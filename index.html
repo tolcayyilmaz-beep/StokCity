@@ -20,6 +20,10 @@
     @media (max-width:560px){.grid{grid-template-columns:1fr}}
     figure.card{width:100%;background:var(--card);border:1px solid var(--border);border-radius:18px;padding:14px;margin:0;box-shadow:0 10px 30px rgba(2,6,23,.05);text-align:center}
     .card img{width:100%;aspect-ratio:1/1;object-fit:cover;border-radius:14px;display:block;background:#eef2ff}
+    /* aspect-ratio desteklemeyen tarayıcılar için güvenli min yükseklik */
+    @supports not (aspect-ratio: 1 / 1) {
+      .card img{height:320px}
+    }
     figcaption{margin-top:12px}
     .title{font-weight:800;font-size:18px;margin-bottom:4px}
     .sub{color:var(--muted);font-size:14px}
@@ -33,27 +37,24 @@
     <header><h1>StokCity</h1></header>
 
     <section class="grid" aria-label="Ürünler">
-      <!-- 1. Görsel -->
       <figure class="card">
-        <img src="gorsel1.png" alt="Stok Sayım SC görseli">
+        <img src="./gorsel1.png?v=1" alt="Stok Sayım SC görseli">
         <figcaption>
           <div class="title">Stok Sayım SC</div>
           <div class="sub">Yayın aşamasında...</div>
         </figcaption>
       </figure>
 
-      <!-- 2. Görsel -->
       <figure class="card">
-        <img src="gorsel2.png" alt="Stok Takip SC görseli">
+        <img src="./gorsel2.png?v=1" alt="Stok Takip SC görseli">
         <figcaption>
           <div class="title">Stok Takip SC</div>
           <div class="sub">Çok yakında...</div>
         </figcaption>
       </figure>
 
-      <!-- 3. Görsel -->
       <figure class="card">
-        <img src="gorsel3.png" alt="Atölye SC görseli">
+        <img src="./gorsel3.png?v=1" alt="Atölye SC görseli">
         <figcaption>
           <div class="title">Atölye SC</div>
           <div class="sub">Çok yakında...</div>
@@ -62,7 +63,7 @@
     </section>
 
     <footer>
-      <a href="/privacy-policy.html">Gizlilik Politikası</a>
+      <a href="privacy-policy.html">Gizlilik Politikası</a>
     </footer>
   </div>
 </body>
