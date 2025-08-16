@@ -1,23 +1,53 @@
 <!doctype html>
 <html lang="tr">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>StokCity</title>
+  <meta name="description" content="StokCity — Stok Sayım ve Takip uygulamaları" />
+
+  <!-- (İsteğe bağlı) İlk görseli önceden getir -->
+  <link rel="preload" as="image" href="gorsel1.webp" imagesrcset="gorsel1.webp" />
+
   <style>
-    :root{--bg:#f7f9fc;--card:#fff;--text:#0f172a;--muted:#6b7280;--accent:#2563eb;--bdr:rgba(2,6,23,.08)}
-    *{box-sizing:border-box} html,body{margin:0}
-    body{font:16px/1.6 system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;background:var(--bg);color:var(--text)}
-    .wrap{max-width:1200px;margin:32px auto;padding:0 16px}
-    header{display:flex;justify-content:center;margin:14px 0 26px}
-    header h1{font-size:clamp(28px,5vw,40px);margin:0;font-weight:800}
-    .row{display:flex;gap:24px;justify-content:center;flex-wrap:wrap}
-    .card{flex:0 0 340px;background:var(--card);border:1px solid var(--bdr);border-radius:18px;padding:14px;text-align:center;box-shadow:0 10px 30px rgba(2,6,23,.05)}
-    .card img{width:100%;height:320px;object-fit:cover;border-radius:14px;background:#eef2ff;display:block}
-    .title{font-weight:800;font-size:18px;margin:12px 0 4px}
-    .sub{color:var(--muted);font-size:14px}
-    footer{margin:26px 0 12px;text-align:center}
-    footer a{color:var(--accent);text-decoration:none;font-weight:600}
+    :root{
+      --bg:#f7f9fc; --card:#ffffff; --text:#0f172a; --muted:#6b7280;
+      --accent:#2563eb; --bdr:rgba(2,6,23,.08);
+    }
+    *{box-sizing:border-box}
+    html,body{margin:0;padding:0}
+    body{
+      font:16px/1.6 system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;
+      background:var(--bg); color:var(--text);
+    }
+    .wrap{max-width:1200px; margin:32px auto; padding:0 16px}
+    header{display:flex; justify-content:center; margin:14px 0 26px}
+    header h1{margin:0; font-weight:900; letter-spacing:.3px; font-size:clamp(28px,5vw,44px)}
+
+    /* KARTLAR: yan yana, ortalı, eş boyut */
+    .row{
+      display:flex; gap:24px; justify-content:center; align-items:flex-start; flex-wrap:wrap;
+    }
+    .card{
+      flex:0 0 340px; /* sabit genişlik → tüm kartlar aynı */
+      background:var(--card);
+      border:1px solid var(--bdr);
+      border-radius:18px;
+      padding:14px;
+      text-align:center;
+      box-shadow:0 10px 30px rgba(2,6,23,.05);
+    }
+    .card picture, .card img{display:block; width:100%}
+    .card img{
+      height:320px;           /* eş yükseklik */
+      object-fit:cover;       /* orantıyı koru, taşanı kırp */
+      border-radius:14px;
+      background:#eef2ff;
+    }
+    .title{font-weight:800; font-size:18px; margin:12px 0 4px}
+    .sub{color:var(--muted); font-size:14px}
+    footer{margin:26px 0 12px; text-align:center}
+    footer a{color:var(--accent); text-decoration:none; font-weight:600}
     footer a:hover{text-decoration:underline}
   </style>
 </head>
@@ -25,34 +55,47 @@
   <div class="wrap">
     <header><h1>StokCity</h1></header>
 
-    <section class="row" aria-label="Ürünler">
+    <section class="row" aria-label="Uygulamalar">
+      <!-- 1. Görsel -->
       <figure class="card">
-        <img id="img1" alt="Stok Sayım SC">
-        <figcaption><div class="title">Stok Sayım SC</div><div class="sub">Yayın aşamasında...</div></figcaption>
+        <picture>
+          <source srcset="gorsel1.webp?v=1" type="image/webp" />
+          <img src="gorsel1.jpg?v=1" alt="Stok Sayım SC" width="340" height="320" loading="lazy" decoding="async" />
+        </picture>
+        <figcaption>
+          <div class="title">Stok Sayım SC</div>
+          <div class="sub">Yayın aşamasında...</div>
+        </figcaption>
       </figure>
 
+      <!-- 2. Görsel -->
       <figure class="card">
-        <img id="img2" alt="Stok Takip SC">
-        <figcaption><div class="title">Stok Takip SC</div><div class="sub">Çok yakında...</div></figcaption>
+        <picture>
+          <source srcset="gorsel2.webp?v=1" type="image/webp" />
+          <img src="gorsel2.jpg?v=1" alt="Stok Takip SC" width="340" height="320" loading="lazy" decoding="async" />
+        </picture>
+        <figcaption>
+          <div class="title">Stok Takip SC</div>
+          <div class="sub">Çok yakında...</div>
+        </figcaption>
       </figure>
 
+      <!-- 3. Görsel -->
       <figure class="card">
-        <img id="img3" alt="Atölye SC">
-        <figcaption><div class="title">Atölye SC</div><div class="sub">Çok yakında...</div></figcaption>
+        <picture>
+          <source srcset="gorsel3.webp?v=1" type="image/webp" />
+          <img src="gorsel3.jpg?v=1" alt="Atölye SC" width="340" height="320" loading="lazy" decoding="async" />
+        </picture>
+        <figcaption>
+          <div class="title">Atölye SC</div>
+          <div class="sub">Çok yakında...</div>
+        </figcaption>
       </figure>
     </section>
 
-    <footer><a id="pp" href="#">Gizlilik Politikası</a></footer>
+    <footer>
+      <a href="privacy-policy.html">Gizlilik Politikası</a>
+    </footer>
   </div>
-
-  <script>
-    // Her zaman doğru hosttan yükle (apex ya da www fark etmeksizin)
-    const base = location.origin;           // örn: https://www.stokcity.com.tr
-    const bust = '?v=' + Date.now();        // önbellek kırıcı
-    document.getElementById('img1').src = base + '/gorsel1.png' + bust;
-    document.getElementById('img2').src = base + '/gorsel2.png' + bust;
-    document.getElementById('img3').src = base + '/gorsel3.png' + bust;
-    document.getElementById('pp').href     = base + '/privacy-policy.html';
-  </script>
 </body>
 </html>
