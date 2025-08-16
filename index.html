@@ -4,34 +4,97 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>StokCity</title>
+  <meta name="description" content="StokCity">
   <style>
-    :root{--bg:#f7f7fb;--fg:#0f172a;--muted:#64748b;--card:#fff;--bdr:rgba(0,0,0,.06)}
+    :root{
+      --bg:#f7f9fc;
+      --card:#ffffff;
+      --text:#0f172a;
+      --muted:#6b7280;
+      --accent:#2563eb;
+      --border:rgba(2,6,23,.08);
+    }
     *{box-sizing:border-box}
-    html,body{height:100%;margin:0}
-    body{
-      font:16px/1.6 system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;
-      color:var(--fg); background:var(--bg);
-      display:grid; place-items:center; padding:24px;
+    html,body{margin:0;padding:0}
+    body{font:16px/1.6 system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;background:var(--bg);color:var(--text)}
+    .wrap{max-width:1100px;margin:32px auto;padding:0 16px}
+    header{display:flex;justify-content:center;align-items:center;margin:14px 0 26px}
+    header h1{font-size:clamp(28px,5vw,40px);margin:0;font-weight:800;letter-spacing:.3px}
+    .grid{
+      display:grid;
+      grid-template-columns: repeat(3, minmax(220px,1fr));
+      gap:22px;
+      align-items:start;
+      justify-items:center;
     }
-    .card{
-      width:min(680px,92vw); background:var(--card); border:1px solid var(--bdr);
-      border-radius:20px; box-shadow:0 10px 40px rgba(2,6,23,.06);
-      padding:28px; text-align:center;
+    @media (max-width: 860px){
+      .grid{grid-template-columns: repeat(2, minmax(220px,1fr))}
     }
-    h1{margin:0 0 6px 0; font-size:clamp(28px,6vw,44px); font-weight:800; letter-spacing:.4px}
-    p{margin:0 0 16px 0; color:var(--muted)}
-    .links{margin-top:12px}
-    .links a{color:#2563eb; text-decoration:none; font-weight:600}
-    .links a:hover{text-decoration:underline}
+    @media (max-width: 560px){
+      .grid{grid-template-columns: 1fr}
+    }
+    figure.card{
+      width:100%;
+      background:var(--card);
+      border:1px solid var(--border);
+      border-radius:18px;
+      padding:14px;
+      margin:0;
+      box-shadow:0 10px 30px rgba(2,6,23,.05);
+      text-align:center;
+    }
+    .card img{
+      width:100%;
+      aspect-ratio: 1 / 1;           /* kare ve eş boyutta göster */
+      object-fit: cover;
+      border-radius:14px;
+      display:block;
+      background:#eef2ff;
+    }
+    figcaption{margin-top:12px}
+    .title{font-weight:800;font-size:18px;margin-bottom:4px}
+    .sub{color:var(--muted);font-size:14px}
+    footer{margin:26px 0 12px;text-align:center}
+    footer a{color:var(--accent);text-decoration:none;font-weight:600}
+    footer a:hover{text-decoration:underline}
   </style>
 </head>
 <body>
-  <main class="card" role="main" aria-label="StokCity">
-    <h1>StokCity</h1>
-    <p>Sayfamız yapım aşamasındadır.</p>
-    <div class="links">
+  <div class="wrap">
+    <header><h1>StokCity</h1></header>
+
+    <section class="grid" aria-label="Ürünler">
+      <!-- 1. Görsel -->
+      <figure class="card">
+        <img src="images/gorsel1.png" alt="Stok Sayım SC görseli">
+        <figcaption>
+          <div class="title">Stok Sayım SC</div>
+          <div class="sub">Yayın aşamasında...</div>
+        </figcaption>
+      </figure>
+
+      <!-- 2. Görsel -->
+      <figure class="card">
+        <img src="images/gorsel2.png" alt="Stok Takip SC görseli">
+        <figcaption>
+          <div class="title">Stok Takip SC</div>
+          <div class="sub">Çok yakında...</div>
+        </figcaption>
+      </figure>
+
+      <!-- 3. Görsel -->
+      <figure class="card">
+        <img src="images/gorsel3.png" alt="Atölye SC görseli">
+        <figcaption>
+          <div class="title">Atölye SC</div>
+          <div class="sub">Çok yakında...</div>
+        </figcaption>
+      </figure>
+    </section>
+
+    <footer>
       <a href="/privacy-policy.html">Gizlilik Politikası</a>
-    </div>
-  </main>
+    </footer>
+  </div>
 </body>
 </html>
