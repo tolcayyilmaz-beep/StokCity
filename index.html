@@ -4,81 +4,18 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>StokCity</title>
-  <meta name="description" content="StokCity">
   <style>
-    :root{
-      --bg:#f7f9fc; --card:#ffffff; --text:#0f172a; --muted:#6b7280;
-      --accent:#2563eb; --border:rgba(2,6,23,.08);
-    }
-    *{box-sizing:border-box} html,body{margin:0;padding:0}
+    :root{--bg:#f7f9fc;--card:#fff;--text:#0f172a;--muted:#6b7280;--accent:#2563eb;--bdr:rgba(2,6,23,.08)}
+    *{box-sizing:border-box} html,body{margin:0}
     body{font:16px/1.6 system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;background:var(--bg);color:var(--text)}
     .wrap{max-width:1200px;margin:32px auto;padding:0 16px}
-    header{display:flex;justify-content:center;align-items:center;margin:14px 0 26px}
-    header h1{font-size:clamp(28px,5vw,40px);margin:0;font-weight:800;letter-spacing:.3px}
-
-    /* KARTLAR: yan yana, ortalı, aynı boyutta */
-    .row{
-      display:flex; gap:22px; justify-content:center; align-items:flex-start; flex-wrap:wrap;
-    }
-    .card{
-      width: 340px;              /* sabit kart genişliği -> hepsi aynı */
-      background:var(--card);
-      border:1px solid var(--border);
-      border-radius:18px;
-      padding:14px;
-      margin:0;
-      box-shadow:0 10px 30px rgba(2,6,23,.05);
-      text-align:center;
-    }
-    .card img{
-      width:100%;
-      height: 320px;             /* sabit yükseklik -> aynı boy */
-      object-fit: cover;         /* taşanı kırp, orantı koru */
-      border-radius:14px;
-      display:block;
-      background:#eef2ff;
-    }
+    header{display:flex;justify-content:center;margin:14px 0 26px}
+    header h1{font-size:clamp(28px,5vw,40px);margin:0;font-weight:800}
+    .row{display:flex;gap:24px;justify-content:center;flex-wrap:wrap}
+    .card{flex:0 0 340px;background:var(--card);border:1px solid var(--bdr);border-radius:18px;padding:14px;text-align:center;box-shadow:0 10px 30px rgba(2,6,23,.05)}
+    .card img{width:100%;height:320px;object-fit:cover;border-radius:14px;background:#eef2ff;display:block}
     .title{font-weight:800;font-size:18px;margin:12px 0 4px}
     .sub{color:var(--muted);font-size:14px}
     footer{margin:26px 0 12px;text-align:center}
     footer a{color:var(--accent);text-decoration:none;font-weight:600}
-    footer a:hover{text-decoration:underline}
-  </style>
-</head>
-<body>
-  <div class="wrap">
-    <header><h1>StokCity</h1></header>
-
-    <section class="row" aria-label="Ürünler">
-      <!-- 1 -->
-      <figure class="card">
-        <img src="/gorsel1.png?v=3" alt="Stok Sayım SC">
-        <figcaption>
-          <div class="title">Stok Sayım SC</div>
-          <div class="sub">Yayın aşamasında...</div>
-        </figcaption>
-      </figure>
-
-      <!-- 2 -->
-      <figure class="card">
-        <img src="/gorsel2.png?v=3" alt="Stok Takip SC">
-        <figcaption>
-          <div class="title">Stok Takip SC</div>
-          <div class="sub">Çok yakında...</div>
-        </figcaption>
-      </figure>
-
-      <!-- 3 -->
-      <figure class="card">
-        <img src="/gorsel3.png?v=3" alt="Atölye SC">
-        <figcaption>
-          <div class="title">Atölye SC</div>
-          <div class="sub">Çok yakında...</div>
-        </figcaption>
-      </figure>
-    </section>
-
-    <footer><a href="/privacy-policy.html">Gizlilik Politikası</a></footer>
-  </div>
-</body>
-</html>
+    footer
