@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Namaz Takip – Gizlilik Politikası</title>
+  <meta name="description" content="Namaz Takip uygulamasının gizlilik politikası" />
+  <style>
+    :root { --fg:#111; --muted:#666; --line:#eee; --bg:#fff; --panel:#f7f7f7; }
+    html,body{background:var(--bg);color:var(--fg);margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif}
+    header,main,footer{max-width:880px;margin:auto;padding:24px}
+    header{background:var(--panel);border-bottom:1px solid var(--line)}
+    h1{margin:0 0 8px} h2{margin-top:28px}
+    ul{padding-left:18px}
+    .muted{color:var(--muted)}
+    .box{background:#fafafa;border:1px solid var(--line);border-radius:12px;padding:16px}
+    a{color:#0b5bd3;text-decoration:none} a:hover{text-decoration:underline}
+  </style>
+</head>
+<body>
+<header>
+  <h1>Gizlilik Politikası – Namaz Takip</h1>
+  <p class="muted">Yürürlük Tarihi: 23 Ağustos 2025</p>
+</header>
+
+<main>
+  <p>Bu gizlilik politikası, <strong>Namaz Takip</strong> (“Uygulama”) için geçerlidir. Uygulamayı kullanarak bu politikayı kabul etmiş sayılırsınız.</p>
+
+  <h2>1) Topladığımız/İşlediğimiz Veriler</h2>
+  <p>Uygulama, <strong>hesap/üye girişi olmadan</strong> çalışır ve kullanıcıdan <strong>kimlik bilgisi</strong> toplamaz.</p>
+
+  <h3>Cihaz Üzerinde Yerel Olarak Tutulan Veriler</h3>
+  <ul>
+    <li>Seçtiğiniz <strong>şehir</strong></li>
+    <li>Namazlar için <strong>işaretleme durumları</strong> (“Kıldım / Kılmadım / Kaza”)</li>
+    <li><strong>Tercihler</strong> (örn. hatırlatma dakikası vb.)</li>
+  </ul>
+  <p>Bu veriler cihazınızdaki uygulama alanında (ör. <code>SharedPreferences</code>) <strong>yerel olarak</strong> saklanır ve geliştiriciye <strong>gönderilmez</strong>.</p>
+
+  <h3>Sunucu İletişimi (Namaz Vakitleri)</h3>
+  <p>Uygulama, seçtiğiniz şehir ve tarih bilgisi ile <strong>Aladhan</strong> API’sinden namaz vakitlerini çeker. Bu istekler sırasında <strong>kullanıcıya ait kişisel veri</strong> gönderilmez.</p>
+
+  <h3>Reklam SDK’ları (Üçüncü Taraflar)</h3>
+  <p>Uygulama <strong>Google Mobile Ads (AdMob)</strong> kullanır. Google ve iş ortakları; reklam sunmak, dolandırıcılığı önlemek ve raporlama amaçlarıyla aşağıdaki türde verileri işleyebilir:</p>
+  <ul>
+    <li>Cihaz tanımlayıcıları (örn. <strong>Reklam Kimliği</strong>)</li>
+    <li>Yaklaşık konum, IP, uygulama etkileşim sinyalleri</li>
+    <li>Çerez benzeri teknolojiler</li>
+  </ul>
+  <p>Bu veriler Google/iş ortakları tarafından işlenir; geliştirici olarak bu verileri doğrudan toplamıyor veya saklamıyoruz.</p>
+
+  <h2>2) Amaçlar</h2>
+  <ul>
+    <li>Seçtiğiniz şehre göre <strong>namaz vakitlerini göstermek</strong></li>
+    <li>İşaretlemeler ve ayarları <strong>yerel</strong> olarak hatırlamak</li>
+    <li><strong>Reklam</strong> gösterimi (AdMob)</li>
+  </ul>
+
+  <h2>3) İzinler</h2>
+  <ul>
+    <li><code>INTERNET</code> / <code>ACCESS_NETWORK_STATE</code>: Namaz vakitlerini almak ve reklamları yüklemek için gereklidir.</li>
+    <li><code>POST_NOTIFICATIONS</code> / <code>SCHEDULE_EXACT_ALARM</code>: <strong>Kullanılmamaktadır.</strong> (Güncel sürüm bildirim izni istemez.)</li>
+  </ul>
+
+  <h2>4) Saklama Süresi</h2>
+  <p>Yerel veriler, siz silene kadar cihazınızda kalır. Uygulama verilerini <em>Ayarlar → Uygulamalar → Namaz Takip → Depolama → Verileri temizle</em> adımlarıyla veya uygulamayı kaldırarak silebilirsiniz.</p>
+
+  <h2>5) Çocukların Gizliliği</h2>
+  <p>Uygulama genel kitleye yöneliktir ve <strong>13 yaş altı</strong> çocuklara özel olarak hedeflenmez. Çocukların verileri bilerek toplanmaz.</p>
+
+  <h2>6) Güvenlik</h2>
+  <p>Yerel veriler cihazınızdadır. İnternet iletişimi standart güvenlik önlemleri ile yapılır. Üçüncü taraf SDK’lar kendi güvenlik ve gizlilik önlemlerini uygular.</p>
+
+  <h2>7) Paylaşım</h2>
+  <p>Geliştirici olarak, kullanıcıdan kişisel veri <strong>paylaşmıyoruz</strong>. Reklam gösterimi kapsamında Google/iş ortakları kendi politikalarına göre veri işleyebilir.</p>
+
+  <h2>8) Haklar ve Tercihler</h2>
+  <ul>
+    <li>Uygulama verilerini cihazınızdan silebilirsiniz.</li>
+    <li>Reklam kişiselleştirmesini cihaz ayarlarından sınırlayabilirsiniz (Android: <em>Ayarlar → Google → Reklamlar</em>).</li>
+  </ul>
+
+  <h2>9) Veri Güvenliğine İlişkin Beyan</h2>
+  <p>İnternet üzerinden veri aktarımı hiçbir zaman %100 güvenli değildir. Makul teknik ve idari önlemler uygulanır ancak mutlak güvenlik garantisi verilemez.</p>
+
+  <h2>10) Değişiklikler</h2>
+  <p>Bu politika zaman zaman güncellenebilir. Önemli değişiklikler uygulama içinde veya sürüm notlarında duyurulacaktır.</p>
+
+  <h2>11) İletişim</h2>
+  <p>Her türlü soru ve talepleriniz için: <a href="mailto:tolcayyilmaz@gmail.com">tolcayyilmaz@gmail.com</a></p>
+</main>
+
+<footer>
+  <p class="muted">© 2025 Namaz Takip</p>
+</footer>
+</body>
+</html>
