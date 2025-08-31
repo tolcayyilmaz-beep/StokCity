@@ -1,0 +1,328 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Wallyus – Test Kayıt Formu</title>
+  <meta name="description" content="Wallyus kapalı test kayıt formu" />
+  <style>
+    :root{
+      --bg1:#b9f3ff;
+      --bg2:#e8fbff;
+      --primary:#0b63b6;
+      --accent:#0fb2ff;
+      --text:#0e2a3b;
+      --muted:#5b6970;
+      --white:#ffffff;
+      --success:#17b26a;
+      --error:#d92d20;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      min-height:100svh;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
+      color:var(--text);
+      background: linear-gradient(160deg, var(--bg2) 0%, var(--bg1) 100%);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:24px;
+    }
+    .card{
+      width:100%;
+      max-width:560px;
+      background:var(--white);
+      border-radius:24px;
+      box-shadow: 0 10px 30px rgba(0,0,0,.08);
+      overflow:hidden;
+      border:1px solid rgba(11,99,182,.08);
+    }
+    .hero{
+      position:relative;
+      padding:28px 24px 16px;
+      text-align:center;
+      background:
+        radial-gradient(120px 80px at 15% 20%, rgba(15,178,255,.12), transparent 60%),
+        radial-gradient(160px 120px at 85% 25%, rgba(11,99,182,.10), transparent 65%);
+    }
+    .logoW{
+      width:84px;height:84px;display:inline-grid;place-items:center;
+      border-radius:20px;
+      background: linear-gradient(145deg, #0d7dd8, #0b63b6);
+      color:white; font-weight:800; font-size:42px; letter-spacing:.5px;
+      margin-bottom:10px;
+      box-shadow: inset 0 2px 6px rgba(255,255,255,.25), 0 6px 20px rgba(11,99,182,.25);
+      user-select:none;
+    }
+    h1{
+      margin:0;
+      font-size: clamp(20px, 3.6vw, 26px);
+      letter-spacing:.2px;
+    }
+    .sub{
+      margin:6px 0 0;
+      color:var(--muted);
+      font-size: 14px;
+    }
+    form{
+      padding:20px 24px 24px;
+      display:grid;
+      gap:14px;
+    }
+    label{font-size:14px;color:var(--text);font-weight:600;margin-bottom:6px;display:block}
+    .row{display:grid; gap:12px}
+    .row.two{grid-template-columns:1fr; }
+    @media (min-width:600px){ .row.two{grid-template-columns:1fr 1fr} }
+    input[type="text"], input[type="email"]{
+      width:100%; padding:14px 14px;
+      border:1px solid rgba(11,99,182,.22);
+      border-radius:12px; outline: none;
+      font-size:16px;
+      transition:.2s border-color, .2s box-shadow;
+      background:#fff;
+    }
+    input[type="text"]:focus, input[type="email"]:focus{
+      border-color: var(--primary);
+      box-shadow: 0 0 0 4px rgba(15,178,255,.15);
+    }
+    .check{
+      display:flex; gap:10px; align-items:flex-start; font-size:14px; color:var(--muted);
+    }
+    .check input{ margin-top:3px }
+    .btn{
+      display:inline-grid; place-items:center;
+      height:48px; border-radius:14px; border:none; cursor:pointer;
+      background: linear-gradient(145deg, #10b0ff, #0b63b6);
+      color:white; font-weight:700; font-size:16px; letter-spacing:.3px;
+      box-shadow: 0 8px 18px rgba(11,99,182,.25);
+      transition:.2s transform, .2s box-shadow, .2s opacity;
+    }
+    .btn:hover{ transform: translateY(-1px); box-shadow: 0 10px 22px rgba(11,99,182,.3); }
+    .btn:disabled{ opacity:.55; cursor:not-allowed; transform:none; box-shadow:none; }
+    .note{font-size:12px;color:var(--muted);line-height:1.5}
+    .alert{
+      margin: 16px 24px 22px; padding:14px 14px;
+      border-radius:12px; font-size:14px; line-height:1.45;
+      display:none;
+    }
+    .alert.show{display:block}
+    .alert.success{ background: #ecfdf3; color:#065e33; border:1px solid #abefc6 }
+    .alert.error{ background:#fef3f2; color:#7a271a; border:1px solid #fecdca }
+    .alert.info { background:#eff8ff; color:#0b3b66; border:1px solid #b6e0fe }
+    .counter{
+      margin:6px 0 0; font-size:13px; color:var(--muted);
+    }
+    .closed{
+      text-align:center; padding:22px; color:#0b3b66;
+    }
+    .hide{display:none !important}
+    .spinner{ 
+      width:18px; height:18px; border:3px solid rgba(255,255,255,.6);
+      border-top-color:#fff; border-radius:50%; animation:spin .9s linear infinite;
+      margin-right:8px; display:none;
+    }
+    .btn.loading .spinner{ display:inline-block }
+    .btn.loading span{ opacity:.9 }
+    @keyframes spin{ to{ transform:rotate(360deg)} }
+    footer{
+      text-align:center; padding:0 24px 20px; color:var(--muted); font-size:12px
+    }
+  </style>
+</head>
+<body>
+  <main class="card" id="card">
+    <div class="hero">
+      <div class="logoW" aria-hidden="true">W</div>
+      <h1>Wallyus – Kapalı Test Kaydı</h1>
+      <p class="sub">İlk test grubuna katıl. <strong>Kontenjan: 100 kişi</strong></p>
+      <p class="counter" id="counterInfo">Kalan kontenjan hesaplanıyor…</p>
+    </div>
+
+    <div id="closedView" class="closed hide">
+      <h2>Kontenjan doldu 🎉</h2>
+      <p>İlginiz için teşekkür ederiz. Belirlediğimiz kontenjan ne yazık ki dolmuştur.<br/>Çok yakında yeni kampanyalarımız ile karşınızda olacağız.</p>
+    </div>
+
+    <form id="signupForm" autocomplete="on" novalidate>
+      <div class="row two">
+        <div>
+          <label for="firstName">İsim</label>
+          <input id="firstName" name="firstName" type="text" placeholder="Adınız" required />
+        </div>
+        <div>
+          <label for="lastName">Soyisim</label>
+          <input id="lastName" name="lastName" type="text" placeholder="Soyadınız" required />
+        </div>
+      </div>
+
+      <div>
+        <label for="email">E‑posta</label>
+        <input id="email" name="email" type="email" placeholder="ornek@mail.com" required />
+      </div>
+
+      <label class="check">
+        <input id="consent" type="checkbox" />
+        <span>Verilerim sadece test daveti ve indirim için kullanılacaktır.</span>
+      </label>
+
+      <button type="submit" class="btn" id="submitBtn">
+        <div class="spinner" aria-hidden="true"></div>
+        <span>Kaydol</span>
+      </button>
+    </form>
+
+    <div id="successAlert" class="alert success">
+      Başvurun alındı! 🎉 Kısa sürede e‑posta ile bilgilendirileceksin.
+    </div>
+    <div id="errorAlert" class="alert error"></div>
+    <div id="infoAlert" class="alert info hide"></div>
+
+    <footer>© <span id="year"></span> Wallyus</footer>
+  </main>
+
+  <!-- Firebase v9 (Modular) -->
+  <script type="module">
+    // TODO: Kendi Firebase Web uygulama config’inizi aşağıya yapıştırın
+    // Firebase Console → Project Settings → Your apps → Web app
+    const firebaseConfig = {
+  apiKey: "AIzaSyCZr30DxXL-MPl8fbg5---WMKLAME_9ReE",
+  authDomain: "wallyus-advert.firebaseapp.com",
+  projectId: "wallyus-advert",
+  storageBucket: "wallyus-advert.appspot.com",
+  messagingSenderId: "886558875581",
+  appId: "1:886558875581:web:1843f409531ab92c3d3cd4"
+    };
+
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-app.js";
+    import { getFirestore, doc, getDoc, setDoc, updateDoc, collection, addDoc, serverTimestamp, runTransaction } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-firestore.js";
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    const LIMIT = 100; // kontenjan
+    const counterRef = doc(db, "counters", "test_group");
+    const formEl = document.getElementById("signupForm");
+    const closedView = document.getElementById("closedView");
+    const counterInfo = document.getElementById("counterInfo");
+    const successAlert = document.getElementById("successAlert");
+    const errorAlert = document.getElementById("errorAlert");
+    const infoAlert = document.getElementById("infoAlert");
+    const submitBtn = document.getElementById("submitBtn");
+    const yearEl = document.getElementById("year");
+    yearEl.textContent = new Date().getFullYear();
+
+    function show(el){ el.classList.add("show"); }
+    function hide(el){ el.classList.remove("show"); }
+    function setLoading(on){
+      if(on){ submitBtn.classList.add("loading"); submitBtn.disabled = true; }
+      else { submitBtn.classList.remove("loading"); submitBtn.disabled = false; }
+    }
+
+    async function ensureCounterDoc(){
+      const snap = await getDoc(counterRef);
+      if(!snap.exists()){
+        await setDoc(counterRef, { count: 0, updatedAt: serverTimestamp() });
+        return 0;
+      }
+      const data = snap.data();
+      return (typeof data.count === "number") ? data.count : 0;
+    }
+
+    async function refreshCounterUI(){
+      try{
+        const snap = await getDoc(counterRef);
+        let count = 0;
+        if(snap.exists()) count = snap.data().count || 0;
+        const remaining = Math.max(LIMIT - count, 0);
+        counterInfo.textContent = `Kalan kontenjan: ${remaining}`;
+        if(remaining <= 0){
+          // formu kapat
+          formEl.classList.add("hide");
+          closedView.classList.remove("hide");
+        } else {
+          formEl.classList.remove("hide");
+          closedView.classList.add("hide");
+        }
+      }catch(e){
+        counterInfo.textContent = "Kontenjan bilgisi alınamadı.";
+      }
+    }
+
+    // İlk yüklemede sayaç dokümanını hazırla ve UI’yı güncelle
+    ensureCounterDoc().then(refreshCounterUI);
+
+    formEl.addEventListener("submit", async (e)=>{
+      e.preventDefault();
+      hide(successAlert); hide(errorAlert);
+      infoAlert.classList.add("hide");
+      setLoading(true);
+
+      const firstName = (document.getElementById("firstName").value || "").trim();
+      const lastName  = (document.getElementById("lastName").value || "").trim();
+      const email     = (document.getElementById("email").value || "").trim();
+      const consent   = document.getElementById("consent").checked;
+
+      // Basit doğrulamalar
+      if(!firstName || !lastName || !email){
+        setLoading(false);
+        errorAlert.textContent = "Lütfen tüm zorunlu alanları doldurun.";
+        show(errorAlert);
+        return;
+      }
+      if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)){
+        setLoading(false);
+        errorAlert.textContent = "Geçerli bir e‑posta adresi girin.";
+        show(errorAlert);
+        return;
+      }
+
+      try{
+        // Transaction ile: kontenjan kontrolü + kayıt + sayaç artışı
+        await runTransaction(db, async (transaction)=>{
+          const counterSnap = await transaction.get(counterRef);
+          let current = 0;
+          if(!counterSnap.exists()){
+            transaction.set(counterRef, { count: 0, updatedAt: serverTimestamp() });
+          } else {
+            current = counterSnap.data().count || 0;
+          }
+          if(current >= LIMIT){
+            throw new Error("Kontenjan dolu");
+          }
+          // kayıt
+          const ref = collection(db, "campaign_signups");
+          transaction.set(doc(ref), {
+            firstName, lastName, email, consent,
+            createdAt: serverTimestamp(),
+            source: "instagram_campaign_de",
+            status: "pending"
+          });
+          // sayaç +1
+          transaction.update(counterRef, {
+            count: current + 1,
+            updatedAt: serverTimestamp()
+          });
+        });
+
+        formEl.reset();
+        setLoading(false);
+        show(successAlert);
+        await refreshCounterUI();
+      } catch(err){
+        setLoading(false);
+        if(err && err.message === "Kontenjan dolu"){
+          // formu kilitle
+          await refreshCounterUI();
+          errorAlert.textContent = "Kontenjan dolu. Kayıt alınamıyor.";
+          show(errorAlert);
+        } else {
+          errorAlert.textContent = "Bir hata oluştu. Lütfen tekrar deneyin.";
+          show(errorAlert);
+          console.error(err);
+        }
+      }
+    });
+  </script>
+</body>
+</html>
