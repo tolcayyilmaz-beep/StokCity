@@ -13,7 +13,7 @@
     body{margin:0;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;
       font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial;
       background:linear-gradient(160deg,var(--bg2),var(--bg1));color:var(--text);}
-    .card{width:100%;max-width:480px;background:var(--white);border-radius:20px;box-shadow:0 8px 24px rgba(0,0,0,.08);overflow:hidden}
+    .card{width:100%;max-width:520px;background:var(--white);border-radius:20px;box-shadow:0 8px 24px rgba(0,0,0,.08);overflow:hidden}
     .hero{text-align:center;padding:24px;background:radial-gradient(120px 80px at 20% 20%,rgba(15,178,255,.12),transparent 60%);}
     .logoW{width:72px;height:72px;border-radius:18px;display:grid;place-items:center;
       background:linear-gradient(145deg,#0d7dd8,#0b63b6);color:white;font-size:36px;font-weight:800;margin:0 auto 12px}
@@ -33,6 +33,11 @@
     .alert.error{background:#fef3f2;color:#7a271a;border:1px solid #fecdca}
     .closed{text-align:center;padding:24px}
     footer{text-align:center;font-size:12px;color:var(--muted);padding:12px}
+    /* Kampanya özeti */
+    .camp-summary{padding:18px 20px;border-top:1px solid rgba(11,99,182,.12);font-size:14px;line-height:1.55}
+    .camp-summary h2{margin:0 0 10px;font-size:16px;color:var(--primary)}
+    .camp-summary ul{padding-left:18px;margin:0}
+    .camp-summary li+li{margin-top:6px}
   </style>
 </head>
 <body>
@@ -76,17 +81,30 @@
     <div id="successAlert" class="alert success">Başvurun alındı! 🎉</div>
     <div id="errorAlert" class="alert error"></div>
 
+    <!-- 📌 Kampanya Özeti -->
+    <section class="camp-summary">
+      <h2>Kampanya Özeti</h2>
+      <p>Wallyus’u ilk deneyimleyenlerden biri ol!</p>
+      <ul>
+        <li>Kapalı test sadece <strong>100 kişilik kontenjan</strong> ile sınırlı.</li>
+        <li>Katılanlar, 15 gün boyunca uygulamayı erkenden deneme şansı yakalayacak.</li>
+        <li>Teste katılan herkese, uygulama resmi olarak yayınlandığında <strong>%50 indirim</strong> sağlanacak.</li>
+        <li>Sadece adınızı, soyadınızı ve e-posta adresinizi bırakmanız yeterli.</li>
+        <li>Endişelenmeyin, verileriniz yalnızca bu test süreci ve indirim daveti için kullanılacak; üçüncü kişilerle paylaşılmayacak.</li>
+      </ul>
+    </section>
+
     <footer>© <span id="year"></span> Wallyus</footer>
   </main>
 
   <script type="module">
-       const firebaseConfig = {
-  apiKey: "AIzaSyCZr30DxXL-MPl8fbg5---WMKLAME_9ReE",
-  authDomain: "wallyus-advert.firebaseapp.com",
-  projectId: "wallyus-advert",
-  storageBucket: "wallyus-advert.appspot.com",
-  messagingSenderId: "886558875581",
-  appId: "1:886558875581:web:1843f409531ab92c3d3cd4"
+    const firebaseConfig = {
+      apiKey: "YOUR_API_KEY",
+      authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
+      projectId: "YOUR_PROJECT_ID",
+      storageBucket: "YOUR_PROJECT_ID.appspot.com",
+      messagingSenderId: "YOUR_SENDER_ID",
+      appId: "YOUR_APP_ID"
     };
 
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-app.js";
