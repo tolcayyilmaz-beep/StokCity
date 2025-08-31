@@ -95,7 +95,8 @@
       <div style="overflow:auto;max-height:440px">
         <table id="tbl">
           <thead>
-            <tr><th>Tarih</th><th>Ad</th><th>Soyad</th><th>E-posta</th><th>Onay</th><th>Kaynak</th></tr>
+            <!-- TARİH SÜTUNU KALDIRILDI -->
+            <tr><th>Ad</th><th>Soyad</th><th>E-posta</th><th>Onay</th><th>Kaynak</th></tr>
           </thead>
           <tbody></tbody>
         </table>
@@ -110,12 +111,12 @@
   <script type="module">
     // 🔧 Kendi Firebase config'inizi ekleyin
     const firebaseConfig = {
-  apiKey: "AIzaSyCZr30DxXL-MPl8fbg5---WMKLAME_9ReE",
-  authDomain: "wallyus-advert.firebaseapp.com",
-  projectId: "wallyus-advert",
-  storageBucket: "wallyus-advert.appspot.com",
-  messagingSenderId: "886558875581",
-  appId: "1:886558875581:web:1843f409531ab92c3d3cd4"
+      apiKey: "YOUR_API_KEY",
+      authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
+      projectId: "YOUR_PROJECT_ID",
+      storageBucket: "YOUR_PROJECT_ID.appspot.com",
+      messagingSenderId: "YOUR_SENDER_ID",
+      appId: "YOUR_APP_ID"
     };
 
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-app.js";
@@ -185,25 +186,23 @@
       }
     }
 
-    // 📥 Kayıtları getir (son 1000)
+    // 📥 Kayıtları getir (son 1000) — TARİH SÜTUNU YOK
     async function loadRows(){
       const qText = qInput.value.trim().toLowerCase();
       const snap = await getDocs(query(collection(db, "campaign_signups"), orderBy("createdAt", "desc"), limit(1000)));
       const rows = [];
       snap.forEach(d=>{
         const x = d.data();
-        const t = x.createdAt?.toDate?.() || null;
         const hay = [(x.firstName||""),(x.lastName||""),(x.email||"")].join(" ").toLowerCase();
         if(qText && !hay.includes(qText)) return;
-        rows.push({ createdAt:t, ...x });
+        rows.push({ ...x });
       });
 
-      // tabloya bas
+      // tabloya bas (tarih YOK)
       tblBody.innerHTML = "";
       for(const r of rows){
         const tr = document.createElement("tr");
         tr.innerHTML = `
-          <td>${r.createdAt ? r.createdAt.toLocaleString() : ""}</td>
           <td>${esc(r.firstName||"")}</td>
           <td>${esc(r.lastName||"")}</td>
           <td>${esc(r.email||"")}</td>
@@ -218,13 +217,12 @@
     async function refreshAll(){ await Promise.all([loadCounter(), loadRows()]); }
     btnRefresh.addEventListener("click", refreshAll);
 
-    // 📤 CSV Export
+    // 📤 CSV Export — TARİH ALANI YOK
     btnExport.addEventListener("click", ()=>{
       const rows = window.__rows || [];
-      const header = ["createdAt","firstName","lastName","email","consent","source"];
+      const header = ["firstName","lastName","email","consent","source"];
       const csv = [header.join(",")].concat(
         rows.map(r=>[
-          r.createdAt ? isoLocal(r.createdAt) : "",
           csvSafe(r.firstName), csvSafe(r.lastName), csvSafe(r.email),
           r.consent ? "true" : "false",
           csvSafe(r.source)
@@ -239,10 +237,6 @@
     });
 
     // Utils
-    function isoLocal(d){
-      const pad = (n)=>String(n).padStart(2,"0");
-      return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`;
-    }
     function csvSafe(s){ const t=(s||"").replace(/"/g,'""'); return `"${t}"`; }
     function esc(s){ return (s||"").replace(/[&<>"']/g, m=>({ "&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;" }[m])); }
   </script>
