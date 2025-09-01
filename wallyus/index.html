@@ -10,9 +10,11 @@
       --text:#0e2a3b; --muted:#5b6970; --white:#ffffff;
     }
     *{box-sizing:border-box}
-    body{margin:0;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;
+    body{
+      margin:0;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;
       font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial;
-      background:linear-gradient(160deg,var(--bg2),var(--bg1));color:var(--text);}
+      background:linear-gradient(160deg,var(--bg2),var(--bg1));color:var(--text);
+    }
     .card{width:100%;max-width:520px;background:var(--white);border-radius:20px;box-shadow:0 8px 24px rgba(0,0,0,.08);overflow:hidden}
     .hero{text-align:center;padding:24px;background:radial-gradient(120px 80px at 20% 20%,rgba(15,178,255,.12),transparent 60%);}
     .logoW{width:72px;height:72px;border-radius:18px;display:grid;place-items:center;
@@ -98,63 +100,102 @@
   </main>
 
   <script type="module">
-   const firebaseConfig = {
-  apiKey: "AIzaSyCZr30DxXL-MPl8fbg5---WMKLAME_9ReE",
-  authDomain: "wallyus-advert.firebaseapp.com",
-  projectId: "wallyus-advert",
-  storageBucket: "wallyus-advert.appspot.com",
-  messagingSenderId: "886558875581",
-  appId: "1:886558875581:web:1843f409531ab92c3d3cd4"
+    // ---- Firebase config (seninki) ----
+    const firebaseConfig = {
+      apiKey: "AIzaSyCZr30DxXL-MPl8fbg5---WMKLAME_9ReE",
+      authDomain: "wallyus-advert.firebaseapp.com",
+      projectId: "wallyus-advert",
+      storageBucket: "wallyus-advert.appspot.com",
+      messagingSenderId: "886558875581",
+      appId: "1:886558875581:web:1843f409531ab92c3d3cd4"
     };
 
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-app.js";
-    import { getFirestore, doc, getDoc, setDoc, collection, serverTimestamp, runTransaction } 
+    import { getFirestore, doc, getDoc, collection, serverTimestamp, runTransaction } 
       from "https://www.gstatic.com/firebasejs/10.12.3/firebase-firestore.js";
 
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
-    const LIMIT=100, counterRef=doc(db,"counters","test_group");
-    const form=document.getElementById("signupForm");
-    const closedView=document.getElementById("closedView");
-    const counterInfo=document.getElementById("counterInfo");
-    const successAlert=document.getElementById("successAlert");
-    const errorAlert=document.getElementById("errorAlert");
-    document.getElementById("year").textContent=new Date().getFullYear();
 
-    function normalizeEmail(e){return (e||"").trim().toLowerCase();}
+    const LIMIT = 100;
+    const counterRef = doc(db, "counters", "test_group");
+
+    const form = document.getElementById("signupForm");
+    const closedView = document.getElementById("closedView");
+    const counterInfo = document.getElementById("counterInfo");
+    const successAlert = document.getElementById("successAlert");
+    const errorAlert = document.getElementById("errorAlert");
+    document.getElementById("year").textContent = new Date().getFullYear();
+
+    function normalizeEmail(e){ return (e||"").trim().toLowerCase(); }
+    function showError(msg){ errorAlert.textContent = msg; errorAlert.classList.add("show"); }
+    function clearAlerts(){ errorAlert.classList.remove("show"); successAlert.classList.remove("show"); }
+
+    // Kontenjanı oku ve UI'ı güncelle
     async function refreshCounterUI(){
-      const snap=await getDoc(counterRef);
-      let count=0;if(snap.exists()) count=snap.data().count||0;
-      const remaining=Math.max(LIMIT-count,0);
-      counterInfo.textContent=`Kalan kontenjan: ${remaining}`;
-      if(remaining<=0){form.style.display="none";closedView.style.display="block";}
+      try{
+        const snap = await getDoc(counterRef);
+        let count = 0;
+        if(snap.exists()) count = snap.data().count || 0;
+        const remaining = Math.max(LIMIT - count, 0);
+        counterInfo.textContent = `Kalan kontenjan: ${remaining}`;
+        if(remaining <= 0){ form.style.display="none"; closedView.style.display="block"; }
+      }catch(e){
+        counterInfo.textContent = "Kontenjan bilgisi alınamadı.";
+      }
     }
 
-    form.addEventListener("submit",async e=>{
+    form.addEventListener("submit", async (e)=>{
       e.preventDefault();
-      successAlert.classList.remove("show"); errorAlert.classList.remove("show");
-      const firstName=document.getElementById("firstName").value.trim();
-      const lastName=document.getElementById("lastName").value.trim();
-      const email=normalizeEmail(document.getElementById("email").value.trim());
-      const consent=document.getElementById("consent").checked;
-      const hp=document.getElementById("hp").value.trim();
-      if(hp) return;
-      if(!firstName||!lastName||!email||!consent){errorAlert.textContent="Lütfen tüm alanları doldurun.";errorAlert.classList.add("show");return;}
-      if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)){errorAlert.textContent="Geçerli bir e-posta girin.";errorAlert.classList.add("show");return;}
+      clearAlerts();
+
+      const firstName = document.getElementById("firstName").value.trim();
+      const lastName  = document.getElementById("lastName").value.trim();
+      const email     = normalizeEmail(document.getElementById("email").value.trim());
+      const consent   = document.getElementById("consent").checked;
+      const hp        = document.getElementById("hp").value.trim();
+
+      if(hp) return; // honeypot
+      if(!firstName || !lastName || !email || !consent){ return showError("Lütfen tüm alanları doldurun."); }
+      if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)){ return showError("Geçerli bir e-posta girin."); }
 
       try{
-        const signupRef=doc(collection(db,"campaign_signups"),email);
-        await runTransaction(db,async tx=>{
-          const cSnap=await tx.get(counterRef);let current=0;
-          if(!cSnap.exists()){tx.set(counterRef,{count:0,updatedAt:serverTimestamp()});}
-          else current=cSnap.data().count||0;
-          if(current>=LIMIT) throw new Error("Kontenjan dolu");
-          if((await tx.get(signupRef)).exists()) throw new Error("Bu e-posta zaten kayıtlı");
-          tx.set(signupRef,{firstName,lastName,email,consent,createdAt:serverTimestamp(),source:"landing"});
-          tx.update(counterRef,{count:current+1,updatedAt:serverTimestamp()});
+        const signupRef = doc(collection(db, "campaign_signups"), email);
+
+        await runTransaction(db, async (tx)=>{
+          // Sayaç oku
+          const cSnap = await tx.get(counterRef);
+          let current = 0;
+          if(!cSnap.exists()){
+            // ilk kez oluştur
+            tx.set(counterRef, { count: 0, updatedAt: serverTimestamp() });
+          }else{
+            current = cSnap.data().count || 0;
+          }
+          if(current >= LIMIT) throw new Error("Kontenjan dolu");
+
+          // 🔑 Burada create kullanıyoruz: varsa hata, yoksa oluşturur (read izni gerekmez)
+          tx.create(signupRef, {
+            firstName, lastName, email, consent,
+            createdAt: serverTimestamp(), source: "landing"
+          });
+
+          // Sayaç +1
+          tx.update(counterRef, { count: current + 1, updatedAt: serverTimestamp() });
         });
-        form.reset(); successAlert.classList.add("show"); refreshCounterUI();
-      }catch(err){errorAlert.textContent=err.message;errorAlert.classList.add("show");}
+
+        form.reset();
+        successAlert.classList.add("show");
+        refreshCounterUI();
+
+      }catch(err){
+        // Belge zaten varsa (duplicate) Firestore "already exists" hatası verir
+        if(String(err?.message || "").toLowerCase().includes("already exists")){
+          showError("Bu e-posta ile zaten kayıt yapılmış.");
+        }else{
+          showError(err?.message || "Bir hata oluştu. Lütfen tekrar deneyin.");
+        }
+      }
     });
 
     refreshCounterUI();
