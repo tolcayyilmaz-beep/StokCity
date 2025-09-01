@@ -175,7 +175,7 @@
           if(current >= LIMIT) throw new Error("Kontenjan dolu");
 
           // 🔑 Burada create kullanıyoruz: varsa hata, yoksa oluşturur (read izni gerekmez)
-          tx.create(signupRef, {
+          tx.set(signupRef, {
             firstName, lastName, email, consent,
             createdAt: serverTimestamp(), source: "landing"
           });
