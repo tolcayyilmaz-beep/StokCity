@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Lafkat – Kayıt Ol</title>
+<meta name="theme-color" content="#FF7F2F" />
+<style>
+  :root{
+    --orange:#FF7F2F; --orange-2:#ff9a58; --ink:#1b1b1b; --muted:#6a3a1f;
+    --card:#ffffff; --line:#ffd7bf; --bg:#fff7f2; --ok:#11a36a; --err:#c62828;
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0; font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+    background: linear-gradient(180deg, var(--orange) 0%, var(--orange-2) 100%);
+    color:var(--ink); display:grid; place-items:center; min-height:100vh; padding:24px;
+  }
+  .card{
+    width:min(860px, 100%); background:#fff; border:1px solid var(--line); border-radius:18px; overflow:hidden;
+    box-shadow:0 18px 48px rgba(255,127,47,.28);
+    display:grid; grid-template-columns: 1.1fr .9fr;
+  }
+  @media (max-width:960px){ .card{grid-template-columns: 1fr;} }
+  .left{padding:22px 22px 18px}
+  .right{
+    background:#fff8f3; border-left:1px solid var(--line); padding:22px;
+    display:flex; flex-direction:column; gap:12px; justify-content:center;
+  }
+  h1{margin:0 0 6px; font-size:26px}
+  .sub{color:#7a3b14; font-size:13px; margin-bottom:12px}
+  .row{display:grid; grid-template-columns:1fr 1fr; gap:12px}
+  @media (max-width:640px){ .row{grid-template-columns:1fr} }
+  label{font-weight:700; font-size:13px; color:#7a3b14}
+  input{
+    width:100%; padding:12px 12px; border:1.6px solid #ffd0b3; border-radius:12px; font-size:15px; outline:none;
+  }
+  input:focus{border-color:#ff9a58; box-shadow:0 0 0 4px #ffe7d7}
+  .hint{font-size:12px; color:#8b5a3a; margin-top:6px}
+  .status{font-size:12px; font-weight:800; margin-top:6px}
+  .ok{color:var(--ok)} .err{color:var(--err)}
+  .actions{display:flex; gap:10px; margin-top:14px; flex-wrap:wrap}
+  .btn{
+    cursor:pointer; border:none; background:var(--orange); color:#fff; padding:12px 16px; border-radius:12px;
+    font-weight:800; box-shadow:0 10px 20px rgba(255,127,47,.35); transition:.15s transform; font-size:14px;
+  }
+  .btn:hover{transform:translateY(-1px)}
+  .btn.secondary{background:#fff; color:#ff6a08; border:1.6px solid #ffd0b3; box-shadow:none}
+  .note{font-size:12px; color:#7a3b14}
+  .logo{
+    width:56px; height:56px; border-radius:14px; background:radial-gradient(100% 100% at 30% 30%,#ffd18f,#ff7f2f);
+    display:grid; place-items:center; color:#fff; font-weight:900; font-size:22px; box-shadow:0 10px 28px rgba(255,127,47,.35);
+  }
+  .bullet{display:flex; gap:10px; align-items:flex-start}
+  .bullet div:first-child{font-size:20px}
+  .sep{height:1px; background:#ffd7bf; margin:10px 0}
+  .toast{position:fixed;left:50%;bottom:26px;transform:translateX(-50%);background:#111;color:#fff;padding:10px 14px;border-radius:10px;font-weight:700;box-shadow:0 10px 24px rgba(0,0,0,.25);z-index:9999}
+  .modeTag{font-size:12px;background:#ffe8d7;display:inline-block;padding:6px 10px;border-radius:999px;border:1px solid #ffd7bf;color:#7a3b14;margin-top:8px}
+</style>
+</head>
+<body>
+  <div class="card">
+    <div class="left">
+      <div style="display:flex; align-items:center; gap:12px; margin-bottom:8px;">
+        <div class="logo">💬</div>
+        <div>
+          <h1>Lafkat – Kayıt Ol</h1>
+          <div class="sub">Hemen katıl, cümleleri birlikte tamamlayalım.</div>
+          <span class="modeTag" id="modeTag">demo (offline)</span>
+        </div>
+      </div>
+
+      <form id="form">
+        <div class="row">
+          <div>
+            <label for="fullname">Ad / Profil adı</label>
+            <input id="fullname" type="text" placeholder="Örn. Tolcay K." required />
+          </div>
+          <div>
+            <label for="nickname">Nickname (benzersiz)</label>
+            <input id="nickname" type="text" placeholder="3–20 karakter, harf/rakam/alt çizgi" required />
+            <div id="nickStatus" class="status"></div>
+          </div>
+        </div>
+
+        <div class="row">
+          <div>
+            <label for="email">E-posta</label>
+            <input id="email" type="email" placeholder="ornek@domain.com" required />
+          </div>
+          <div>
+            <label for="password">Şifre</label>
+            <input id="password" type="password" placeholder="En az 6 karakter" required />
+          </div>
+        </div>
+
+        <div class="hint">Nickname kuralları: 3–20 karakter; **a-z, 0-9, _** kullanılabilir. Nickname tekil olmalıdır.</div>
+        <div class="actions">
+          <button class="btn" type="submit">Hesap Oluştur</button>
+          <button class="btn secondary" type="button" id="demoFill">Örnek Doldur</button>
+        </div>
+        <div class="note">Kayıt ile <a href="#" onclick="alert('Kullanım Şartları (taslak)'); return false;">kullanım şartlarını</a> kabul etmiş olursunuz.</div>
+      </form>
+    </div>
+
+    <aside class="right">
+      <div class="bullet"><div>⚡</div><div><strong>Benzersiz nickname</strong>: Aynı takma ad iki kişide olmaz.</div></div>
+      <div class="bullet"><div>🔒</div><div><strong>Güvenli giriş</strong>: Firebase ile e-posta/şifre desteği (opsiyonel).</div></div>
+      <div class="bullet"><div>🏷️</div><div><strong>Profil</strong>: Ad-soyad ve görünür kullanıcı adı ayrıdır.</div></div>
+      <div class="bullet"><div>🛡️</div><div><strong>Spam koruma</strong>: Kurallar ve moderasyonla temiz topluluk.</div></div>
+      <div class="sep"></div>
+      <div class="hint">Not: Firebase kullanmak için bu sayfada <em>ENABLE_FIREBASE = true</em> yapıp kendi yapılandırmanı ekle.</div>
+    </aside>
+  </div>
+
+<!-- Firebase (compat) – opsiyonel -->
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script>
+/* =========================
+   AYARLAR
+========================= */
+let ENABLE_FIREBASE = false; // 🔴 Lokal demo: false. Canlı için true yap.
+const firebaseConfig = {
+  // apiKey: "xxx",
+  // authDomain: "xxx.firebaseapp.com",
+  // projectId: "xxx",
+  // storageBucket: "xxx.appspot.com",
+  // messagingSenderId: "xxx",
+  // appId: "xxx"
+};
+const PROFILES = "profiles"; // Firestore koleksiyonu
+
+/* =========================
+   YARDIMCI
+========================= */
+const $ = (s)=>document.querySelector(s);
+function toast(t){ const el=document.createElement("div"); el.className="toast"; el.textContent=t; document.body.appendChild(el); setTimeout(()=>el.remove(), 1400); }
+function normNick(n){ return (n||"").toLowerCase().trim(); }
+const NICK_RE = /^[a-z0-9_]{3,20}$/;
+
+/* =========================
+   DEMO VERİ / LOCAL STORAGE
+========================= */
+const LS_KEY = "lafkat_nicks";
+function lsGetNicks(){ try{ return new Set(JSON.parse(localStorage.getItem(LS_KEY)||"[]")); }catch{return new Set();} }
+function lsAddNick(n){ const set=lsGetNicks(); set.add(n); localStorage.setItem(LS_KEY, JSON.stringify([...set])); }
+function lsHasNick(n){ return lsGetNicks().has(n); }
+
+/* =========================
+   FIREBASE BAŞLAT
+========================= */
+let db=null, auth=null;
+(function init(){
+  if(firebaseConfig && firebaseConfig.projectId && ENABLE_FIREBASE){
+    firebase.initializeApp(firebaseConfig);
+    db = firebase.firestore();
+    auth = firebase.auth();
+    $("#modeTag").textContent = "canlı (Firebase)";
+  }else{
+    $("#modeTag").textContent = "demo (offline)";
+  }
+})();
+
+/* =========================
+   NICKNAME UYGUNLUK KONTROLÜ
+========================= */
+let debounceTimer=null;
+$("#nickname").addEventListener("input", ()=>{
+  clearTimeout(debounceTimer);
+  debounceTimer = setTimeout(checkNickname, 320);
+});
+async function checkNickname(){
+  const raw = $("#nickname").value;
+  const nick = normNick(raw);
+  const status = $("#nickStatus");
+
+  if(!NICK_RE.test(nick)){
+    status.className = "status err";
+    status.textContent = "Geçersiz format: 3–20, a-z, 0-9, _";
+    return false;
+  }
+
+  if(ENABLE_FIREBASE){
+    try{
+      const ref = db.collection(PROFILES).doc(nick);
+      const doc = await ref.get();
+      if(doc.exists){
+        status.className = "status err";
+        status.textContent = "Bu nickname alınmış.";
+        return false;
+      }else{
+        status.className = "status ok";
+        status.textContent = "Uygun! Kullanabilirsiniz.";
+        return true;
+      }
+    }catch(e){
+      status.className = "status err";
+      status.textContent = "Kontrol edilemedi, daha sonra deneyin.";
+      return false;
+    }
+  }else{
+    // Demo modu
+    if(lsHasNick(nick)){
+      status.className = "status err";
+      status.textContent = "Bu nickname alınmış (demo).";
+      return false;
+    }else{
+      status.className = "status ok";
+      status.textContent = "Uygun! (demo)";
+      return true;
+    }
+  }
+}
+
+/* =========================
+   FORM İŞLEME
+========================= */
+$("#demoFill").addEventListener("click", ()=>{
+  $("#fullname").value = "Ziyaretçi";
+  $("#nickname").value = "ziyaretci_" + Math.floor(Math.random()*1000);
+  $("#email").value = `demo${Math.floor(Math.random()*10000)}@mail.com`;
+  $("#password").value = "demo1234";
+  checkNickname();
+});
+
+$("#form").addEventListener("submit", async (e)=>{
+  e.preventDefault();
+
+  const name = $("#fullname").value.trim();
+  const rawNick = $("#nickname").value;
+  const email = $("#email").value.trim();
+  const pass = $("#password").value;
+
+  const nick = normNick(rawNick);
+  if(!name){ return toast("Lütfen ad / profil adı girin."); }
+  if(!NICK_RE.test(nick)){ return toast("Nickname kurallarına uyun."); }
+  const ok = await checkNickname(); if(!ok) return toast("Nickname uygun değil.");
+
+  if(ENABLE_FIREBASE){
+    try{
+      // Önce nickname dokümanını rezerve et (yarış şartları için transaction daha iyi)
+      await db.runTransaction(async (tx)=>{
+        const ref = db.collection(PROFILES).doc(nick);
+        const snap = await tx.get(ref);
+        if(snap.exists) throw new Error("Bu nickname alınmış.");
+        tx.set(ref, {
+          nickname: nick,
+          displayName: name,
+          createdAt: new Date().toISOString()
+        });
+      });
+
+      // Auth kullanıcı oluştur
+      const { user } = await auth.createUserWithEmailAndPassword(email, pass);
+      await user.updateProfile({ displayName: name });
+
+      toast("Kayıt başarılı! Giriş yapıldı.");
+      // Burada yönlendirme yapabilirsiniz:
+      // window.location.href = "/";
+
+    }catch(err){
+      // Nickname rezerve edildi ama auth başarısız olabilir -> geri alma mantığı eklenebilir.
+      alert(err.message);
+    }
+  }else{
+    // Demo: local olarak kaydet
+    lsAddNick(nick);
+    toast("Demo kaydı tamamlandı. (Nickname rezerve edildi)");
+  }
+});
+
+/* =========================
+   BİTİR
+========================= */
+</script>
+</body>
+</html>
