@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Lafkat – Forum Paneli Demo</title>
+<meta name="theme-color" content="#FF7F2F" />
+<style>
+  :root{
+    --orange:#FF7F2F; --orange-2:#ff9a58; --ink:#1b1b1b; --muted:#6a3a1f;
+    --card:#ffffff; --line:#ffd7bf; --bg:#fff7f2;
+  }
+  *{box-sizing:border-box}
+  html,body{height:100%}
+  body{
+    margin:0; font-family: system-ui,-apple-system,Segoe UI,Inter,Roboto,Arial,sans-serif;
+    background: linear-gradient(180deg, var(--orange) 0%, var(--orange-2) 100%);
+    color:var(--ink);
+  }
+  .shell{
+    max-width:1200px; margin:0 auto; padding:16px; min-height:100%;
+    display:grid; grid-template-columns: 1fr 380px; gap:16px;
+  }
+  @media (max-width:1040px){ .shell{grid-template-columns: 1fr;} }
+
+  header{
+    grid-column:1/-1; background:#fff4ec; border:1px solid var(--line); border-radius:14px;
+    padding:14px 16px; display:flex; align-items:center; gap:12px; margin-bottom:6px;
+  }
+  .logo{width:40px;height:40px;border-radius:10px;background:radial-gradient(100% 100% at 30% 30%,#ffd18f,#ff7f2f);
+    display:grid;place-items:center;color:#fff;font-weight:800;box-shadow:0 6px 18px rgba(255,127,47,.35)}
+  header h1{margin:0;font-size:18px}
+  .tag{margin-left:auto;font-size:12px;background:#ffe8d7;color:#7a3b14;padding:6px 10px;border-radius:999px;border:1px solid #ffd7bf}
+
+  /* LEFT (içerik/oyun alanı yer tutucu) */
+  .left{
+    background:var(--card); border:1px solid var(--line); border-radius:14px; padding:16px;
+    min-height:520px;
+  }
+  .left h2{margin:4px 0 10px;font-size:18px;color:#7a3b14}
+  .placeholder{background:#fff8f3;border:1px dashed #ffc59f;border-radius:12px;padding:16px;color:#8a4a26}
+
+  /* RIGHT (forum) */
+  .right{
+    background:#fffdfb; border:1px solid var(--line); border-radius:14px; padding:0; overflow:hidden;
+    position:relative;
+  }
+  .summary{
+    padding:14px; background:#fff9f4; border-bottom:1px solid var(--line);
+  }
+  .summary h3{margin:0 0 8px;font-size:15px;color:#7a3b14}
+  .summary .top{
+    background:#ffffff; border:1px solid var(--line); border-radius:12px; padding:12px;
+  }
+  .top .title{font-weight:700;font-size:14px}
+  .top .meta{font-size:12px;color:#8b5a3a;margin-top:4px;display:flex;gap:10px;align-items:center}
+
+  .controls{
+    padding:10px 14px; display:flex; align-items:center; gap:8px; border-bottom:1px solid var(--line);
+    background:#fffefc;
+  }
+  .controls .sort-label{font-size:12px;color:#7a3b14;margin-right:6px}
+  .controls .chip{
+    border:1px solid #ffd0b3; background:#fff; color:#7a3b14; padding:6px 10px; border-radius:10px; cursor:pointer; font-weight:600; font-size:12px;
+  }
+  .controls .chip.active{background:#ffefe4;border-color:#ffb98d;color:#6a2d0b}
+
+  .feed{padding:10px 14px 16px; display:grid; gap:12px; max-height:70vh; overflow:auto}
+  .post{
+    background:#ffffff; border:1px solid var(--line); border-radius:12px; padding:12px;
+  }
+  .post .head{display:flex; align-items:center; gap:10px; margin-bottom:8px}
+  .avatar{
+    width:36px;height:36px;border-radius:50%; background:#ffe3cf; display:grid;place-items:center; font-weight:800; color:#7a3b14
+  }
+  .who{display:flex; flex-direction:column}
+  .who .name{font-weight:700}
+  .who .time{font-size:12px;color:#8b5a3a}
+
+  .content{font-size:15px; line-height:1.45}
+  .actions{display:flex; gap:10px; margin-top:10px; align-items:center; flex-wrap:wrap}
+  .btn{
+    cursor:pointer;border:none;background:var(--orange);color:#fff;padding:8px 12px;border-radius:10px;
+    font-weight:800; box-shadow:0 6px 14px rgba(255,127,47,.28); transition:.15s transform;
+    font-size:13px;
+  }
+  .btn:hover{transform:translateY(-1px)}
+  .btn.secondary{background:#ffffff;color:#ff6a08;border:1.5px solid #ffd0b3;box-shadow:none}
+  .like-count{font-size:12px;color:#7a3b14}
+  .comments{
+    margin-top:10px; padding-top:10px; border-top:1px dashed #ffd0b3;
+  }
+  .comments .label{font-weight:700; font-size:13px; color:#7a3b14; margin-bottom:6px}
+  .comment-item{font-size:13px; background:#fffaf7; border:1px solid #ffe3cf; border-radius:8px; padding:8px; margin-top:6px}
+  .comment-item .by{font-weight:700; margin-right:6px}
+  .comment-form{display:flex; gap:6px; margin-top:8px; flex-wrap:wrap}
+  .comment-form input{
+    flex:1; min-width:120px; padding:8px 10px; border:1.5px solid #ffd0b3; border-radius:10px; font-size:13px;
+  }
+  .empty{font-size:13px;color:#8b5a3a}
+</style>
+</head>
+<body>
+  <div class="shell">
+    <header>
+      <div class="logo">💬</div>
+      <h1>Lafkat – Forum Köşesi (Demo)</h1>
+      <div class="tag">deneme modu</div>
+    </header>
+
+    <!-- SOL: içerik/oyun alanı yer tutucu -->
+    <section class="left" aria-labelledby="oyunTitle">
+      <h2 id="oyunTitle">Oyun Alanı (Yer Tutucu)</h2>
+      <div class="placeholder">
+        Burada oyun/etkileşim alanınız olacak. Sağdaki forum paneli canlıdır:
+        beğeni butonuna bas, sıralama otomatik güncellensin; yorum ekle, anında görünsün.
+      </div>
+    </section>
+
+    <!-- SAĞ: Forum paneli -->
+    <aside class="right" aria-labelledby="forumTitle">
+      <div class="summary">
+        <h3 id="forumTitle">Bugünün En Popüler Cümlesi</h3>
+        <div class="top" id="topCard">
+          <div class="title" id="topText">—</div>
+          <div class="meta" id="topMeta">—</div>
+        </div>
+      </div>
+
+      <div class="controls">
+        <span class="sort-label">Sırala:</span>
+        <button class="chip active" id="sortPopular">En popüler</button>
+        <button class="chip" id="sortNewest">En yeni</button>
+      </div>
+
+      <div class="feed" id="feed" aria-live="polite"></div>
+    </aside>
+  </div>
+
+<script>
+/* ----------------- Demo verisi ----------------- */
+let idSeq = 7;
+const now = () => new Date().toISOString();
+
+let posts = [
+  { id:1, name:"Ayşe K.", text:"Bugün işe giderken şemsiyeyle dans ettim.", likes: 12, at:"2025-09-03T18:10:00Z",
+    comments:[{by:"Mert", text:"Tam benlik!"}] },
+  { id:2, name:"Erdem T.", text:"Asansörde yanlış kata çıkıp kahkaha attım.", likes: 8, at:"2025-09-03T18:45:00Z",
+    comments:[{by:"Seda", text:"Klasik 😄"},{by:"Mina", text:"Aynısı bana da oldu!"}] },
+  { id:3, name:"Zeynep A.", text:"Kahvemi şekersiz sanıp iki kez şeker attım.", likes: 15, at:"2025-09-03T19:05:00Z",
+    comments:[] },
+  { id:4, name:"Kerem B.", text:"Otobüste yanımdaki kişi uyuyunca ben de esnedim.", likes: 6, at:"2025-09-03T19:20:00Z",
+    comments:[{by:"Can", text:"Bulaşıcı esneme!"}] },
+  { id:5, name:"Mina R.", text:"Telefonum çalınca 'Pizza geldi!' diye açtım.", likes: 19, at:"2025-09-03T20:00:00Z",
+    comments:[{by:"Barış", text:"Efsane replik!"}] },
+  { id:6, name:"Hakan D.", text:"Markete ekmek almaya gidip çiçekle döndüm.", likes: 11, at:"2025-09-03T20:30:00Z",
+    comments:[] }
+];
+
+/* ----------------- Yardımcılar ----------------- */
+function timeAgo(iso){
+  const d = new Date(iso), s = (Date.now()-d.getTime())/1000;
+  if(s<60) return "az önce";
+  const m = s/60; if(m<60) return `${Math.floor(m)} dk önce`;
+  const h = m/60; if(h<24) return `${Math.floor(h)} sa önce`;
+  const day = h/24; return `${Math.floor(day)} g önce`;
+}
+function initial(name){
+  return name.trim().charAt(0).toUpperCase();
+}
+
+/* ----------------- Render ----------------- */
+let sortMode = "popular"; // 'popular' | 'newest'
+
+function sortPosts(){
+  if(sortMode==="popular"){
+    posts.sort((a,b)=> b.likes - a.likes || new Date(b.at)-new Date(a.at));
+  }else{
+    posts.sort((a,b)=> new Date(b.at)-new Date(a.at));
+  }
+}
+function renderTop(){
+  if(!posts.length) return;
+  const winner = [...posts].sort((a,b)=> b.likes - a.likes || new Date(b.at)-new Date(a.at))[0];
+  document.getElementById("topText").textContent = `"${winner.text}"`;
+  document.getElementById("topMeta").innerHTML = `
+    <span>👤 ${winner.name}</span>
+    <span>👍 ${winner.likes}</span>
+    <span>🕒 ${timeAgo(winner.at)}</span>
+  `;
+}
+function renderFeed(){
+  sortPosts();
+  renderTop();
+  const feed = document.getElementById("feed");
+  feed.innerHTML = "";
+  posts.forEach(p=>{
+    const card = document.createElement("article");
+    card.className = "post";
+    card.setAttribute("data-id", p.id);
+
+    card.innerHTML = `
+      <div class="head">
+        <div class="avatar" aria-hidden="true">${initial(p.name)}</div>
+        <div class="who">
+          <div class="name">${p.name}</div>
+          <div class="time">${timeAgo(p.at)}</div>
+        </div>
+      </div>
+      <div class="content">${escapeHTML(p.text)}</div>
+      <div class="actions">
+        <button class="btn" data-like="${p.id}" aria-label="Beğen">👍 Beğen</button>
+        <span class="like-count" id="likes-${p.id}">${p.likes} beğeni</span>
+        <button class="btn secondary" data-comment-toggle="${p.id}">💬 Yorumlar</button>
+      </div>
+      <div class="comments" id="comments-${p.id}" style="display:none">
+        <div class="label">Yorumlar</div>
+        <div class="list" id="list-${p.id}">
+          ${p.comments.length ? p.comments.map(c=>(
+            `<div class="comment-item"><span class="by">${escapeHTML(c.by)}:</span>${escapeHTML(c.text)}</div>`
+          )).join("") : `<div class="empty">Henüz yorum yok.</div>`}
+        </div>
+        <form class="comment-form" data-form="${p.id}">
+          <input type="text" name="by" placeholder="Adınız" required />
+          <input type="text" name="text" placeholder="Yorum yazın..." required />
+          <button class="btn" type="submit">Gönder</button>
+        </form>
+      </div>
+    `;
+    feed.appendChild(card);
+  });
+}
+
+function escapeHTML(s){
+  return s.replace(/[&<>"']/g, m=>({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;" }[m]));
+}
+
+/* ----------------- Etkileşimler ----------------- */
+document.addEventListener("click",(e)=>{
+  const likeBtn = e.target.closest("[data-like]");
+  if(likeBtn){
+    const id = +likeBtn.getAttribute("data-like");
+    const p = posts.find(x=>x.id===id);
+    p.likes++;
+    document.getElementById(`likes-${id}`).textContent = `${p.likes} beğeni`;
+    if(sortMode==="popular"){ renderFeed(); } // popülerdeyken anında yeniden sırala
+    else renderTop(); // en yeni modda sadece top'u güncelle
+  }
+
+  const toggleBtn = e.target.closest("[data-comment-toggle]");
+  if(toggleBtn){
+    const id = +toggleBtn.getAttribute("data-comment-toggle");
+    const box = document.getElementById(`comments-${id}`);
+    box.style.display = box.style.display==="none" ? "block" : "none";
+  }
+
+  const chipPopular = e.target.closest("#sortPopular");
+  const chipNewest = e.target.closest("#sortNewest");
+  if(chipPopular){
+    sortMode = "popular";
+    document.getElementById("sortPopular").classList.add("active");
+    document.getElementById("sortNewest").classList.remove("active");
+    renderFeed();
+  }
+  if(chipNewest){
+    sortMode = "newest";
+    document.getElementById("sortNewest").classList.add("active");
+    document.getElementById("sortPopular").classList.remove("active");
+    renderFeed();
+  }
+});
+
+document.addEventListener("submit",(e)=>{
+  const form = e.target.closest("[data-form]");
+  if(form){
+    e.preventDefault();
+    const id = +form.getAttribute("data-form");
+    const by = form.querySelector('input[name="by"]').value.trim() || "Ziyaretçi";
+    const text = form.querySelector('input[name="text"]').value.trim();
+    if(!text) return;
+
+    const p = posts.find(x=>x.id===id);
+    if(!p.comments.length){
+      const emptyEl = document.querySelector(`#list-${id} .empty`);
+      if(emptyEl) emptyEl.remove();
+    }
+    p.comments.push({by, text});
+
+    const list = document.getElementById(`list-${id}`);
+    const item = document.createElement("div");
+    item.className = "comment-item";
+    item.innerHTML = `<span class="by">${escapeHTML(by)}:</span>${escapeHTML(text)}`;
+    list.appendChild(item);
+
+    form.reset();
+  }
+});
+
+/* ----------------- Başlat ----------------- */
+renderFeed();
+</script>
+</body>
+</html>
