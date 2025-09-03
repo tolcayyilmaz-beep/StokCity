@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Lafkat – Giriş</title>
+<meta name="theme-color" content="#FF7F2F" />
+<style>
+  :root{--orange:#FF7F2F;--orange-2:#ff9a58;--ink:#1b1b1b;--line:#ffd7bf}
+  *{box-sizing:border-box}
+  body{margin:0;min-height:100vh;display:grid;place-items:center;padding:24px;
+    font-family:system-ui,-apple-system,Segoe UI,Inter,Roboto,Arial,sans-serif;
+    background:linear-gradient(180deg,var(--orange) 0%,var(--orange-2) 100%);color:var(--ink)}
+  .card{width:min(840px,100%);background:#fff;border:1px solid var(--line);border-radius:18px;
+    box-shadow:0 18px 48px rgba(255,127,47,.28);display:grid;grid-template-columns:1.05fr .95fr;overflow:hidden}
+  @media (max-width:900px){.card{grid-template-columns:1fr}}
+  .left{padding:22px}.right{padding:22px;border-left:1px solid var(--line);background:#fff9f4}
+  .logo{width:56px;height:56px;border-radius:14px;background:radial-gradient(100% 100% at 30% 30%,#ffd18f,#ff7f2f);
+    display:grid;place-items:center;color:#fff;font-weight:900;font-size:22px;box-shadow:0 10px 28px rgba(255,127,47,.35)}
+  h1{margin:8px 0 4px;font-size:26px}.muted{color:#7a3b14}.modeTag{font-size:12px;background:#ffe8d7;padding:6px 10px;border-radius:999px;border:1px solid var(--line)}
+  label{font-weight:700;font-size:13px;color:#7a3b14}.row{display:grid;gap:10px;margin-top:10px}
+  input{width:100%;padding:12px;border:1.6px solid #ffd0b3;border-radius:12px;font-size:15px;outline:none}
+  input:focus{border-color:#ff9a58;box-shadow:0 0 0 4px #ffe7d7}
+  .actions{display:flex;gap:10px;margin-top:14px;flex-wrap:wrap}
+  .btn{cursor:pointer;border:none;background:#FF7F2F;color:#fff;padding:12px 16px;border-radius:12px;font-weight:800;box-shadow:0 10px 20px rgba(255,127,47,.35)}
+  .btn.secondary{background:#fff;color:#ff6a08;border:1.6px solid #ffd0b3;box-shadow:none}
+  .btn.ghost{background:#fff7ef;color:#7a3b14;border:1.6px dashed #ffc49f}
+  .hint{font-size:12px;color:#8b5a3a}.toast{position:fixed;left:50%;bottom:26px;transform:translateX(-50%);background:#111;color:#fff;padding:10px 14px;border-radius:10px;font-weight:700}
+</style>
+</head>
+<body>
+<div class="card">
+  <section class="left">
+    <div style="display:flex;align-items:center;gap:12px">
+      <div class="logo">💬</div>
+      <div><h1>Lafkat</h1><div class="muted">Giriş yap ve cümleleri tamamla.</div><span id="modeTag" class="modeTag">demo (offline)</span></div>
+    </div>
+    <form id="form" class="row" autocomplete="on">
+      <div class="row">
+        <label for="idInput">E-posta veya Kullanıcı Adı (nickname)</label>
+        <input id="idInput" type="text" placeholder="ornek@posta.com veya takmaad" required />
+        <div class="hint">E-posta girerseniz doğrudan giriş yapılır; kullanıcı adı girerseniz e-posta bulunur.</div>
+      </div>
+      <div class="row">
+        <label for="password">Şifre</label>
+        <input id="password" type="password" placeholder="••••••••" required />
+      </div>
+      <div class="actions">
+        <button class="btn" type="submit" id="btnLogin">Giriş Yap</button>
+        <button class="btn secondary" type="button" id="btnRegister">Kayıt Ol</button>
+        <button class="btn ghost" type="button" id="btnForgot">Şifremi Unuttum</button>
+        <button class="btn secondary" type="button" id="btnGuest">Ziyaretçi Girişi</button>
+      </div>
+      <div class="hint">Ziyaretçi modu: forumları okuyabilir; beğeni/yorum/gönderi yapamaz.</div>
+    </form>
+  </section>
+  <aside class="right">
+    <div class="row"><div class="muted"><strong>İpucu:</strong> Canlı mod için bu dosyada Firebase config doldurup ENABLE_FIREBASE’i <code>true</code> yapın.</div></div>
+  </aside>
+</div>
+
+<!-- Firebase (opsiyonel) -->
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script>
+let ENABLE_FIREBASE = true; // 🔴 demo: false, canlı: true yap
+const firebaseConfig = {
+  apiKey: "AIzaSyB5VbgogKUo8RXeA8SUMUaHVbbblAg4gfE",
+  authDomain: "lafkat-23687.firebaseapp.com",
+  projectId: "lafkat-23687",
+  storageBucket: "lafkat-23687.firebasestorage.app",
+  messagingSenderId: "493504696765",
+  appId: "1:493504696765:web:86bb6f7a28e403efc782d4"
+};
+
+const PATH_AFTER_LOGIN = "index-compact.html";
+const PATH_REGISTER = "register.html"; // istersen sonra ekleriz
+
+const $ = s=>document.querySelector(s);
+function toast(t){ const el=document.createElement("div"); el.className="toast"; el.textContent=t; document.body.appendChild(el); setTimeout(()=>el.remove(),1400); }
+function isEmail(v){ return /@/.test(v); }
+
+let db=null, auth=null;
+(function init(){
+  if(firebaseConfig && firebaseConfig.projectId && ENABLE_FIREBASE){
+    firebase.initializeApp(firebaseConfig);
+    db=firebase.firestore(); auth=firebase.auth();
+    $("#modeTag").textContent="canlı (Firebase)";
+  }else{$("#modeTag").textContent="demo (offline)";}
+})();
+
+$("#btnRegister").addEventListener("click", ()=>{ window.location.href = PATH_REGISTER; });
+$("#btnGuest").addEventListener("click", ()=>{
+  localStorage.setItem("authRole","visitor");
+  localStorage.removeItem("authUser");
+  toast("Ziyaretçi modunda gezinebilirsiniz.");
+  setTimeout(()=>location.href=PATH_AFTER_LOGIN,600);
+});
+$("#btnForgot").addEventListener("click", async ()=>{
+  const id=$("#idInput").value.trim();
+  if(!ENABLE_FIREBASE){ return toast("Demo mod: şifre sıfırlama simülasyonu."); }
+  if(!id || !isEmail(id)) return toast("E-posta adresinizi yazın.");
+  try{ await auth.sendPasswordResetEmail(id); toast("Sıfırlama e-postası gönderildi."); }catch(e){ alert(e.message); }
+});
+$("#form").addEventListener("submit", async (e)=>{
+  e.preventDefault();
+  const id=$("#idInput").value.trim(); const pass=$("#password").value;
+  if(!ENABLE_FIREBASE){
+    if(!id||!pass) return toast("Bilgileri doldurun.");
+    localStorage.setItem("authRole","user");
+    localStorage.setItem("authUser", JSON.stringify({id, nickname: id.includes("@")? id.split("@")[0]: id}));
+    return location.href=PATH_AFTER_LOGIN;
+  }
+  try{
+    let email=id;
+    if(!isEmail(id)){
+      const snap = await db.collection("users").where("nickname","==", id).limit(1).get();
+      if(snap.empty) return toast("Kullanıcı adı bulunamadı.");
+      email = snap.docs[0].data().email;
+    }
+    const { user } = await auth.signInWithEmailAndPassword(email, pass);
+    localStorage.setItem("authRole","user");
+    localStorage.setItem("authUser", JSON.stringify({ uid:user.uid, email:user.email, displayName:user.displayName || "" }));
+    location.href=PATH_AFTER_LOGIN;
+  }catch(err){ alert(err.message); }
+});
+</script>
+</body>
+</html>
