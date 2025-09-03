@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Lafkat – Bugünün Cümlesi</title>
+<meta name="theme-color" content="#FF7F2F" />
+<style>
+  :root{--orange:#FF7F2F;--orange-2:#ff9a58;--ink:#1b1b1b;--muted:#7a3b14;--card:#fff;--line:#ffd7bf}
+  *{box-sizing:border-box} html,body{height:100%}
+  body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Inter,Roboto,Arial,sans-serif;
+    background:linear-gradient(180deg,var(--orange) 0%,var(--orange-2) 100%);color:var(--ink)}
+  .header{background:#fff4ec;border-bottom:1px solid var(--line)}
+  .header .inner{max-width:1200px;margin:0 auto;padding:10px 16px;display:flex;align-items:center;gap:12px}
+  .logo{width:40px;height:40px;border-radius:10px;background:radial-gradient(100% 100% at 30% 30%,#ffd18f,#ff7f2f);
+    display:grid;place-items:center;color:#fff;font-weight:900;box-shadow:0 6px 18px rgba(255,127,47,.35)}
+  nav{margin-left:auto;display:flex;gap:8px;flex-wrap:wrap}
+  nav a{text-decoration:none;color:#7a3b14;font-weight:700;font-size:14px;padding:8px 12px;border:1px solid #ffd7bf;border-radius:999px;background:#fff}
+  nav a:hover{background:#ffefe4;border-color:#ffb98d}
+  .shell{max-width:1200px;margin:0 auto;padding:16px;display:grid;grid-template-columns:1fr 360px;gap:16px}
+  @media (max-width:1040px){.shell{grid-template-columns:1fr}}
+  .left{background:#fff;border:1px solid var(--line);border-radius:14px;padding:16px;min-height:520px}
+  h1{margin:6px 0 12px;font-size:22px;color:#7a3b14}
+  .prompt{background:#fff7f0;border:1px dashed #ffc49f;border-radius:12px;padding:16px;margin-bottom:14px}
+  .sentence{font-size:24px;line-height:1.35}.blank{padding:2px 10px;border-radius:8px;background:#ffe0c9;border:1px solid #ffb98d;color:#9a3e0d}
+  input[type="text"]{width:100%;padding:14px;border:1.5px solid #ffd0b3;border-radius:12px;font-size:16px}
+  input[type="text"]:focus{border-color:#ff9a58;box-shadow:0 0 0 4px #ffe7d7}
+  .btn{cursor:pointer;border:none;background:#FF7F2F;color:#fff;padding:12px 14px;border-radius:12px;font-weight:800;box-shadow:0 7px 16px rgba(255,127,47,.35)}
+  .btn.secondary{background:#fff;color:#ff6a08;border:1.5px solid #ffd0b3}
+  .actions{display:flex;gap:10px;margin-top:8px;flex-wrap:wrap}
+  .result-card{margin-top:12px;background:#fffdfb;border:1px solid var(--line);padding:12px;border-radius:12px}
+  .shareBar{display:flex;gap:10px;margin-top:10px;flex-wrap:wrap}
+  .right{background:#fffdfb;border:1px solid var(--line);border-radius:14px;overflow:hidden}
+  .sectionHead{padding:12px 14px;background:#fff9f4;border-bottom:1px solid var(--line);font-weight:800;color:#7a3b14}
+  .list{padding:10px 14px;display:grid;gap:8px}
+  .item{display:grid;gap:4px;background:#fff;border:1px solid var(--line);border-radius:10px;padding:10px}
+  .row{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+  .rank{font-weight:900;color:#7a3b14;width:28px;text-align:center}
+  .name{font-weight:700}.meta{margin-left:auto;font-size:12px;color:#8b5a3a;display:flex;gap:10px}
+</style>
+</head>
+<body>
+<header class="header">
+  <div class="inner">
+    <div class="logo">💬</div><div class="brand"><strong>Lafkat</strong></div>
+    <nav><a href="suggest.html">Cümle Öner</a><a href="forum.html">Forum</a><a href="leaderboard.html">Liderlik</a><a href="friends.html">Arkadaşlar</a><a href="profile.html">Profil</a><a href="settings.html">Ayarlar</a></nav>
+  </div>
+</header>
+
+<main class="shell">
+  <section class="left">
+    <h1>Bugünün Cümlesi</h1>
+    <div class="prompt"><div id="sentence" class="sentence"></div></div>
+
+    <label for="answer" style="font-weight:700;color:#7a3b14">Boşluğu kendi kelimenle tamamla:</label>
+    <input id="answer" type="text" placeholder="ör. dondurma yemeyi" />
+    <div class="actions">
+      <button class="btn" id="btnSubmit">Gönder</button>
+      <button class="btn secondary" id="btnClear">Temizle</button>
+    </div>
+
+    <div class="result-card">
+      <strong>Sonuç</strong>
+      <div id="result">Henüz bir sonuç yok. Boşluğu doldur ve sonucu burada gör.</div>
+      <div class="shareBar">
+        <button class="btn" id="btnShare">Paylaş</button>
+        <button class="btn secondary" id="btnCopy">Metni Kopyala</button>
+      </div>
+      <div style="font-size:12px;color:#8b5a3a;margin-top:4px">Paylaşım metnine <strong>Lafkat</strong> ve <strong>#SendeKatıl</strong> otomatik eklenir.</div>
+    </div>
+  </section>
+
+  <aside class="right">
+    <div class="sectionHead">Bugünün İlk 3'ü</div>
+    <div class="list" id="top3"></div>
+    <div class="sectionHead">Son Eklenenler</div>
+    <div class="list" id="last10"></div>
+  </aside>
+</main>
+
+<footer style="max-width:1200px;margin:0 auto 16px;padding:0 16px;color:#fff;opacity:.9">
+  “Sözcükleri kat, eğlenceyi yakala!” • © Lafkat
+</footer>
+
+<!-- Firebase (opsiyonel) -->
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script>
+/* ===== Ayarlar ===== */
+let ENABLE_FIREBASE = true; // 🔴 demo: false, canlı: true yap
+const firebaseConfig = {
+  apiKey: "AIzaSyB5VbgogKUo8RXeA8SUMUaHVbbblAg4gfE",
+  authDomain: "lafkat-23687.firebaseapp.com",
+  projectId: "lafkat-23687",
+  storageBucket: "lafkat-23687.firebasestorage.app",
+  messagingSenderId: "493504696765",
+  appId: "1:493504696765:web:86bb6f7a28e403efc782d4"
+};
+
+const $ = s=>document.querySelector(s);
+function escapeHTML(s){ return (s||"").replace(/[&<>"']/g, m=>({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;" }[m])); }
+function timeAgo(iso){ const d=new Date(iso), s=(Date.now()-d)/1000; if(s<60)return"az önce"; const m=s/60;if(m<60)return`${Math.floor(m)} dk`;const h=m/60;if(h<24)return`${Math.floor(h)} sa`;return `${Math.floor(h/24)} g`; }
+
+let db=null, auth=null;
+(function init(){
+  if(firebaseConfig && firebaseConfig.projectId && ENABLE_FIREBASE){
+    firebase.initializeApp(firebaseConfig); db=firebase.firestore(); auth=firebase.auth();
+  }
+  initPage();
+})();
+
+async function getTodayId(){ const t=new Date(); const y=t.getFullYear(), m=String(t.getMonth()+1).padStart(2,'0'), d=String(t.getDate()).padStart(2,'0'); return `${y}-${m}-${d}`; }
+
+/* ===== Prompt ===== */
+let DAILY_PROMPT_TEXT = "Bugün işe giderken ____ yüzünden geciktim."; // demo
+async function loadPrompt(){
+  if(!db){ renderPrompt(); return; }
+  const doc = await db.collection("dailyPrompts").doc(await getTodayId()).get();
+  DAILY_PROMPT_TEXT = doc.exists ? (doc.data().promptText||DAILY_PROMPT_TEXT) : DAILY_PROMPT_TEXT;
+  renderPrompt();
+}
+function renderPrompt(){ $("#sentence").innerHTML = DAILY_PROMPT_TEXT.replace("____", `<span class="blank">_____</span>`); }
+function submitAnswerText(filler){ const full = DAILY_PROMPT_TEXT.replace("____", filler.trim()); $("#result").textContent = full; }
+
+/* ===== Gönder ===== */
+document.addEventListener("click", async (e)=>{
+  const id=e.target.id;
+  if(id==="btnClear"){ $("#answer").value=""; $("#answer").focus(); }
+  if(id==="btnSubmit"){
+    const v=$("#answer").value.trim(); if(!v) return;
+    submitAnswerText(v);
+
+    if(!db){ // demo mod – sağ listelere ekle
+      addDemoPost(v); renderTop3(demoTop3()); renderLast10(demoLast10()); return;
+    }
+    const role = localStorage.getItem("authRole");
+    if(role==="visitor"){ return alert("Gönderi için giriş yapmalısınız."); }
+    const user = (auth && auth.currentUser) || null;
+    const name = user ? (user.displayName || user.email || "Kullanıcı") : "Kullanıcı";
+    const uid  = user ? user.uid : "anon";
+
+    await db.collection("posts").add({
+      text: DAILY_PROMPT_TEXT.replace("____", v),
+      uid, name, likes:0,
+      at: firebase.firestore.Timestamp.now(),
+      promptDate: await getTodayId()
+    });
+    await refreshLists();
+  }
+  if(id==="btnShare"||id==="btnCopy"){
+    const txt=$("#result").textContent.trim(); if(!txt||txt.startsWith("Henüz")) return;
+    const shareText=`${txt}\n\nLafkat • #SendeKatıl\n${location.href}`;
+    if(id==="btnShare" && navigator.share){ try{ await navigator.share({title:"Lafkat", text:shareText, url:location.href}); }catch{} }
+    else{ try{ await navigator.clipboard.writeText(shareText); alert("Metin kopyalandı!"); }catch{ alert("Kopyalama başarısız."); } }
+  }
+});
+
+/* ===== Sağ Panel Okumaları ===== */
+async function fetchTop3(){
+  const snap = await db.collection("posts")
+    .where("promptDate","==", await getTodayId())
+    .orderBy("likes","desc").orderBy("at","desc").limit(3).get();
+  return snap.docs.map(d=>({ id:d.id, ...d.data(), at:d.data().at.toDate().toISOString() }));
+}
+async function fetchLast10(){
+  const snap = await db.collection("posts")
+    .where("promptDate","==", await getTodayId())
+    .orderBy("at","desc").limit(10).get();
+  return snap.docs.map(d=>({ id:d.id, ...d.data(), at:d.data().at.toDate().toISOString() }));
+}
+async function refreshLists(){
+  if(!db){ renderTop3(demoTop3()); renderLast10(demoLast10()); return; }
+  renderTop3(await fetchTop3());
+  renderLast10(await fetchLast10());
+}
+
+/* ===== Beğeni ===== */
+document.addEventListener("click", async (e)=>{
+  const btn = e.target.closest("[data-like]"); if(!btn) return;
+  if(!db) { // demo like
+    const id = btn.getAttribute("data-like"); demoLike(id); renderTop3(demoTop3()); renderLast10(demoLast10()); return;
+  }
+  if(localStorage.getItem("authRole")==='visitor') return alert("Beğenmek için giriş yapın.");
+  const user = auth.currentUser; if(!user) return alert("Giriş yapın.");
+  const postId = btn.getAttribute("data-like");
+  const likeDoc = db.collection("posts").doc(postId).collection("likes").doc(user.uid);
+  const s = await likeDoc.get(); if(s.exists) return;
+  await likeDoc.set({ at: firebase.firestore.Timestamp.now() });
+  await refreshLists();
+});
+
+/* ===== Render ===== */
+function renderTop3(list){
+  const box=$("#top3"); box.innerHTML="";
+  list.forEach((p,i)=>{
+    const el=document.createElement("div");
+    el.className="item";
+    el.innerHTML=`<div class="row"><div class="rank">#${i+1}</div>
+      <div class="name">${escapeHTML(p.name)}</div>
+      <div class="meta"><span>👍 ${p.likes||0}</span><span>🕒 ${timeAgo(p.at)}</span></div></div>
+      <div>${escapeHTML(p.text)}</div>
+      <div class="row"><button class="btn secondary" style="padding:6px 10px" data-like="${p.id}">Beğen</button></div>`;
+    box.appendChild(el);
+  });
+}
+function renderLast10(list){
+  const box=$("#last10"); box.innerHTML="";
+  list.forEach(p=>{
+    const el=document.createElement("div");
+    el.className="item";
+    el.innerHTML=`<div class="row"><div class="name">${escapeHTML(p.name)}</div>
+      <div class="meta"><span>🕒 ${timeAgo(p.at)}</span><span>👍 ${p.likes||0}</span></div></div>
+      <div>${escapeHTML(p.text)}</div>
+      <div class="row"><button class="btn secondary" style="padding:6px 10px" data-like="${p.id}">Beğen</button></div>`;
+    box.appendChild(el);
+  });
+}
+
+/* ===== Demo veri (offline mod) ===== */
+let demoPosts=[
+  { id:"p5", name:"Mina R.",  text:"Telefonum çalınca 'Pizza geldi!' diye açtım.", likes:19, at:"2025-09-03T20:00:00Z" },
+  { id:"p3", name:"Zeynep A.", text:"Kahvemi şekersiz sanıp iki kez şeker attım.",   likes:15, at:"2025-09-03T19:05:00Z" },
+  { id:"p1", name:"Ayşe K.",   text:"İşe giderken şemsiyeyle dans ettim.",            likes:12, at:"2025-09-03T18:10:00Z" },
+  { id:"p6", name:"Hakan D.",  text:"Markete ekmek almaya gidip çiçekle döndüm.",     likes:11, at:"2025-09-03T20:30:00Z" },
+  { id:"p4", name:"Kerem B.",  text:"Otobüste yanımdaki kişi uyuyunca ben de esnedim.", likes:6, at:"2025-09-03T19:20:00Z" }
+];
+function addDemoPost(v){ demoPosts.unshift({ id:String(Date.now()), name:"Ziyaretçi", text:DAILY_PROMPT_TEXT.replace("____", v), likes:0, at:new Date().toISOString() });}
+function demoTop3(){ return [...demoPosts].sort((a,b)=> b.likes-a.likes || new Date(b.at)-new Date(a.at)).slice(0,3); }
+function demoLast10(){ return [...demoPosts].sort((a,b)=> new Date(b.at)-new Date(a.at)).slice(0,10); }
+function demoLike(id){ const p=demoPosts.find(x=>x.id===id); if(p) p.likes++; }
+
+/* ===== Init ===== */
+async function initPage(){ await loadPrompt(); await refreshLists(); }
+</script>
+</body>
+</html>
