@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Lafkat – Forum</title>
+<meta name="theme-color" content="#FF7F2F" />
+<style>
+  :root{--orange:#FF7F2F;--orange-2:#ff9a58;--line:#ffd7bf;--ink:#1b1b1b}
+  *{box-sizing:border-box} html,body{height:100%}
+  body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Inter,Roboto,Arial,sans-serif;
+    background:linear-gradient(180deg,var(--orange) 0%,var(--orange-2) 100%); color:var(--ink)}
+  .wrap{max-width:1000px;margin:0 auto;padding:16px}
+  .card{background:#fff;border:1px solid var(--line);border-radius:14px}
+  .header{background:#fff4ec;border-bottom:1px solid var(--line)}
+  .header .inner{max-width:1000px;margin:0 auto;padding:10px 16px;display:flex;gap:10px;align-items:center}
+  nav{margin-left:auto;display:flex;gap:8px;flex-wrap:wrap}
+  nav a{text-decoration:none;color:#7a3b14;font-weight:700;font-size:14px;padding:8px 12px;border:1px solid var(--line);border-radius:999px;background:#fff}
+  nav a:hover{background:#ffefe4;border-color:#ffb98d}
+  .tabs{display:flex;gap:8px;padding:10px 12px;border-bottom:1px solid var(--line)}
+  .tab{border:1px solid var(--line);background:#fff;border-radius:10px;padding:8px 12px;font-weight:700;cursor:pointer}
+  .tab.active{background:#fff7ef;border-color:#ffb98d;color:#7a3b14}
+  .list{padding:12px;display:grid;gap:12px}
+  .item{border:1px solid var(--line);border-radius:12px;padding:10px;background:#fff}
+  .row{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+  .name{font-weight:800}
+  .meta{margin-left:auto;font-size:12px;color:#8b5a3a;display:flex;gap:10px}
+  .actions{display:flex;gap:8px}
+  .btn{cursor:pointer;border:1px solid #ffd0b3;background:#fff;color:#ff6a08;padding:6px 10px;border-radius:10px;font-weight:700}
+  .badge{font-size:12px;background:#ffe8d7;border:1px solid var(--line);padding:4px 8px;border-radius:999px}
+  .load{display:block;width:100%;text-align:center;padding:12px;color:#7a3b14}
+  .footer{max-width:1000px;margin:8px auto 20px;padding:0 16px;color:#fff;opacity:.9}
+  /* Modal */
+  .modal{position:fixed;inset:0;background:rgba(0,0,0,.4);display:none;place-items:center;padding:16px}
+  .modal .box{background:#fff;border-radius:14px;border:1px solid var(--line);width:min(520px,100%);padding:14px}
+  .modal h3{margin:0 0 8px}
+  textarea{width:100%;min-height:100px;padding:10px;border:1.5px solid #ffd0b3;border-radius:12px}
+</style>
+</head>
+<body>
+<header class="header">
+  <div class="inner">
+    <div style="width:40px;height:40px;border-radius:10px;background:radial-gradient(100% 100% at 30% 30%,#ffd18f,#ff7f2f);display:grid;place-items:center;color:#fff;font-weight:900">💬</div>
+    <strong>Lafkat</strong>
+    <nav>
+      <a href="index-compact.html">Bugünün Cümlesi</a>
+      <a href="forum.html">Forum</a>
+      <a href="leaderboard.html">Liderlik</a>
+      <a href="profile.html">Profil</a>
+      <a href="settings.html">Ayarlar</a>
+    </nav>
+  </div>
+</header>
+
+<main class="wrap">
+  <div class="card">
+    <div class="tabs">
+      <button class="tab active" data-sort="popular">Popüler (Bugün)</button>
+      <button class="tab" data-sort="new">En Yeni</button>
+    </div>
+    <div class="list" id="list"></div>
+    <button id="loadMore" class="load">Daha Fazla Yükle</button>
+  </div>
+</main>
+
+<footer class="footer">© Lafkat • “Sözcükleri kat, eğlenceyi yakala!”</footer>
+
+<!-- Yorum Modal -->
+<div id="modal" class="modal" aria-hidden="true">
+  <div class="box">
+    <h3>Yorum Yaz</h3>
+    <div class="row" style="margin-bottom:8px"><span class="badge" id="modalPostAuthor"></span></div>
+    <textarea id="commentText" placeholder="Gülümset ve nezaketi unutma."></textarea>
+    <div class="row" style="margin-top:8px;justify-content:flex-end">
+      <button class="btn" id="sendComment">Gönder</button>
+      <button class="btn" id="closeModal">Kapat</button>
+    </div>
+  </div>
+</div>
+
+<!-- Firebase (opsiyonel) -->
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script>
+/* ===== Ayarlar ===== */
+let ENABLE_FIREBASE = true; // canlıya alınca true yap
+const firebaseConfig = {
+  apiKey: "AIzaSyB5VbgogKUo8RXeA8SUMUaHVbbblAg4gfE",
+  authDomain: "lafkat-23687.firebaseapp.com",
+  projectId: "lafkat-23687",
+  storageBucket: "lafkat-23687.firebasestorage.app",
+  messagingSenderId: "493504696765",
+  appId: "1:493504696765:web:86bb6f7a28e403efc782d4"
+};
+
+const $ = s=>document.querySelector(s);
+function escapeHTML(s){return (s||"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[m]));}
+function timeAgo(iso){const d=new Date(iso),s=(Date.now()-d)/1000;if(s<60)return"az önce";const m=s/60;if(m<60)return`${Math.floor(m)} dk`;const h=m/60;if(h<24)return`${Math.floor(h)} sa`;return`${Math.floor(h/24)} g`;}
+
+/* ===== Firebase init ===== */
+let db=null, auth=null;
+(function init(){
+  if(firebaseConfig && firebaseConfig.projectId && ENABLE_FIREBASE){
+    firebase.initializeApp(firebaseConfig); db=firebase.firestore(); auth=firebase.auth();
+  }
+  initPage();
+})();
+
+/* ===== Gün kimliği ===== */
+async function getTodayId(){const t=new Date();const y=t.getFullYear(),m=String(t.getMonth()+1).padStart(2,'0'),d=String(t.getDate()).padStart(2,'0');return `${y}-${m}-${d}`;}
+
+/* ===== Sıralama & sayfalama durumu ===== */
+let SORT="popular"; // popular | new
+let PAGE_LAST_DOC=null;
+const PAGE_SIZE=10;
+let CURRENT_LIST=[];
+
+/* ===== Olaylar ===== */
+document.querySelectorAll(".tab").forEach(t=>{
+  t.addEventListener("click", async ()=>{
+    document.querySelectorAll(".tab").forEach(x=>x.classList.remove("active"));
+    t.classList.add("active");
+    SORT = t.getAttribute("data-sort");
+    PAGE_LAST_DOC=null; CURRENT_LIST=[];
+    $("#list").innerHTML="";
+    await loadPage();
+  });
+});
+
+$("#loadMore").addEventListener("click", loadPage);
+
+/* ===== Like & Comment clickleri ===== */
+document.addEventListener("click", async (e)=>{
+  const like = e.target.closest("[data-like]");
+  const cmt  = e.target.closest("[data-comment]");
+  if(like){ return handleLike(like.getAttribute("data-like")); }
+  if(cmt){ return openModal(cmt.dataset.postid, cmt.dataset.name); }
+});
+
+/* ===== Modal ===== */
+let MODAL_POST_ID=null;
+function openModal(postId, name){
+  MODAL_POST_ID=postId;
+  $("#modalPostAuthor").textContent = `Gönderi: ${name}`;
+  $("#modal").style.display="grid";
+}
+$("#closeModal").addEventListener("click", ()=> { $("#modal").style.display="none"; });
+$("#sendComment").addEventListener("click", sendComment);
+
+/* ===== Veri Çekme ===== */
+async function queryBase(){
+  if(!db) return null;
+  const base = db.collection("posts").where("promptDate","==", await getTodayId());
+  if(SORT==="popular") return base.orderBy("likes","desc").orderBy("at","desc");
+  return base.orderBy("at","desc");
+}
+async function loadPage(){
+  if(!db){ // DEMO
+    const chunk = demoData().slice(CURRENT_LIST.length, CURRENT_LIST.length+PAGE_SIZE);
+    CURRENT_LIST = CURRENT_LIST.concat(chunk);
+    renderList(CURRENT_LIST, chunk.length===PAGE_SIZE);
+    return;
+  }
+  let q = await queryBase();
+  if(PAGE_LAST_DOC) q = q.startAfter(PAGE_LAST_DOC);
+  const snap = await q.limit(PAGE_SIZE).get();
+  const rows = snap.docs.map(d=>({ id:d.id, ...d.data(), at:d.data().at.toDate().toISOString() }));
+  CURRENT_LIST = CURRENT_LIST.concat(rows);
+  PAGE_LAST_DOC = snap.docs[snap.docs.length-1] || null;
+  renderList(CURRENT_LIST, snap.size===PAGE_SIZE);
+}
+
+/* ===== Render ===== */
+function renderList(list, canLoadMore){
+  const box=$("#list"); box.innerHTML="";
+  list.forEach(p=>{
+    const el=document.createElement("div"); el.className="item";
+    el.innerHTML=`
+      <div class="row">
+        <span class="name">${escapeHTML(p.name)}</span>
+        <span class="badge">👍 ${p.likes||0}</span>
+        <div class="meta"><span>🕒 ${timeAgo(p.at)}</span></div>
+      </div>
+      <div style="margin:6px 0">${escapeHTML(p.text)}</div>
+      <div class="actions">
+        <button class="btn" data-like="${p.id}">Beğen</button>
+        <button class="btn" data-comment data-postid="${p.id}" data-name="${escapeHTML(p.name)}">Yorum Yap</button>
+      </div>`;
+    box.appendChild(el);
+  });
+  $("#loadMore").style.display = canLoadMore ? "block" : "none";
+}
+
+/* ===== Like ===== */
+async function handleLike(postId){
+  if(!db){ demoLike(postId); rerenderDemo(); return; }
+  if(localStorage.getItem("authRole")==='visitor') return alert("Beğenmek için giriş yapın.");
+  const user = auth.currentUser; if(!user) return alert("Giriş yapın.");
+  const likeDoc = db.collection("posts").doc(postId).collection("likes").doc(user.uid);
+  const s = await likeDoc.get(); if(s.exists) return;
+  await likeDoc.set({ at: firebase.firestore.Timestamp.now() });
+  // güncel listeyi tekrar çekmeden küçük bir artış gösterelim:
+  const item = CURRENT_LIST.find(x=>x.id===postId); if(item){ item.likes=(item.likes||0)+1; renderList(CURRENT_LIST,true); }
+}
+
+/* ===== Comment ===== */
+async function sendComment(){
+  const txt = $("#commentText").value.trim();
+  if(!txt) return;
+  if(!db){ alert("Demo mod: yorum kaydedilmedi."); $("#modal").style.display="none"; $("#commentText").value=""; return; }
+  if(localStorage.getItem("authRole")==='visitor') return alert("Yorum için giriş yapın.");
+  const user = auth.currentUser; if(!user) return alert("Giriş yapın.");
+
+  await db.collection("posts").doc(MODAL_POST_ID).collection("comments").add({
+    by: user.displayName || user.email || "Kullanıcı",
+    text: txt,
+    at: firebase.firestore.Timestamp.now(),
+    uid: user.uid
+  });
+  $("#modal").style.display="none"; $("#commentText").value="";
+  alert("Yorum gönderildi.");
+}
+
+/* ===== Demo veri ===== */
+let DEMO = [
+  { id:"1", name:"Mina R.", text:"Telefonum çalınca 'Pizza geldi!' diye açtım.", likes:19, at:"2025-09-03T20:00:00Z" },
+  { id:"2", name:"Zeynep A.", text:"Kahvemi şekersiz sanıp iki kez şeker attım.", likes:15, at:"2025-09-03T19:05:00Z" },
+  { id:"3", name:"Ayşe K.", text:"İşe giderken şemsiyeyle dans ettim.", likes:12, at:"2025-09-03T18:10:00Z" },
+  { id:"4", name:"Hakan D.", text:"Markete ekmek almaya gidip çiçekle döndüm.", likes:11, at:"2025-09-03T20:30:00Z" },
+  { id:"5", name:"Kerem B.", text:"Otobüste yanımdaki kişi uyuyunca ben de esnedim.", likes:6, at:"2025-09-03T19:20:00Z" }
+];
+function demoData(){
+  if(SORT==="popular") return [...DEMO].sort((a,b)=> b.likes-a.likes || new Date(b.at)-new Date(a.at));
+  return [...DEMO].sort((a,b)=> new Date(b.at)-new Date(a.at));
+}
+function demoLike(id){ const p=DEMO.find(x=>x.id===id); if(p) p.likes++; }
+function rerenderDemo(){ renderList(demoData().slice(0,CURRENT_LIST.length), demoData().length>CURRENT_LIST.length); }
+
+/* ===== Init ===== */
+async function initPage(){ CURRENT_LIST=[]; PAGE_LAST_DOC=null; await loadPage(); }
+</script>
+</body>
+</html>
