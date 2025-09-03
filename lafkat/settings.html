@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Lafkat – Ayarlar</title>
+<meta name="theme-color" content="#FF7F2F" />
+<style>
+  :root{--orange:#FF7F2F;--orange-2:#ff9a58;--ink:#1b1b1b;--line:#ffd7bf}
+  *{box-sizing:border-box}
+  body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Inter,Roboto,Arial,sans-serif;
+    background:linear-gradient(180deg,var(--orange) 0%,var(--orange-2) 100%);color:var(--ink)}
+  .header{background:#fff4ec;border-bottom:1px solid var(--line)}
+  .header .inner{max-width:1000px;margin:0 auto;padding:10px 16px;display:flex;align-items:center;gap:10px}
+  nav{margin-left:auto;display:flex;gap:8px;flex-wrap:wrap}
+  nav a{text-decoration:none;color:#7a3b14;font-weight:700;font-size:14px;padding:8px 12px;border:1px solid var(--line);border-radius:999px;background:#fff}
+  nav a:hover{background:#ffefe4;border-color:#ffb98d}
+  .wrap{max-width:800px;margin:16px auto;padding:16px;background:#fff;border:1px solid var(--line);border-radius:14px}
+  h1{margin-top:0;font-size:22px;color:#7a3b14}
+  .section{margin-bottom:20px}
+  .section h2{font-size:18px;margin:0 0 8px;color:#7a3b14}
+  .row{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:10px;align-items:center}
+  select,input[type=checkbox]{padding:8px;font-size:14px;border:1.5px solid #ffd0b3;border-radius:8px}
+  .btn{cursor:pointer;border:none;background:#FF7F2F;color:#fff;padding:10px 14px;border-radius:10px;font-weight:700}
+  .btn.secondary{background:#fff;color:#ff6a08;border:1.5px solid #ffd0b3}
+  .note{font-size:12px;color:#8b5a3a;margin-top:4px}
+  .empty{border:1px dashed #ffc49f;border-radius:10px;padding:12px;background:#fff7ef;color:#7a3b14}
+</style>
+</head>
+<body>
+<header class="header">
+  <div class="inner">
+    <div style="width:40px;height:40px;border-radius:10px;background:radial-gradient(100% 100% at 30% 30%,#ffd18f,#ff7f2f);display:grid;place-items:center;color:#fff;font-weight:900">💬</div>
+    <strong>Lafkat</strong>
+    <nav>
+      <a href="index-compact.html">Bugünün Cümlesi</a>
+      <a href="forum.html">Forum</a>
+      <a href="leaderboard.html">Liderlik</a>
+      <a href="friends.html">Arkadaşlar</a>
+      <a href="profile.html">Profil</a>
+      <a href="settings.html">Ayarlar</a>
+    </nav>
+  </div>
+</header>
+
+<main class="wrap">
+  <h1>Ayarlar</h1>
+
+  <div id="visitorNote" class="empty" style="display:none">
+    Ziyaretçi modundasınız. Ayarları değiştirmek için giriş yapın.
+  </div>
+
+  <div id="settingsPanel">
+    <!-- Dil -->
+    <div class="section">
+      <h2>🌐 Dil</h2>
+      <div class="row">
+        <label for="lang">Dil Seçin:</label>
+        <select id="lang">
+          <option value="auto">Otomatik</option>
+          <option value="tr">Türkçe</option>
+          <option value="en">English</option>
+        </select>
+      </div>
+      <div class="note">Otomatik: Tarayıcı diline göre ayarlanır.</div>
+    </div>
+
+    <!-- Bildirimler -->
+    <div class="section">
+      <h2>🔔 Bildirimler</h2>
+      <div class="row">
+        <input type="checkbox" id="noti" />
+        <label for="noti">Bildirimleri Aç</label>
+      </div>
+    </div>
+
+    <!-- Tema -->
+    <div class="section">
+      <h2>🎨 Tema</h2>
+      <div class="row">
+        <select id="theme">
+          <option value="light">Açık</option>
+          <option value="dark">Koyu</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Şifre Değiştir -->
+    <div class="section">
+      <h2>🔑 Şifre</h2>
+      <button class="btn secondary" id="btnResetPass">Şifreyi Değiştir</button>
+      <div class="note">E-posta adresinize şifre sıfırlama linki gönderilir.</div>
+    </div>
+
+    <!-- Hesap Sil -->
+    <div class="section">
+      <h2>⚠️ Hesap</h2>
+      <button class="btn" id="btnDelete">Hesabı Sil</button>
+      <div class="note">Bu işlem geri alınamaz.</div>
+    </div>
+  </div>
+</main>
+
+<footer style="max-width:800px;margin:0 auto 20px;padding:0 16px;color:#fff;opacity:.9">
+  © Lafkat • “Sözcükleri kat, eğlenceyi yakala!”
+</footer>
+
+<!-- Firebase (opsiyonel) -->
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script>
+let ENABLE_FIREBASE=false; // canlıda true yap
+const firebaseConfig={
+  // apiKey:"...", authDomain:"...", projectId:"lafkat-23687"
+};
+const $=s=>document.querySelector(s);
+let auth=null;
+
+(function init(){
+  if(firebaseConfig && firebaseConfig.projectId && ENABLE_FIREBASE){
+    firebase.initializeApp(firebaseConfig);
+    auth=firebase.auth();
+    $("#settingsPanel").style.display="block";
+  }else{
+    $("#visitorNote").style.display="block";
+  }
+})();
+
+/* ===== Local storage demo ===== */
+$("#lang").value=localStorage.getItem("lang")||"auto";
+$("#noti").checked=localStorage.getItem("noti")==="1";
+$("#theme").value=localStorage.getItem("theme")||"light";
+
+$("#lang").addEventListener("change",()=>localStorage.setItem("lang",$("#lang").value));
+$("#noti").addEventListener("change",()=>localStorage.setItem("noti",$("#noti").checked?"1":"0"));
+$("#theme").addEventListener("change",()=>localStorage.setItem("theme",$("#theme").value));
+
+/* ===== Şifre Sıfırlama ===== */
+$("#btnResetPass").addEventListener("click",async ()=>{
+  if(!auth){ alert("Demo mod: şifre sıfırlama yok."); return; }
+  const user=auth.currentUser;
+  if(!user||!user.email){ alert("Giriş yapmalısınız."); return; }
+  try{ await auth.sendPasswordResetEmail(user.email); alert("Sıfırlama e-postası gönderildi."); }
+  catch(e){ alert("Hata: "+e.message); }
+});
+
+/* ===== Hesap Silme ===== */
+$("#btnDelete").addEventListener("click",async ()=>{
+  if(!auth){ alert("Demo mod: hesap silinmedi."); return; }
+  if(!confirm("Hesabınızı silmek istediğinizden emin misiniz?")) return;
+  try{
+    const user=auth.currentUser;
+    if(user){ await user.delete(); alert("Hesap silindi."); location.href="login.html"; }
+  }catch(e){ alert("Silme başarısız: "+e.message); }
+});
+</script>
+</body>
+</html>
