@@ -1,0 +1,54 @@
+
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>LafKat – Gizlilik Politikası</title>
+  <link rel="stylesheet" href="assets/style.css"/>
+  <script src="assets/app.js"></script>
+</head>
+<body onload="initTopbar('privacy')">
+  
+<div class="topbar">
+  <div class="nav">
+    <a class="brand brand-link" href="index.html" aria-label="LafKat">
+      <img src="assets/logo.svg" alt="" style="width:28px;height:28px" />
+      <span>LafKat</span>
+    </a>
+    <button class="hamburger btn small ghost" onclick="toggleMenu()">☰</button>
+    <div class="menu">
+      <a href="home.html" data-page="home">Anasayfa</a>
+      <a href="forum.html" data-page="forum">Forum</a>
+      <a href="leaderboard.html" data-page="leaderboard">Liderlik</a>
+      <a href="friends.html" data-page="friends">Arkadaşlar</a>
+      <a href="profile.html" data-page="profile">Profil</a>
+      <a href="settings.html" data-page="settings">Ayarlar</a>
+      <a href="admin.html" class="admin-link" data-page="admin">Admin</a>
+      <a href="terms.html" data-page="terms">Şartlar</a>
+      <a href="privacy.html" data-page="privacy">Gizlilik</a>
+    </div>
+    <div class="right">
+      <span class="nickname show-when-auth"></span>
+      <button class="btn small ghost show-when-auth" onclick="logout()">Oturumu Kapat</button>
+      <a class="btn small hide-when-auth" href="index.html">Giriş</a>
+      <button class="btn small ghost" onclick="toggleTheme()" title="Tema">🌓</button>
+    </div>
+  </div>
+</div>
+
+  <div class="container">
+    <div class="card">
+      <h2 class="title">Gizlilik Politikası</h2>
+      <p>Kişisel verilerinizi (e-posta, nickname vb.) yalnızca hesabınızı işletmek, güvenliği sağlamak ve deneyiminizi geliştirmek için işleriz.</p>
+      <ul>
+        <li>Verileriniz üçüncü kişilerle izinsiz paylaşılmaz.</li>
+        <li>İstediğiniz zaman hesabınızı silebilirsiniz.</li>
+        <li>Çerezler yalnızca oturum ve tercihlerinizi hatırlamak için kullanılır.</li>
+      </ul>
+      <p class="small-muted">Sorularınız için iletişim: destek@lafkat.app</p>
+    </div>
+  </div>
+  <footer>© 2025 LafKat</footer>
+</body>
+</html>
