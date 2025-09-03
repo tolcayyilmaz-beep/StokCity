@@ -1,0 +1,73 @@
+
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>LafKat – Giriş / Kayıt</title>
+  <link rel="stylesheet" href="assets/style.css"/>
+  <script src="assets/app.js"></script>
+</head>
+<body onload="initTopbar('index')">
+  <div class="topbar">
+    <div class="nav">
+      <a class="brand brand-link" href="index.html">
+        <img src="assets/logo.svg" alt="" style="width:28px;height:28px"/>
+        <span>LafKat</span>
+      </a>
+      <div class="right">
+        <button class="btn small ghost" onclick="toggleTheme()" title="Tema">🌓</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="container">
+    <div class="row">
+      <div class="card">
+        <h2 class="title">Giriş Yap</h2>
+        <div class="subtle">E-posta ve şifrenle devam et</div>
+        <hr/>
+        <label>E-posta</label>
+        <input class="input" id="loginEmail" type="email" placeholder="ornek@mail.com"/>
+        <label>Şifre</label>
+        <input class="input" id="loginPass" type="password" placeholder="••••••••"/>
+        <div class="flex" style="justify-content:space-between;margin-top:10px">
+          <label class="flex" style="gap:8px"><input type="checkbox" id="asAdmin"/> <span>Admin olarak giriş</span></label>
+          <button class="btn" onclick="(function(){ 
+            const email=document.querySelector('#loginEmail').value.trim();
+            const pass=document.querySelector('#loginPass').value.trim();
+            if(!email||!pass) return toast('E-posta ve şifre gerekli');
+            const role = document.querySelector('#asAdmin').checked ? 'admin':'user';
+            setUser({uid: email, email, nickname: email.split('@')[0], role});
+            toast('Giriş başarılı');
+            location.href='home.html';
+          })()">Giriş</button>
+        </div>
+        <div class="small-muted" style="margin-top:8px"><a href="settings.html">Şifre sıfırla</a></div>
+      </div>
+
+      <div class="card">
+        <h2 class="title">Kayıt Ol</h2>
+        <div class="subtle">E-posta, şifre ve benzersiz bir nickname belirle</div>
+        <hr/>
+        <label>Nickname</label>
+        <input class="input" id="regNick" placeholder="takmaad"/>
+        <label>E-posta</label>
+        <input class="input" id="regEmail" type="email" placeholder="ornek@mail.com"/>
+        <label>Şifre</label>
+        <input class="input" id="regPass" type="password" placeholder="en az 6 karakter"/>
+        <button class="btn" style="margin-top:10px" onclick="(function(){
+          const n=document.querySelector('#regNick').value.trim(), e=document.querySelector('#regEmail').value.trim(), p=document.querySelector('#regPass').value.trim();
+          if(!n||!e||!p) return toast('Tüm alanlar gerekli');
+          setUser({uid:e,email:e,nickname:n,role:'user'});
+          toast('Kayıt başarılı, e-posta doğrulaması bekleniyor (demo)');
+          location.href='home.html';
+        })()">Kayıt Ol</button>
+        <p class="small-muted" style="margin-top:8px">Ziyaretçi modu: <a href="home.html" onclick="setUser(null)">Sadece bakın</a></p>
+      </div>
+    </div>
+  </div>
+
+  <footer>© 2025 LafKat</footer>
+</body>
+</html>
