@@ -1,72 +1,99 @@
 <!doctype html>
 <html lang="tr">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Lafkat – Forum</title>
-  <meta name="description" content="Lafkat Forum – Popüler, En Yeni ve Canlı Sohbet." />
-  <style>
-    :root{
-      --orange-1:#ff7a1a; --orange-2:#f36a00;
-      --card:#fff9f2; --ink:#2b2b2b; --muted:#7b7b7b; --ring:rgba(0,0,0,.08);
-      --shadow:0 8px 24px rgba(0,0,0,.18), 0 2px 6px rgba(0,0,0,.08);
-      --radius:18px;
-    }
-    *{box-sizing:border-box}
-    body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;color:var(--ink);
-      background:linear-gradient(180deg,var(--orange-1),var(--orange-2)); background-attachment:fixed;}
-    /* Topbar */
-    .topbar{position:sticky;top:0;z-index:50;backdrop-filter:blur(6px);
-      background:rgba(255,255,255,.3);border-bottom:1px solid rgba(255,255,255,.4);}
-    .topbar-inner{max-width:1200px;margin:auto;padding:10px 16px;display:flex;align-items:center;gap:14px}
-    .brand{display:flex;align-items:center;gap:10px;font-weight:800}
-    .brand img{width:34px;height:34px;border-radius:9px}
-    .brand .t{font-size:22px;color:#fff;text-shadow:0 2px 10px rgba(0,0,0,.3)}
-    nav{margin-left:auto;display:flex;gap:8px;flex-wrap:wrap}
-    nav a{color:#1b1b1b;text-decoration:none;font-weight:600;background:rgba(255,255,255,.85);
-      padding:8px 12px;border-radius:12px;border:1px solid rgba(255,255,255,.55)}
-    nav a.active{outline:3px solid rgba(255,255,255,.7)}
-    /* Layout */
-    .wrap{max-width:1000px;margin:22px auto;padding:0 16px}
-    .card{background:var(--card);border-radius:var(--radius);box-shadow:var(--shadow);border:1px solid var(--ring)}
-    .card .hd{padding:14px 16px;border-bottom:1px solid rgba(0,0,0,.06);font-weight:800}
-    .card .bd{padding:14px 16px}
-    /* Tabs */
-    .tabs{display:flex;gap:6px;padding:8px;background:rgba(255,255,255,.55);border-bottom:1px solid rgba(0,0,0,.06)}
-    .tab{flex:1;padding:10px;border:0;border-radius:12px;font-weight:800;cursor:pointer;background:#fff}
-    .tab[aria-selected="true"]{background:linear-gradient(180deg,#ffb37a,#ff8e3a)}
-    /* Posts */
-    .post{background:#fff;border:1px solid rgba(0,0,0,.08);border-radius:12px;padding:12px;margin-bottom:12px}
-    .meta{font-size:13px;color:var(--muted);margin-bottom:6px}
-    .vote{display:flex;gap:8px;margin-top:8px;flex-wrap:wrap}
-    .btn{padding:6px 10px;border-radius:10px;border:1px solid rgba(0,0,0,.08);background:#fff;cursor:pointer}
-    .btn:hover{background:#f8f8f8}
-    .loadmore{text-align:center;margin:14px 0}
-    /* Chat */
-    .chat-wrap{display:flex;flex-direction:column;gap:10px}
-    .chat-messages{max-height:300px;overflow-y:auto;display:flex;flex-direction:column-reverse;gap:8px;background:#fff;
-      border:1px solid rgba(0,0,0,.08);border-radius:12px;padding:10px}
-    .chat-row{display:flex;gap:8px;align-items:flex-start}
-    textarea.chat-input{flex:1;resize:none;padding:8px;border:1px solid rgba(0,0,0,.12);border-radius:10px}
-    .hint{font-size:12px;color:var(--muted)}
-    /* Utilities */
-    .hidden{display:none}
-  </style>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Lafkat – Forum</title>
+<meta name="description" content="Lafkat Forum – Popüler, En Yeni ve Canlı Sohbet." />
+<style>
+  :root{
+    --orange-1:#ff7a1a; --orange-2:#f36a00;
+    --card:#fff9f2; --ink:#2b2b2b; --muted:#7b7b7b; --ring:rgba(0,0,0,.08);
+    --shadow:0 8px 24px rgba(0,0,0,.18), 0 2px 6px rgba(0,0,0,.08);
+    --radius:18px;
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0; font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif; color:var(--ink);
+    background:linear-gradient(180deg,var(--orange-1),var(--orange-2)); background-attachment:fixed;
+  }
+  /* Topbar + drawer (same as index) */
+  .topbar{position:sticky;top:0;z-index:60;backdrop-filter:blur(6px);background:rgba(255,255,255,.30);border-bottom:1px solid rgba(255,255,255,.45)}
+  .topbar-inner{max-width:1200px;margin:auto;padding:10px 16px;display:flex;align-items:center;gap:10px}
+  .hamburger button{appearance:none;background:#fff;border:1px solid rgba(0,0,0,.12);border-radius:10px;padding:8px 10px;font-weight:800;cursor:pointer}
+  .brand{display:flex;align-items:center;gap:10px;font-weight:900}
+  .brand img{width:34px;height:34px;border-radius:9px}
+  .brand .t{font-size:22px;color:#fff;text-shadow:0 2px 10px rgba(0,0,0,.28)}
+  nav.hnav{margin-left:auto;display:none;gap:8px;flex-wrap:wrap}
+  nav.hnav a{color:#1b1b1b;text-decoration:none;font-weight:600;background:rgba(255,255,255,.85);padding:8px 12px;border-radius:12px;border:1px solid rgba(255,255,255,.55)}
+  nav.hnav a.active{outline:3px solid rgba(255,255,255,.7)}
+  .overlay{position:fixed;inset:0;background:rgba(0,0,0,.45);opacity:0;pointer-events:none;transition:opacity .25s;z-index:55}
+  .overlay.show{opacity:1;pointer-events:auto}
+  .drawer{position:fixed;inset:0 auto 0 0;width:min(84vw,320px);background:#fff;border-right:1px solid rgba(0,0,0,.08);box-shadow:var(--shadow);
+          transform:translateX(-100%);transition:transform .25s;z-index:56;display:flex;flex-direction:column}
+  .drawer.open{transform:translateX(0)}
+  .drawer .head{padding:16px;border-bottom:1px solid rgba(0,0,0,.06);display:flex;align-items:center;gap:10px}
+  .drawer nav{display:grid;gap:8px;padding:12px}
+  .drawer nav a{padding:10px 12px;border-radius:12px;border:1px solid rgba(0,0,0,.08);text-decoration:none;color:#1b1b1b;background:#fff;font-weight:700}
+  .drawer .foot{margin-top:auto;padding:12px;border-top:1px solid rgba(0,0,0,.06)}
+  @media (min-width:980px){ nav.hnav{display:flex}.hamburger{display:none} }
+  /* Page */
+  .wrap{max-width:1000px;margin:22px auto;padding:0 16px}
+  .card{background:var(--card);border-radius:var(--radius);box-shadow:var(--shadow);border:1px solid var(--ring)}
+  .card .hd{padding:14px 16px;border-bottom:1px solid rgba(0,0,0,.06);font-weight:800}
+  .card .bd{padding:14px 16px}
+  /* Tabs */
+  .tabs{display:flex;gap:6px;padding:8px;background:rgba(255,255,255,.55);border-bottom:1px solid rgba(0,0,0,.06)}
+  .tab{flex:1;padding:10px;border:0;border-radius:12px;font-weight:800;cursor:pointer;background:#fff}
+  .tab[aria-selected="true"]{background:linear-gradient(180deg,#ffb37a,#ff8e3a)}
+  /* Feed */
+  .post{background:#fff;border:1px solid rgba(0,0,0,.08);border-radius:12px;padding:12px;margin-bottom:12px}
+  .meta{font-size:13px;color:var(--muted);margin-bottom:6px}
+  .vote{display:flex;gap:8px;margin-top:8px;flex-wrap:wrap}
+  .btn{padding:6px 10px;border-radius:10px;border:1px solid rgba(0,0,0,.08);background:#fff;cursor:pointer}
+  .btn:hover{background:#f8f8f8}
+  .loadmore{text-align:center;margin:14px 0}
+  /* Chat */
+  .chat-wrap{display:flex;flex-direction:column;gap:10px}
+  .chat-messages{max-height:300px;overflow-y:auto;display:flex;flex-direction:column-reverse;gap:8px;background:#fff;border:1px solid rgba(0,0,0,.08);border-radius:12px;padding:10px}
+  .chat-row{display:flex;gap:8px;align-items:flex-start}
+  textarea.chat-input{flex:1;resize:none;padding:8px;border:1px solid rgba(0,0,0,.12);border-radius:10px}
+  .hint{font-size:12px;color:var(--muted)}
+  .hidden{display:none}
+</style>
 </head>
 <body>
+  <!-- Overlay & Drawer -->
+  <div class="overlay" id="overlay"></div>
+  <aside class="drawer" id="drawer" aria-hidden="true" aria-label="Menü">
+    <div class="head"><img src="assets/logo.png" alt="" width="28" height="28" onerror="this.style.display='none'"><strong>Lafkat Menü</strong></div>
+    <nav>
+      <a href="index.html">Anasayfa</a>
+      <a href="forum.html">Forum</a>
+      <a href="#">Liderlik</a>
+      <a href="#">Arkadaşlar</a>
+      <a href="#">Profil</a>
+      <a href="#">Ayarlar</a>
+      <a href="#" id="adminLink1" style="display:none">Admin Yönetimi</a>
+    </nav>
+    <div class="foot"><a href="#" style="text-decoration:none;color:#b12020;font-weight:800">Çıkış</a></div>
+  </aside>
+
+  <!-- Topbar -->
   <header class="topbar">
     <div class="topbar-inner">
+      <div class="hamburger"><button id="menuBtn" aria-label="Menüyü aç" aria-expanded="false" aria-controls="drawer">☰ Menü</button></div>
       <a class="brand" href="index.html">
-        <img src="assets/logo.png" alt="Lafkat" onerror="this.style.display='none'">
-        <span class="t">Lafkat</span>
+        <img src="assets/logo.png" alt="Lafkat" onerror="this.style.display='none'"><span class="t">Lafkat</span>
       </a>
-      <nav>
+      <nav class="hnav">
         <a href="index.html">Anasayfa</a>
         <a class="active" href="forum.html">Forum</a>
         <a href="#">Liderlik</a>
         <a href="#">Arkadaşlar</a>
         <a href="#">Profil</a>
         <a href="#">Ayarlar</a>
+        <a href="#" id="adminLink2" style="display:none">Admin Yönetimi</a>
       </nav>
     </div>
   </header>
@@ -82,55 +109,28 @@
         <button class="tab" role="tab" id="tab-chat" aria-selected="false" aria-controls="panel-chat">Canlı Sohbet</button>
       </div>
 
-      <!-- İçerik Panelleri -->
+      <!-- İçerik -->
       <div class="bd">
-        <!-- Popüler -->
         <div id="panel-pop" role="tabpanel" aria-labelledby="tab-pop">
-          <div class="post">
-            <div class="meta">@Mimoza — 2s önce</div>
-            “Defterin içinde kocaman <strong>‘Sürpriz Parti’</strong> yazıyordu.”
-            <div class="vote">
-              <button class="btn">👍 12</button>
-              <button class="btn">👎 1</button>
-              <button class="btn">💬 3 Yorum</button>
-            </div>
+          <div class="post"><div class="meta">@Mimoza — 2s önce</div>“Defterin içinde kocaman <strong>‘Sürpriz Parti’</strong> yazıyordu.”
+            <div class="vote"><button class="btn">👍 12</button><button class="btn">👎 1</button><button class="btn">💬 3 Yorum</button></div>
           </div>
-          <div class="post">
-            <div class="meta">@KumSaati — 5s önce</div>
-            “Defterin içinde kocaman <strong>‘Sakın Açma’</strong> yazıyordu.”
-            <div class="vote">
-              <button class="btn">👍 9</button>
-              <button class="btn">👎 0</button>
-              <button class="btn">💬 1 Yorum</button>
-            </div>
+          <div class="post"><div class="meta">@KumSaati — 5s önce</div>“Defterin içinde kocaman <strong>‘Sakın Açma’</strong> yazıyordu.”
+            <div class="vote"><button class="btn">👍 9</button><button class="btn">👎 0</button><button class="btn">💬 1 Yorum</button></div>
           </div>
           <div class="loadmore"><button class="btn">Daha Fazla Yükle</button></div>
         </div>
 
-        <!-- En Yeni -->
         <div id="panel-new" role="tabpanel" aria-labelledby="tab-new" class="hidden">
-          <div class="post">
-            <div class="meta">@Lavanta — 4dk önce</div>
-            “Açınca sadece <strong>‘Devamı Arkada’</strong> yazıyordu.”
-            <div class="vote">
-              <button class="btn">👍 1</button>
-              <button class="btn">👎 0</button>
-              <button class="btn">💬 0 Yorum</button>
-            </div>
+          <div class="post"><div class="meta">@Lavanta — 4dk önce</div>“Açınca sadece <strong>‘Devamı Arkada’</strong> yazıyordu.”
+            <div class="vote"><button class="btn">👍 1</button><button class="btn">👎 0</button><button class="btn">💬 0 Yorum</button></div>
           </div>
-          <div class="post">
-            <div class="meta">@GalaksiTreni — 9dk önce</div>
-            “Kocaman <strong>‘Sürpriz Kutusu’</strong> yazıyordu.”
-            <div class="vote">
-              <button class="btn">👍 3</button>
-              <button class="btn">👎 0</button>
-              <button class="btn">💬 1 Yorum</button>
-            </div>
+          <div class="post"><div class="meta">@GalaksiTreni — 9dk önce</div>“Kocaman <strong>‘Sürpriz Kutusu’</strong> yazıyordu.”
+            <div class="vote"><button class="btn">👍 3</button><button class="btn">👎 0</button><button class="btn">💬 1 Yorum</button></div>
           </div>
           <div class="loadmore"><button class="btn">Daha Fazla Yükle</button></div>
         </div>
 
-        <!-- Canlı Sohbet -->
         <div id="panel-chat" role="tabpanel" aria-labelledby="tab-chat" class="hidden">
           <div class="chat-wrap">
             <div class="chat-messages" id="chatBox" aria-live="polite">
@@ -141,51 +141,39 @@
               <textarea id="chatInput" class="chat-input" rows="2" placeholder="Mesajını yaz... (Enter: Gönder · Shift+Enter: Yeni satır)"></textarea>
               <button class="btn" id="sendChat">Gönder</button>
             </div>
-            <div class="hint">Spam ve uygunsuz mesajlar moderasyona takılır.</div>
+            <div class="hint">Enter = gönder, Shift+Enter = satır sonu.</div>
           </div>
         </div>
       </div>
     </section>
   </main>
 
-  <script>
-    // Sekme yönetimi
-    const tabs = [
-      {btn:'tab-pop', panel:'panel-pop'},
-      {btn:'tab-new', panel:'panel-new'},
-      {btn:'tab-chat', panel:'panel-chat'}
-    ];
-    function switchTo(id){
-      tabs.forEach(t=>{
-        const b=document.getElementById(t.btn), p=document.getElementById(t.panel);
-        const active=(t.btn===id);
-        b.setAttribute('aria-selected', active ? 'true':'false');
-        p.classList.toggle('hidden', !active);
-      });
-    }
-    tabs.forEach(t=>document.getElementById(t.btn).addEventListener('click',()=>switchTo(t.btn)));
+<script>
+  // Admin link (demo)
+  (new URLSearchParams(location.search)).get("admin")==="1" && (adminLink1.style.display=adminLink2.style.display="inline-block");
 
-    // Sohbet gönderimi (Enter ile): Shift+Enter yeni satır
-    const chatBox = document.getElementById('chatBox');
-    const chatInput = document.getElementById('chatInput');
-    const sendChatBtn = document.getElementById('sendChat');
+  // Drawer
+  const menuBtn=document.getElementById('menuBtn');
+  const drawer=document.getElementById('drawer');
+  const overlay=document.getElementById('overlay');
+  function openDrawer(){drawer.classList.add('open');overlay.classList.add('show');menuBtn.setAttribute('aria-expanded','true');document.body.style.overflow='hidden'; drawer.querySelector('a').focus();}
+  function closeDrawer(){drawer.classList.remove('open');overlay.classList.remove('show');menuBtn.setAttribute('aria-expanded','false');document.body.style.overflow='';}
+  menuBtn.addEventListener('click', ()=> drawer.classList.contains('open')?closeDrawer():openDrawer());
+  overlay.addEventListener('click', closeDrawer);
+  window.addEventListener('keydown', e=>{ if(e.key==='Escape' && drawer.classList.contains('open')) closeDrawer(); });
 
-    function sendChat(){
-      const v = (chatInput.value || '').trim();
-      if(!v) return;
-      const msg = document.createElement('div');
-      msg.innerHTML = `<strong>@Sen</strong>: ${v}`;
-      chatBox.prepend(msg);
-      chatInput.value = '';
-      chatInput.focus();
-    }
-    sendChatBtn?.addEventListener('click', sendChat);
-    chatInput?.addEventListener('keydown', (e)=>{
-      if(e.key === 'Enter' && !e.shiftKey){
-        e.preventDefault(); // satır ekleme yerine gönder
-        sendChat();
-      }
-    });
-  </script>
+  // Tabs
+  const tabs=[{btn:'tab-pop',panel:'panel-pop'},{btn:'tab-new',panel:'panel-new'},{btn:'tab-chat',panel:'panel-chat'}];
+  function switchTo(id){tabs.forEach(t=>{const b=document.getElementById(t.btn),p=document.getElementById(t.panel);const on=t.btn===id;b.setAttribute('aria-selected',on?'true':'false');p.classList.toggle('hidden',!on);});}
+  tabs.forEach(t=>document.getElementById(t.btn).addEventListener('click',()=>switchTo(t.btn)));
+
+  // Chat (Enter = send, Shift+Enter = newline)
+  const chatBox=document.getElementById('chatBox');
+  const chatInput=document.getElementById('chatInput');
+  const sendChat=document.getElementById('sendChat');
+  function send(){const v=(chatInput.value||'').trim(); if(!v) return; const d=document.createElement('div'); d.innerHTML=`<strong>@Sen</strong>: ${v}`; chatBox.prepend(d); chatInput.value=''; chatInput.focus();}
+  sendChat?.addEventListener('click', send);
+  chatInput?.addEventListener('keydown', e=>{ if(e.key==='Enter' && !e.shiftKey){ e.preventDefault(); send(); }});
+</script>
 </body>
 </html>
