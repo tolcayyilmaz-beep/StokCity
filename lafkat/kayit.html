@@ -1,0 +1,216 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Lafkat – Kayıt</title>
+<meta name="description" content="Lafkat'a kayıt ol, topluluğa katıl." />
+<style>
+  :root{
+    --orange-1:#ff7a1a; --orange-2:#f36a00;
+    --card:#fff9f2; --ink:#2b2b2b; --muted:#7b7b7b; --ring:rgba(0,0,0,.10);
+    --shadow:0 10px 30px rgba(0,0,0,.25), 0 2px 8px rgba(0,0,0,.10);
+    --radius:20px;
+  }
+  *{box-sizing:border-box}
+  html,body{height:100%}
+  body{
+    margin:0; font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif; color:var(--ink);
+    background:
+      radial-gradient(120vmax 120vmax at 90% -20%, rgba(255,255,255,.12), transparent 55%),
+      linear-gradient(180deg,var(--orange-1),var(--orange-2));
+    background-attachment:fixed;
+    display:grid; place-items:center; padding:24px;
+  }
+  .shell{width:min(980px,100%);display:grid;grid-template-columns: 1fr 1fr;gap:18px}
+  @media (max-width:920px){ .shell{grid-template-columns:1fr} }
+  .card{background:var(--card);border:1px solid var(--ring);border-radius:var(--radius);box-shadow:var(--shadow)}
+  .left,.right{padding:22px 22px}
+  .brand{display:flex;align-items:center;gap:12px;margin-bottom:10px}
+  .brand img{width:40px;height:40px;border-radius:10px;box-shadow:0 6px 14px rgba(0,0,0,.25)}
+  .brand .t{font-weight:900;font-size:24px;color:#7a4a16}
+  h1{font-size:22px;margin:6px 0 2px}
+  p{margin:8px 0;color:var(--muted)}
+  label{display:block;font-weight:800;margin:10px 0 6px}
+  input[type="text"],input[type="email"],input[type="password"]{
+    width:100%;padding:12px 14px;border:1px solid rgba(0,0,0,.12);border-radius:12px;background:#fff
+  }
+  .row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+  .btn{appearance:none;border:0;padding:11px 14px;border-radius:12px;font-weight:900;cursor:pointer;box-shadow:0 4px 14px rgba(0,0,0,.15)}
+  .btn.primary{background:linear-gradient(180deg,#ffb37a,#ff8e3a);color:#3a240e}
+  .hint{font-size:12px;color:var(--muted)}
+  .divider{height:1px;background:rgba(0,0,0,.08);margin:14px 0}
+  .mini-note{font-size:13px;color:#5a3a14;background:#fff3e0;border:1px dashed rgba(0,0,0,.12);padding:8px 10px;border-radius:10px}
+
+  /* Nick feedback */
+  .nickrow{display:flex;gap:8px;align-items:center}
+  .state{min-width:140px}
+  .valid{color:#1b7e35}
+  .invalid{color:#b12020}
+  .checking{color:#6b5600}
+</style>
+</head>
+<body>
+  <div class="shell">
+    <!-- Form -->
+    <section class="card left">
+      <div class="brand">
+        <img src="assets/logo.png" alt="" onerror="this.style.display='none'"><div class="t">Lafkat</div>
+      </div>
+      <h1>Kayıt Ol</h1>
+      <p class="hint">Hesap oluştur, günlük 5 tamamlamayla oyuna katıl.</p>
+
+      <form id="regForm">
+        <div class="row">
+          <div style="flex:1">
+            <label for="fname">Ad</label>
+            <input id="fname" type="text" required placeholder="Ad" />
+          </div>
+          <div style="flex:1">
+            <label for="lname">Soyad</label>
+            <input id="lname" type="text" required placeholder="Soyad" />
+          </div>
+        </div>
+
+        <label for="email">E-posta</label>
+        <input id="email" type="email" required placeholder="ornek@posta.com" autocomplete="email" />
+
+        <label for="nick">Benzersiz Nickname</label>
+        <div class="nickrow">
+          <input id="nick" type="text" required placeholder="ör. NarPortakalı" minlength="3" maxlength="20" />
+          <span id="nickState" class="hint state">3–20 karakter, boşluk yok</span>
+        </div>
+
+        <div class="row" style="justify-content:space-between;align-items:flex-end;margin-top:4px">
+          <div style="flex:1">
+            <label for="pass">Şifre</label>
+            <input id="pass" type="password" required placeholder="En az 6 karakter" minlength="6" autocomplete="new-password" />
+          </div>
+          <div style="flex:1">
+            <label for="pass2">Şifre (Tekrar)</label>
+            <input id="pass2" type="password" required placeholder="Tekrar" autocomplete="new-password" />
+          </div>
+        </div>
+
+        <label class="row" style="gap:8px;margin-top:8px">
+          <input type="checkbox" id="terms" required />
+          <span> <a href="#">Kullanım Şartları</a> ve <a href="#">Gizlilik</a>’i okudum, kabul ediyorum.</span>
+        </label>
+
+        <div class="row" style="margin-top:12px">
+          <button class="btn primary" type="submit">Kayıt Ol</button>
+          <a class="btn" href="giris.html" style="background:#fff;border:1px solid rgba(0,0,0,.12)">Giriş Yap</a>
+        </div>
+      </form>
+
+      <div class="divider"></div>
+      <div class="mini-note">
+        Kayıttan sonra e-posta doğrulama bağlantısı gönderilecektir. Doğrulamadan ad-soyad görünmez; yalnızca <strong>nick</strong> yayınlanır.
+      </div>
+    </section>
+
+    <!-- Yan panel -->
+    <aside class="card right">
+      <h1>Neden Lafkat?</h1>
+      <ul class="hint" style="margin:0 0 10px 18px">
+        <li>Yaratıcı cümle tamamlamaları</li>
+        <li>Beğeni & yorumlarla öne çık</li>
+        <li>Günlük 5 hak, rozet & liderlik</li>
+      </ul>
+      <div class="mini-note">Topluluk kuralları: Küfür, nefret söylemi ve telif ihlallerine tolerans yoktur.</div>
+      <!-- Anasayfaya dön butonu kaldırıldı -->
+    </aside>
+  </div>
+
+<script>
+  // ---- Nickname otomatik kontrol (debounce + temel doğrulama) ----
+  const nickInput = document.getElementById('nick');
+  const nickState = document.getElementById('nickState');
+
+  const reserved = ['admin','lafkat','tolcay','test','user','guest','moderator','support']
+    .map(x => x.toLowerCase());
+
+  let nickTimer = null;
+
+  function validateNickSyntax(v){
+    // 3-20 karakter, harf/rakam/altçizgi/nokta/çizgi; boşluk yok
+    const okLen = v.length>=3 && v.length<=20;
+    const okChars = /^[a-z0-9._-]+$/i.test(v);
+    return okLen && okChars;
+  }
+
+  function setState(type, text){
+    nickState.textContent = text;
+    nickState.classList.remove('valid','invalid','checking');
+    if(type) nickState.classList.add(type);
+  }
+
+  async function checkNickAvailability(v){
+    // DEMO: basit yerel kontrol. Canlıda backend/Firebase sorgusu yapılacak.
+    const taken = reserved.includes(v.toLowerCase());
+    // Küçük bir “checking” gecikmesi simüle edelim
+    await new Promise(r=>setTimeout(r,150));
+    return !taken;
+  }
+
+  nickInput.addEventListener('input', ()=>{
+    const raw = (nickInput.value || '').trim();
+    const v = raw.replace(/\s+/g,''); // boşlukları anında at
+
+    if(raw !== v) nickInput.value = v;
+
+    if(!v){
+      setState(null,'3–20 karakter, boşluk yok');
+      return;
+    }
+    if(!validateNickSyntax(v)){
+      setState('invalid','Geçersiz biçim (harf/rakam/._- ve 3–20 karakter)');
+      return;
+    }
+
+    // debounce
+    setState('checking','Uygunluk kontrol ediliyor…');
+    clearTimeout(nickTimer);
+    nickTimer = setTimeout(async ()=>{
+      const ok = await checkNickAvailability(v);
+      if(nickInput.value !== v) return; // arada değişmişse es geç
+      if(ok) setState('valid','Uygun ✔');
+      else setState('invalid','Bu nick kullanılamaz');
+    }, 500);
+  });
+
+  // ---- Şifre doğrulama ----
+  function validatePasswords(){
+    const p1=document.getElementById('pass').value;
+    const p2=document.getElementById('pass2').value;
+    if(p1.length<6) return {ok:false,msg:'Şifre en az 6 karakter olmalı'};
+    if(p1!==p2) return {ok:false,msg:'Şifreler eşleşmiyor'};
+    return {ok:true};
+  }
+
+  // ---- Kayıt (demo) ----
+  document.getElementById('regForm').addEventListener('submit', async (e)=>{
+    e.preventDefault();
+    const fname=document.getElementById('fname').value.trim();
+    const lname=document.getElementById('lname').value.trim();
+    const email=document.getElementById('email').value.trim();
+    const nick=(nickInput.value||'').trim();
+    const terms=document.getElementById('terms').checked;
+
+    if(!fname||!lname||!email||!nick){ alert('Tüm alanlar zorunlu'); return; }
+    if(!validateNickSyntax(nick)){ alert('Nick geçersiz'); return; }
+
+    setState('checking','Son kontrol yapılıyor…');
+    const ok = await checkNickAvailability(nick);
+    if(!ok){ setState('invalid','Bu nick kullanılamaz'); alert('Lütfen başka bir nick seçin'); return; }
+
+    const passValid=validatePasswords(); if(!passValid.ok){ alert(passValid.msg); return; }
+    if(!terms){ alert('Şartları kabul etmelisiniz'); return; }
+
+    // Demo: başarılı akış
+    alert('Kayıt başarılı! Doğrulama e-postası gönderildi (demo).');
+    location.href='giris.html';
+  });
+</script>
+</body>
+</html>
