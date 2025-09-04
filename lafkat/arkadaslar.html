@@ -1,0 +1,188 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Lafkat – Arkadaşlar</title>
+<meta name="description" content="Lafkat Arkadaşlar – arkadaş ekleme, istekler ve mesajlaşma." />
+<style>
+  :root{
+    --orange-1:#ff7a1a; --orange-2:#f36a00;
+    --card:#fff9f2; --ink:#2b2b2b; --muted:#7b7b7b; --ring:rgba(0,0,0,.08);
+    --shadow:0 8px 24px rgba(0,0,0,.18), 0 2px 6px rgba(0,0,0,.08);
+    --radius:18px;
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0; font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif; color:var(--ink);
+    background:linear-gradient(180deg,var(--orange-1),var(--orange-2)); background-attachment:fixed;
+  }
+
+  /* Topbar & Drawer */
+  .topbar{position:sticky;top:0;z-index:60;backdrop-filter:blur(6px);background:rgba(255,255,255,.30);border-bottom:1px solid rgba(255,255,255,.45)}
+  .topbar-inner{max-width:1200px;margin:auto;padding:10px 16px;display:flex;align-items:center;gap:10px}
+  .hamburger button{appearance:none;background:#fff;border:1px solid rgba(0,0,0,.12);border-radius:10px;padding:8px 10px;font-weight:800;cursor:pointer}
+  .brand{display:flex;align-items:center;gap:10px;font-weight:900}
+  .brand img{width:34px;height:34px;border-radius:9px;box-shadow:0 6px 14px rgba(0,0,0,.25)}
+  .brand .t{font-size:22px;color:#fff;text-shadow:0 2px 10px rgba(0,0,0,.28)}
+  nav.hnav{margin-left:auto;display:none;gap:8px;flex-wrap:wrap}
+  nav.hnav a{color:#1b1b1b;text-decoration:none;font-weight:600;background:rgba(255,255,255,.85);padding:8px 12px;border-radius:12px;border:1px solid rgba(255,255,255,.55)}
+  nav.hnav a.active{outline:3px solid rgba(255,255,255,.7)}
+  .overlay{position:fixed;inset:0;background:rgba(0,0,0,.45);opacity:0;pointer-events:none;transition:opacity .25s;z-index:55}
+  .overlay.show{opacity:1;pointer-events:auto}
+  .drawer{position:fixed;inset:0 auto 0 0;width:min(84vw,320px);background:#fff;border-right:1px solid rgba(0,0,0,.08);box-shadow:var(--shadow);
+          transform:translateX(-100%);transition:transform .25s;z-index:56;display:flex;flex-direction:column}
+  .drawer.open{transform:translateX(0)}
+  .drawer .head{padding:16px;border-bottom:1px solid rgba(0,0,0,.06);display:flex;align-items:center;gap:10px}
+  .drawer nav{display:grid;gap:8px;padding:12px}
+  .drawer nav a{padding:10px 12px;border-radius:12px;border:1px solid rgba(0,0,0,.08);text-decoration:none;color:#1b1b1b;background:#fff;font-weight:700}
+  .drawer .foot{margin-top:auto;padding:12px;border-top:1px solid rgba(0,0,0,.06)}
+  @media (min-width:980px){ nav.hnav{display:flex}.hamburger{display:none} }
+
+  /* Page */
+  .wrap{max-width:900px;margin:22px auto;padding:0 16px}
+  .card{background:var(--card);border-radius:var(--radius);box-shadow:var(--shadow);border:1px solid var(--ring)}
+  .card .hd{padding:14px 16px;border-bottom:1px solid rgba(0,0,0,.06);font-weight:800}
+  .card .bd{padding:14px 16px}
+  .tabs{display:flex;gap:6px;padding:8px;background:rgba(255,255,255,.55);border-bottom:1px solid rgba(0,0,0,.06)}
+  .tab{flex:1;padding:10px;border:0;border-radius:12px;font-weight:800;cursor:pointer;background:#fff}
+  .tab[aria-selected="true"]{background:linear-gradient(180deg,#ffb37a,#ff8e3a)}
+
+  /* Lists */
+  .friend{display:flex;align-items:center;gap:10px;background:#fff;border:1px solid rgba(0,0,0,.08);border-radius:12px;padding:10px;margin-bottom:10px}
+  .avatar{width:42px;height:42px;border-radius:50%;background:linear-gradient(180deg,#ffe0c6,#ffbf88);border:1px solid rgba(0,0,0,.08);display:grid;place-items:center;font-weight:800;color:#7a4a16}
+  .status{width:10px;height:10px;border-radius:50%}
+  .online{background:#2ecc71}
+  .offline{background:#ccc}
+  .row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+  .btn{padding:6px 10px;border-radius:10px;border:1px solid rgba(0,0,0,.1);background:#fff;cursor:pointer;font-weight:700}
+  .btn.primary{background:linear-gradient(180deg,#ffb37a,#ff8e3a);color:#3a240e;border:0}
+  .btn.danger{color:#b12020;border-color:#b12020}
+  input[type="text"],input[type="email"]{padding:8px 10px;border:1px solid rgba(0,0,0,.12);border-radius:10px}
+  .hidden{display:none}
+</style>
+</head>
+<body>
+  <!-- Overlay & Drawer -->
+  <div class="overlay" id="overlay"></div>
+  <aside class="drawer" id="drawer" aria-hidden="true" aria-label="Menü">
+    <div class="head"><img src="assets/logo.png" alt="" width="28" height="28" onerror="this.style.display='none'"><strong>Lafkat Menü</strong></div>
+    <nav>
+      <a href="index.html">Anasayfa</a>
+      <a href="forum.html">Forum</a>
+      <a href="liderlik.html">Liderlik</a>
+      <a href="arkadaslar.html">Arkadaşlar</a>
+      <a href="profil.html">Profil</a>
+      <a href="ayarlar.html">Ayarlar</a>
+      <a href="#" id="adminLink1" style="display:none">Admin Yönetimi</a>
+    </nav>
+    <div class="foot"><a href="#" style="text-decoration:none;color:#b12020;font-weight:800">Çıkış</a></div>
+  </aside>
+
+  <!-- Topbar -->
+  <header class="topbar">
+    <div class="topbar-inner">
+      <div class="hamburger"><button id="menuBtn" aria-label="Menüyü aç" aria-expanded="false" aria-controls="drawer">☰ Menü</button></div>
+      <a class="brand" href="index.html">
+        <img src="assets/logo.png" alt="Lafkat" onerror="this.style.display='none'"><span class="t">Lafkat</span>
+      </a>
+      <nav class="hnav">
+        <a href="index.html">Anasayfa</a>
+        <a href="forum.html">Forum</a>
+        <a href="liderlik.html">Liderlik</a>
+        <a class="active" href="arkadaslar.html">Arkadaşlar</a>
+        <a href="profil.html">Profil</a>
+        <a href="ayarlar.html">Ayarlar</a>
+        <a href="#" id="adminLink2" style="display:none">Admin Yönetimi</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <section class="card">
+      <div class="hd">Arkadaşlar</div>
+
+      <!-- Tabs -->
+      <div class="tabs">
+        <button class="tab" id="tab-list" aria-selected="true">Arkadaşlarım</button>
+        <button class="tab" id="tab-req" aria-selected="false">İstekler</button>
+        <button class="tab" id="tab-find" aria-selected="false">Kullanıcı Ara</button>
+      </div>
+
+      <div class="bd">
+        <!-- Arkadaşlarım -->
+        <div id="panel-list">
+          <div class="friend">
+            <div class="avatar">A</div>
+            <div style="flex:1">
+              <div><strong>@Aydede</strong></div>
+              <div class="row"><div class="status online"></div><span class="hint">Online</span></div>
+            </div>
+            <button class="btn">Mesaj</button>
+            <button class="btn danger">Çıkar</button>
+          </div>
+          <div class="friend">
+            <div class="avatar">K</div>
+            <div style="flex:1">
+              <div><strong>@KumSaati</strong></div>
+              <div class="row"><div class="status offline"></div><span class="hint">Offline</span></div>
+            </div>
+            <button class="btn">Mesaj</button>
+            <button class="btn danger">Çıkar</button>
+          </div>
+        </div>
+
+        <!-- İstekler -->
+        <div id="panel-req" class="hidden">
+          <div class="friend">
+            <div class="avatar">L</div>
+            <div style="flex:1"><strong>@Lavanta</strong> arkadaşlık isteği gönderdi.</div>
+            <button class="btn primary">Kabul</button>
+            <button class="btn danger">Reddet</button>
+          </div>
+        </div>
+
+        <!-- Kullanıcı Ara -->
+        <div id="panel-find" class="hidden">
+          <div class="row">
+            <input type="text" id="searchUser" placeholder="Nickname veya e-posta" />
+            <button class="btn primary" id="addUser">Ekle</button>
+          </div>
+          <div id="searchResult" class="hint" style="margin-top:8px">Demo: Kullanıcı bulunamadı.</div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+<script>
+  // Admin link
+  (new URLSearchParams(location.search)).get("admin")==="1" && (adminLink1.style.display=adminLink2.style.display="inline-block");
+
+  // Drawer
+  const menuBtn=document.getElementById('menuBtn');
+  const drawer=document.getElementById('drawer');
+  const overlay=document.getElementById('overlay');
+  function openDrawer(){drawer.classList.add('open');overlay.classList.add('show');menuBtn.setAttribute('aria-expanded','true');document.body.style.overflow='hidden';}
+  function closeDrawer(){drawer.classList.remove('open');overlay.classList.remove('show');menuBtn.setAttribute('aria-expanded','false');document.body.style.overflow='';}
+  menuBtn.addEventListener('click', ()=> drawer.classList.contains('open')?closeDrawer():openDrawer());
+  overlay.addEventListener('click', closeDrawer);
+  window.addEventListener('keydown', e=>{ if(e.key==='Escape' && drawer.classList.contains('open')) closeDrawer(); });
+
+  // Tabs
+  const tabs=['list','req','find'];
+  function showTab(id){
+    tabs.forEach(t=>{
+      document.getElementById('tab-'+t).setAttribute('aria-selected', t===id ? 'true':'false');
+      document.getElementById('panel-'+t).classList.toggle('hidden', t!==id);
+    });
+  }
+  tabs.forEach(t=> document.getElementById('tab-'+t).addEventListener('click', ()=>showTab(t)));
+
+  // Demo: kullanıcı ekleme
+  document.getElementById('addUser').addEventListener('click', ()=>{
+    const q=document.getElementById('searchUser').value.trim();
+    document.getElementById('searchResult').textContent = q ? `'${q}' için istek gönderildi (demo).` : 'Arama boş.';
+  });
+</script>
+</body>
+</html>
