@@ -1,0 +1,145 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Lafkat – Forum</title>
+  <meta name="description" content="Lafkat Forum – Yaratıcı gönderiler, sohbet ve paylaşım." />
+
+  <style>
+    :root{
+      --orange-1:#ff7a1a;
+      --orange-2:#f36a00;
+      --card:#fff9f2;
+      --ink:#2b2b2b;
+      --muted:#7b7b7b;
+      --ring:rgba(0,0,0,.08);
+      --shadow: 0 8px 24px rgba(0,0,0,.18), 0 2px 6px rgba(0,0,0,.08);
+      --radius:18px;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
+      color:var(--ink);
+      background:linear-gradient(180deg, var(--orange-1), var(--orange-2));
+      background-attachment:fixed;
+    }
+    .topbar{
+      position:sticky; top:0; backdrop-filter:blur(6px);
+      background:rgba(255,255,255,.3); border-bottom:1px solid rgba(255,255,255,.4);
+    }
+    .topbar-inner{max-width:1200px;margin:auto;padding:10px 16px;display:flex;align-items:center;gap:14px}
+    .brand{display:flex;align-items:center;gap:10px;font-weight:800}
+    .brand img{width:34px;height:34px;border-radius:9px}
+    .brand .t{font-size:22px;color:#fff;text-shadow:0 2px 10px rgba(0,0,0,.3)}
+    nav{margin-left:auto;display:flex;gap:8px;flex-wrap:wrap}
+    nav a{color:#1b1b1b;text-decoration:none;font-weight:600;background:rgba(255,255,255,.8);padding:8px 12px;border-radius:12px}
+    nav a.active{outline:3px solid rgba(255,255,255,.7)}
+
+    .wrap{max-width:1000px;margin:22px auto;padding:0 16px}
+    .card{background:var(--card);border-radius:var(--radius);box-shadow:var(--shadow);border:1px solid var(--ring)}
+    .card .hd{padding:14px 16px;border-bottom:1px solid rgba(0,0,0,.06);font-weight:800}
+    .card .bd{padding:14px 16px}
+    .tabs{display:flex;gap:6px;padding:6px}
+    .tabs button{flex:1;padding:10px;border:0;border-radius:12px;font-weight:700;cursor:pointer}
+    .tabs button.active{background:linear-gradient(180deg,#ffb37a,#ff8e3a);color:#2b2b2b}
+
+    .post{background:#fff;border:1px solid rgba(0,0,0,.08);border-radius:12px;padding:12px;margin-bottom:12px}
+    .post .meta{font-size:13px;color:var(--muted);margin-bottom:6px}
+    .vote{display:flex;gap:8px;margin-top:8px}
+    .btn{padding:6px 10px;border-radius:10px;border:1px solid rgba(0,0,0,.08);background:#fff;cursor:pointer}
+    .btn:hover{background:#f8f8f8}
+    .loadmore{text-align:center;margin:14px 0}
+    .chat{margin-top:20px}
+    .chat-messages{max-height:260px;overflow-y:auto;display:flex;flex-direction:column-reverse;gap:8px}
+    .chat .row{display:flex;gap:8px}
+    textarea{flex:1;resize:none;padding:8px;border:1px solid rgba(0,0,0,.12);border-radius:10px}
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <a class="brand" href="index.html">
+        <img src="assets/logo.png" alt="Lafkat" onerror="this.style.display='none'">
+        <span class="t">Lafkat</span>
+      </a>
+      <nav>
+        <a href="index.html">Anasayfa</a>
+        <a class="active" href="forum.html">Forum</a>
+        <a href="#">Liderlik</a>
+        <a href="#">Arkadaşlar</a>
+        <a href="#">Profil</a>
+        <a href="#">Ayarlar</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <section class="card">
+      <div class="hd">Forum</div>
+      <div class="tabs">
+        <button class="active" id="tab-pop">Popüler (Bugün)</button>
+        <button id="tab-new">En Yeni</button>
+      </div>
+      <div class="bd" id="posts">
+        <!-- Örnek gönderiler -->
+        <div class="post">
+          <div class="meta">@Mimoza — 2s önce</div>
+          “Defterin içinde kocaman <strong>‘Sürpriz Parti’</strong> yazıyordu.”
+          <div class="vote">
+            <button class="btn">👍 12</button>
+            <button class="btn">👎 1</button>
+            <button class="btn">💬 3 Yorum</button>
+          </div>
+        </div>
+        <div class="post">
+          <div class="meta">@KumSaati — 5s önce</div>
+          “Defterin içinde kocaman <strong>‘Sakın Açma’</strong> yazıyordu.”
+          <div class="vote">
+            <button class="btn">👍 9</button>
+            <button class="btn">👎 0</button>
+            <button class="btn">💬 1 Yorum</button>
+          </div>
+        </div>
+        <div class="loadmore"><button class="btn">Daha Fazla Yükle</button></div>
+      </div>
+    </section>
+
+    <!-- Canlı sohbet -->
+    <section class="card chat">
+      <div class="hd">Canlı Sohbet</div>
+      <div class="bd">
+        <div class="chat-messages" id="chatBox">
+          <div><strong>@Gunesli</strong>: Selam millet 🌞</div>
+          <div><strong>@NarPortakalı</strong>: Günün cümlesi süpermiş!</div>
+        </div>
+        <div class="row" style="margin-top:10px">
+          <textarea id="chatInput" rows="2" placeholder="Mesajını yaz..."></textarea>
+          <button class="btn" id="sendChat">Gönder</button>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    // Tablar (demo)
+    const tabPop=document.getElementById('tab-pop');
+    const tabNew=document.getElementById('tab-new');
+    tabPop.onclick=()=>{tabPop.classList.add('active');tabNew.classList.remove('active');};
+    tabNew.onclick=()=>{tabNew.classList.add('active');tabPop.classList.remove('active');};
+
+    // Chat demo
+    const chatBox=document.getElementById('chatBox');
+    const chatInput=document.getElementById('chatInput');
+    document.getElementById('sendChat').onclick=()=>{
+      const v=chatInput.value.trim();
+      if(!v) return;
+      const d=document.createElement('div');
+      d.innerHTML=`<strong>@Sen</strong>: ${v}`;
+      chatBox.prepend(d);
+      chatInput.value="";
+    };
+  </script>
+</body>
+</html>
