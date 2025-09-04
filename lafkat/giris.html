@@ -1,0 +1,133 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Lafkat – Giriş</title>
+<meta name="description" content="Lafkat hesabına giriş yap." />
+<style>
+  :root{
+    --orange-1:#ff7a1a; --orange-2:#f36a00;
+    --card:#fff9f2; --ink:#2b2b2b; --muted:#7b7b7b; --ring:rgba(0,0,0,.10);
+    --shadow:0 10px 30px rgba(0,0,0,.25), 0 2px 8px rgba(0,0,0,.10);
+    --radius:20px;
+  }
+  *{box-sizing:border-box}
+  html,body{height:100%}
+  body{
+    margin:0; font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif; color:var(--ink);
+    background:
+      radial-gradient(120vmax 120vmax at 90% -20%, rgba(255,255,255,.12), transparent 55%),
+      linear-gradient(180deg,var(--orange-1),var(--orange-2));
+    background-attachment:fixed;
+    display:grid; place-items:center; padding:24px;
+  }
+  .shell{width:min(960px,100%);display:grid;grid-template-columns: 1.1fr .9fr;gap:18px}
+  @media (max-width:900px){ .shell{grid-template-columns:1fr} }
+  .card{background:var(--card);border:1px solid var(--ring);border-radius:var(--radius);box-shadow:var(--shadow)}
+  .left{padding:22px 22px}
+  .right{padding:22px 22px}
+  .brand{display:flex;align-items:center;gap:12px;margin-bottom:10px}
+  .brand img{width:40px;height:40px;border-radius:10px;box-shadow:0 6px 14px rgba(0,0,0,.25)}
+  .brand .t{font-weight:900;font-size:24px;color:#7a4a16}
+  h1{font-size:22px;margin:6px 0 2px}
+  p{margin:8px 0;color:var(--muted)}
+  label{display:block;font-weight:800;margin:10px 0 6px}
+  input[type="email"],input[type="password"]{
+    width:100%;padding:12px 14px;border:1px solid rgba(0,0,0,.12);border-radius:12px;background:#fff
+  }
+  .row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+  .btn{appearance:none;border:0;padding:11px 14px;border-radius:12px;font-weight:900;cursor:pointer;box-shadow:0 4px 14px rgba(0,0,0,.15)}
+  .btn.primary{background:linear-gradient(180deg,#ffb37a,#ff8e3a);color:#3a240e}
+  .btn.ghost{background:#fff;border:1px solid rgba(0,0,0,.12)}
+  .hint{font-size:12px;color:var(--muted)}
+  .footer{display:flex;justify-content:space-between;align-items:center;margin-top:12px}
+  .divider{height:1px;background:rgba(0,0,0,.08);margin:14px 0}
+  .flex{display:flex;gap:8px;align-items:center}
+  .toggle{position:relative}
+  .toggle input{position:absolute;inset:0;opacity:0}
+  .showpw{font-size:12px;color:#333}
+  .toast{position:fixed;bottom:18px;left:50%;transform:translateX(-50%);background:#111;color:#fff;padding:10px 14px;border-radius:999px;opacity:0;pointer-events:none;transition:opacity .25s}
+  .toast.show{opacity:1}
+  .links a{color:#2b2b2b}
+</style>
+</head>
+<body>
+  <div class="shell">
+    <!-- Form -->
+    <section class="card left">
+      <div class="brand">
+        <img src="assets/logo.png" alt="" onerror="this.style.display='none'"><div class="t">Lafkat</div>
+      </div>
+      <h1>Giriş</h1>
+      <p class="hint">Ziyaretçi modu yalnızca okumaya izin verir. Etkileşim için giriş yap.</p>
+
+      <form id="loginForm">
+        <label for="lemail">E-posta</label>
+        <input id="lemail" type="email" autocomplete="email" required placeholder="ornek@posta.com" />
+
+        <div class="row" style="justify-content:space-between;align-items:flex-end;margin-top:4px">
+          <div style="flex:1">
+            <label for="lpass">Şifre</label>
+            <input id="lpass" type="password" required placeholder="••••••••" autocomplete="current-password" />
+          </div>
+          <label class="flex toggle" style="margin-bottom:6px"><input type="checkbox" id="showPw"><span class="showpw">Göster</span></label>
+        </div>
+
+        <div class="row" style="margin-top:12px">
+          <button class="btn primary" type="submit">Giriş Yap</button>
+          <a class="btn ghost" href="kayit.html">Kayıt Ol</a>
+        </div>
+
+        <div class="footer">
+          <a class="hint" href="#" id="forgot">Şifreyi mi unuttun?</a>
+          <div class="links hint">Devam ederek <a href="#">Kullanım Şartları</a> ve <a href="#">Gizlilik</a>’i kabul etmiş olursun.</div>
+        </div>
+      </form>
+
+      <!-- Giriş sayfasından doğrulama notu kaldırıldı -->
+    </section>
+
+    <!-- Yan panel -->
+    <aside class="card right">
+      <h1>Bugünün Cümlesi</h1>
+      <p class="hint">Giriş yapmadan sadece okuyabilirsin:</p>
+      <div class="mini-note" id="dailyBox" style="font-size:13px;color:#5a3a14;background:#fff3e0;border:1px dashed rgba(0,0,0,.12);padding:8px 10px;border-radius:10px">
+        Arkadaşım gizlice defterime bir şeyler yazmış. Sayfayı açtığımda kocaman <u>_____</u> yazısını gördüm.
+      </div>
+      <div style="height:8px"></div>
+      <a class="btn ghost" href="index.html">Anasayfaya dön</a>
+    </aside>
+  </div>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+  const toast=(m)=>{const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),1400)};
+
+  // Şifre göster
+  document.getElementById('showPw').addEventListener('change', (e)=>{
+    document.getElementById('lpass').type = e.target.checked ? 'text' : 'password';
+  });
+
+  // Giriş (demo)
+  document.getElementById('loginForm').addEventListener('submit', (e)=>{
+    e.preventDefault();
+    const email=document.getElementById('lemail').value.trim();
+    const pass=document.getElementById('lpass').value;
+    if(!email || !pass) return toast('E-posta ve şifre gerekli');
+    if(pass.length<6) return toast('Şifre en az 6 karakter olmalı');
+    toast('Giriş başarılı (demo)');
+    setTimeout(()=> location.href='index.html', 700);
+  });
+
+  // Şifre sıfırlama (demo)
+  document.getElementById('forgot').addEventListener('click', (e)=>{
+    e.preventDefault();
+    const email=prompt('E-posta adresini gir:');
+    if(!email) return;
+    toast('Sıfırlama bağlantısı gönderildi (demo)');
+  });
+</script>
+</body>
+</html>
