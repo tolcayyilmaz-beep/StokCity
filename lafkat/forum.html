@@ -4,57 +4,53 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Lafkat – Forum</title>
-  <meta name="description" content="Lafkat Forum – Yaratıcı gönderiler, sohbet ve paylaşım." />
-
+  <meta name="description" content="Lafkat Forum – Popüler, En Yeni ve Canlı Sohbet." />
   <style>
     :root{
-      --orange-1:#ff7a1a;
-      --orange-2:#f36a00;
-      --card:#fff9f2;
-      --ink:#2b2b2b;
-      --muted:#7b7b7b;
-      --ring:rgba(0,0,0,.08);
-      --shadow: 0 8px 24px rgba(0,0,0,.18), 0 2px 6px rgba(0,0,0,.08);
+      --orange-1:#ff7a1a; --orange-2:#f36a00;
+      --card:#fff9f2; --ink:#2b2b2b; --muted:#7b7b7b; --ring:rgba(0,0,0,.08);
+      --shadow:0 8px 24px rgba(0,0,0,.18), 0 2px 6px rgba(0,0,0,.08);
       --radius:18px;
     }
     *{box-sizing:border-box}
-    body{
-      margin:0;
-      font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
-      color:var(--ink);
-      background:linear-gradient(180deg, var(--orange-1), var(--orange-2));
-      background-attachment:fixed;
-    }
-    .topbar{
-      position:sticky; top:0; backdrop-filter:blur(6px);
-      background:rgba(255,255,255,.3); border-bottom:1px solid rgba(255,255,255,.4);
-    }
+    body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;color:var(--ink);
+      background:linear-gradient(180deg,var(--orange-1),var(--orange-2)); background-attachment:fixed;}
+    /* Topbar */
+    .topbar{position:sticky;top:0;z-index:50;backdrop-filter:blur(6px);
+      background:rgba(255,255,255,.3);border-bottom:1px solid rgba(255,255,255,.4);}
     .topbar-inner{max-width:1200px;margin:auto;padding:10px 16px;display:flex;align-items:center;gap:14px}
     .brand{display:flex;align-items:center;gap:10px;font-weight:800}
     .brand img{width:34px;height:34px;border-radius:9px}
     .brand .t{font-size:22px;color:#fff;text-shadow:0 2px 10px rgba(0,0,0,.3)}
     nav{margin-left:auto;display:flex;gap:8px;flex-wrap:wrap}
-    nav a{color:#1b1b1b;text-decoration:none;font-weight:600;background:rgba(255,255,255,.8);padding:8px 12px;border-radius:12px}
+    nav a{color:#1b1b1b;text-decoration:none;font-weight:600;background:rgba(255,255,255,.85);
+      padding:8px 12px;border-radius:12px;border:1px solid rgba(255,255,255,.55)}
     nav a.active{outline:3px solid rgba(255,255,255,.7)}
-
+    /* Layout */
     .wrap{max-width:1000px;margin:22px auto;padding:0 16px}
     .card{background:var(--card);border-radius:var(--radius);box-shadow:var(--shadow);border:1px solid var(--ring)}
     .card .hd{padding:14px 16px;border-bottom:1px solid rgba(0,0,0,.06);font-weight:800}
     .card .bd{padding:14px 16px}
-    .tabs{display:flex;gap:6px;padding:6px}
-    .tabs button{flex:1;padding:10px;border:0;border-radius:12px;font-weight:700;cursor:pointer}
-    .tabs button.active{background:linear-gradient(180deg,#ffb37a,#ff8e3a);color:#2b2b2b}
-
+    /* Tabs */
+    .tabs{display:flex;gap:6px;padding:8px;background:rgba(255,255,255,.55);border-bottom:1px solid rgba(0,0,0,.06)}
+    .tab{flex:1;padding:10px;border:0;border-radius:12px;font-weight:800;cursor:pointer;background:#fff}
+    .tab[aria-selected="true"]{background:linear-gradient(180deg,#ffb37a,#ff8e3a)}
+    /* Posts */
     .post{background:#fff;border:1px solid rgba(0,0,0,.08);border-radius:12px;padding:12px;margin-bottom:12px}
-    .post .meta{font-size:13px;color:var(--muted);margin-bottom:6px}
-    .vote{display:flex;gap:8px;margin-top:8px}
+    .meta{font-size:13px;color:var(--muted);margin-bottom:6px}
+    .vote{display:flex;gap:8px;margin-top:8px;flex-wrap:wrap}
     .btn{padding:6px 10px;border-radius:10px;border:1px solid rgba(0,0,0,.08);background:#fff;cursor:pointer}
     .btn:hover{background:#f8f8f8}
     .loadmore{text-align:center;margin:14px 0}
-    .chat{margin-top:20px}
-    .chat-messages{max-height:260px;overflow-y:auto;display:flex;flex-direction:column-reverse;gap:8px}
-    .chat .row{display:flex;gap:8px}
-    textarea{flex:1;resize:none;padding:8px;border:1px solid rgba(0,0,0,.12);border-radius:10px}
+    /* Chat */
+    .chat-wrap{display:flex;flex-direction:column;gap:10px}
+    .chat-messages{max-height:300px;overflow-y:auto;display:flex;flex-direction:column-reverse;gap:8px;background:#fff;
+      border:1px solid rgba(0,0,0,.08);border-radius:12px;padding:10px}
+    .chat-row{display:flex;gap:8px;align-items:flex-start}
+    textarea.chat-input{flex:1;resize:none;padding:8px;border:1px solid rgba(0,0,0,.12);border-radius:10px}
+    .hint{font-size:12px;color:var(--muted)}
+    /* Utilities */
+    .hidden{display:none}
   </style>
 </head>
 <body>
@@ -76,70 +72,120 @@
   </header>
 
   <main class="wrap">
-    <section class="card">
-      <div class="hd">Forum</div>
-      <div class="tabs">
-        <button class="active" id="tab-pop">Popüler (Bugün)</button>
-        <button id="tab-new">En Yeni</button>
-      </div>
-      <div class="bd" id="posts">
-        <!-- Örnek gönderiler -->
-        <div class="post">
-          <div class="meta">@Mimoza — 2s önce</div>
-          “Defterin içinde kocaman <strong>‘Sürpriz Parti’</strong> yazıyordu.”
-          <div class="vote">
-            <button class="btn">👍 12</button>
-            <button class="btn">👎 1</button>
-            <button class="btn">💬 3 Yorum</button>
-          </div>
-        </div>
-        <div class="post">
-          <div class="meta">@KumSaati — 5s önce</div>
-          “Defterin içinde kocaman <strong>‘Sakın Açma’</strong> yazıyordu.”
-          <div class="vote">
-            <button class="btn">👍 9</button>
-            <button class="btn">👎 0</button>
-            <button class="btn">💬 1 Yorum</button>
-          </div>
-        </div>
-        <div class="loadmore"><button class="btn">Daha Fazla Yükle</button></div>
-      </div>
-    </section>
+    <section class="card" aria-labelledby="forumTitle">
+      <div class="hd" id="forumTitle">Forum</div>
 
-    <!-- Canlı sohbet -->
-    <section class="card chat">
-      <div class="hd">Canlı Sohbet</div>
+      <!-- Sekmeler -->
+      <div class="tabs" role="tablist" aria-label="Forum sekmeleri">
+        <button class="tab" role="tab" id="tab-pop" aria-selected="true" aria-controls="panel-pop">Popüler (Bugün)</button>
+        <button class="tab" role="tab" id="tab-new" aria-selected="false" aria-controls="panel-new">En Yeni</button>
+        <button class="tab" role="tab" id="tab-chat" aria-selected="false" aria-controls="panel-chat">Canlı Sohbet</button>
+      </div>
+
+      <!-- İçerik Panelleri -->
       <div class="bd">
-        <div class="chat-messages" id="chatBox">
-          <div><strong>@Gunesli</strong>: Selam millet 🌞</div>
-          <div><strong>@NarPortakalı</strong>: Günün cümlesi süpermiş!</div>
+        <!-- Popüler -->
+        <div id="panel-pop" role="tabpanel" aria-labelledby="tab-pop">
+          <div class="post">
+            <div class="meta">@Mimoza — 2s önce</div>
+            “Defterin içinde kocaman <strong>‘Sürpriz Parti’</strong> yazıyordu.”
+            <div class="vote">
+              <button class="btn">👍 12</button>
+              <button class="btn">👎 1</button>
+              <button class="btn">💬 3 Yorum</button>
+            </div>
+          </div>
+          <div class="post">
+            <div class="meta">@KumSaati — 5s önce</div>
+            “Defterin içinde kocaman <strong>‘Sakın Açma’</strong> yazıyordu.”
+            <div class="vote">
+              <button class="btn">👍 9</button>
+              <button class="btn">👎 0</button>
+              <button class="btn">💬 1 Yorum</button>
+            </div>
+          </div>
+          <div class="loadmore"><button class="btn">Daha Fazla Yükle</button></div>
         </div>
-        <div class="row" style="margin-top:10px">
-          <textarea id="chatInput" rows="2" placeholder="Mesajını yaz..."></textarea>
-          <button class="btn" id="sendChat">Gönder</button>
+
+        <!-- En Yeni -->
+        <div id="panel-new" role="tabpanel" aria-labelledby="tab-new" class="hidden">
+          <div class="post">
+            <div class="meta">@Lavanta — 4dk önce</div>
+            “Açınca sadece <strong>‘Devamı Arkada’</strong> yazıyordu.”
+            <div class="vote">
+              <button class="btn">👍 1</button>
+              <button class="btn">👎 0</button>
+              <button class="btn">💬 0 Yorum</button>
+            </div>
+          </div>
+          <div class="post">
+            <div class="meta">@GalaksiTreni — 9dk önce</div>
+            “Kocaman <strong>‘Sürpriz Kutusu’</strong> yazıyordu.”
+            <div class="vote">
+              <button class="btn">👍 3</button>
+              <button class="btn">👎 0</button>
+              <button class="btn">💬 1 Yorum</button>
+            </div>
+          </div>
+          <div class="loadmore"><button class="btn">Daha Fazla Yükle</button></div>
+        </div>
+
+        <!-- Canlı Sohbet -->
+        <div id="panel-chat" role="tabpanel" aria-labelledby="tab-chat" class="hidden">
+          <div class="chat-wrap">
+            <div class="chat-messages" id="chatBox" aria-live="polite">
+              <div><strong>@Gunesli</strong>: Selam millet 🌞</div>
+              <div><strong>@NarPortakalı</strong>: Günün cümlesi süpermiş!</div>
+            </div>
+            <div class="chat-row">
+              <textarea id="chatInput" class="chat-input" rows="2" placeholder="Mesajını yaz... (Enter: Gönder · Shift+Enter: Yeni satır)"></textarea>
+              <button class="btn" id="sendChat">Gönder</button>
+            </div>
+            <div class="hint">Spam ve uygunsuz mesajlar moderasyona takılır.</div>
+          </div>
         </div>
       </div>
     </section>
   </main>
 
   <script>
-    // Tablar (demo)
-    const tabPop=document.getElementById('tab-pop');
-    const tabNew=document.getElementById('tab-new');
-    tabPop.onclick=()=>{tabPop.classList.add('active');tabNew.classList.remove('active');};
-    tabNew.onclick=()=>{tabNew.classList.add('active');tabPop.classList.remove('active');};
+    // Sekme yönetimi
+    const tabs = [
+      {btn:'tab-pop', panel:'panel-pop'},
+      {btn:'tab-new', panel:'panel-new'},
+      {btn:'tab-chat', panel:'panel-chat'}
+    ];
+    function switchTo(id){
+      tabs.forEach(t=>{
+        const b=document.getElementById(t.btn), p=document.getElementById(t.panel);
+        const active=(t.btn===id);
+        b.setAttribute('aria-selected', active ? 'true':'false');
+        p.classList.toggle('hidden', !active);
+      });
+    }
+    tabs.forEach(t=>document.getElementById(t.btn).addEventListener('click',()=>switchTo(t.btn)));
 
-    // Chat demo
-    const chatBox=document.getElementById('chatBox');
-    const chatInput=document.getElementById('chatInput');
-    document.getElementById('sendChat').onclick=()=>{
-      const v=chatInput.value.trim();
+    // Sohbet gönderimi (Enter ile): Shift+Enter yeni satır
+    const chatBox = document.getElementById('chatBox');
+    const chatInput = document.getElementById('chatInput');
+    const sendChatBtn = document.getElementById('sendChat');
+
+    function sendChat(){
+      const v = (chatInput.value || '').trim();
       if(!v) return;
-      const d=document.createElement('div');
-      d.innerHTML=`<strong>@Sen</strong>: ${v}`;
-      chatBox.prepend(d);
-      chatInput.value="";
-    };
+      const msg = document.createElement('div');
+      msg.innerHTML = `<strong>@Sen</strong>: ${v}`;
+      chatBox.prepend(msg);
+      chatInput.value = '';
+      chatInput.focus();
+    }
+    sendChatBtn?.addEventListener('click', sendChat);
+    chatInput?.addEventListener('keydown', (e)=>{
+      if(e.key === 'Enter' && !e.shiftKey){
+        e.preventDefault(); // satır ekleme yerine gönder
+        sendChat();
+      }
+    });
   </script>
 </body>
 </html>
