@@ -1,0 +1,342 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Lafkat – Admin Paneli</title>
+<meta name="description" content="Lafkat Admin – Günün cümlesi, öneriler ve moderasyon." />
+<style>
+  :root{
+    --orange-1:#ff7a1a; --orange-2:#f36a00;
+    --card:#fff9f2; --ink:#2b2b2b; --muted:#7b7b7b; --ring:rgba(0,0,0,.08);
+    --shadow:0 8px 24px rgba(0,0,0,.18), 0 2px 6px rgba(0,0,0,.08);
+    --radius:18px;
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0; font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif; color:var(--ink);
+    background:
+      radial-gradient(90vmax 90vmax at 100% -10%, rgba(255,255,255,.08), transparent 60%),
+      linear-gradient(180deg,var(--orange-1),var(--orange-2));
+    background-attachment:fixed;
+  }
+  /* Topbar & Drawer */
+  .topbar{position:sticky;top:0;z-index:60;backdrop-filter:blur(6px);background:rgba(255,255,255,.30);border-bottom:1px solid rgba(255,255,255,.45)}
+  .topbar-inner{max-width:1200px;margin:auto;padding:10px 16px;display:flex;align-items:center;gap:10px}
+  .hamburger button{appearance:none;background:#fff;border:1px solid rgba(0,0,0,.12);border-radius:10px;padding:8px 10px;font-weight:800;cursor:pointer}
+  .brand{display:flex;align-items:center;gap:10px;font-weight:900}
+  .brand img{width:34px;height:34px;border-radius:9px;box-shadow:0 6px 14px rgba(0,0,0,.25)}
+  .brand .t{font-size:22px;color:#fff;text-shadow:0 2px 10px rgba(0,0,0,.28)}
+  nav.hnav{margin-left:auto;display:none;gap:8px;flex-wrap:wrap}
+  nav.hnav a{color:#1b1b1b;text-decoration:none;font-weight:600;background:rgba(255,255,255,.85);padding:8px 12px;border-radius:12px;border:1px solid rgba(255,255,255,.55)}
+  nav.hnav a.active{outline:3px solid rgba(255,255,255,.7)}
+  .overlay{position:fixed;inset:0;background:rgba(0,0,0,.45);opacity:0;pointer-events:none;transition:opacity .25s;z-index:55}
+  .overlay.show{opacity:1;pointer-events:auto}
+  .drawer{position:fixed;inset:0 auto 0 0;width:min(84vw,320px);background:#fff;border-right:1px solid rgba(0,0,0,.08);box-shadow:var(--shadow);
+          transform:translateX(-100%);transition:transform .25s;z-index:56;display:flex;flex-direction:column}
+  .drawer.open{transform:translateX(0)}
+  .drawer .head{padding:16px;border-bottom:1px solid rgba(0,0,0,.06);display:flex;align-items:center;gap:10px}
+  .drawer nav{display:grid;gap:8px;padding:12px}
+  .drawer nav a{padding:10px 12px;border-radius:12px;border:1px solid rgba(0,0,0,.08);text-decoration:none;color:#1b1b1b;background:#fff;font-weight:700}
+  .drawer .foot{margin-top:auto;padding:12px;border-top:1px solid rgba(0,0,0,.06)}
+  @media (min-width:980px){ nav.hnav{display:flex}.hamburger{display:none} }
+
+  /* Page */
+  .wrap{max-width:1100px;margin:22px auto;padding:0 16px}
+  .grid{display:grid;gap:18px;grid-template-columns: 1fr 360px}
+  @media (max-width:980px){ .grid{grid-template-columns:1fr} }
+
+  .card{background:var(--card);border-radius:var(--radius);box-shadow:var(--shadow);border:1px solid var(--ring)}
+  .card .hd{padding:14px 16px;border-bottom:1px solid rgba(0,0,0,.06);font-weight:800}
+  .card .bd{padding:14px 16px}
+  .row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+  .btn{padding:8px 12px;border-radius:10px;border:1px solid rgba(0,0,0,.1);background:#fff;cursor:pointer;font-weight:800}
+  .btn.primary{background:linear-gradient(180deg,#ffb37a,#ff8e3a);color:#3a240e;border:0}
+  .btn.danger{color:#b12020;border-color:#b12020}
+  input[type="text"], textarea, input[type="search"]{padding:10px;border:1px solid rgba(0,0,0,.12);border-radius:10px}
+  textarea{width:100%;min-height:90px;resize:vertical}
+  .hint{font-size:12px;color:var(--muted)}
+  .tag{display:inline-block;background:#fff;border:1px solid rgba(0,0,0,.08);border-radius:999px;padding:4px 8px;font-size:12px;margin-right:6px}
+  /* Tables */
+  .table{width:100%;border-collapse:separate;border-spacing:0;background:#fff;border:1px solid rgba(0,0,0,.08);border-radius:12px;overflow:hidden}
+  .table thead th{position:sticky;top:0;background:#fff9f2;border-bottom:1px solid rgba(0,0,0,.08);padding:10px;text-align:left;font-size:13px}
+  .table tbody td{padding:10px;border-bottom:1px solid rgba(0,0,0,.05);vertical-align:top}
+  .table tbody tr:last-child td{border-bottom:0}
+  .pill{display:inline-flex;align-items:center;gap:6px;padding:6px 10px;background:#fff;border:1px solid rgba(0,0,0,.08);border-radius:999px;font-weight:700}
+  .lock{background:rgba(0,0,0,.6);color:#fff;position:fixed;inset:auto 16px 16px auto;border-radius:10px;padding:8px 10px;z-index:70;display:none}
+  .lock.show{display:block}
+  .hidden{display:none}
+</style>
+</head>
+<body>
+  <!-- Overlay & Drawer -->
+  <div class="overlay" id="overlay"></div>
+  <aside class="drawer" id="drawer" aria-hidden="true" aria-label="Menü">
+    <div class="head"><img src="assets/logo.png" alt="" width="28" height="28" onerror="this.style.display='none'"><strong>Lafkat Menü</strong></div>
+    <nav>
+      <a href="index.html">Anasayfa</a>
+      <a href="forum.html">Forum</a>
+      <a href="liderlik.html">Liderlik</a>
+      <a href="arkadaslar.html">Arkadaşlar</a>
+      <a href="profil.html">Profil</a>
+      <a href="ayarlar.html">Ayarlar</a>
+      <a href="admin.html" class="active">Admin Yönetimi</a>
+    </nav>
+    <div class="foot"><a href="#" style="text-decoration:none;color:#b12020;font-weight:800">Çıkış</a></div>
+  </aside>
+
+  <!-- Topbar -->
+  <header class="topbar">
+    <div class="topbar-inner">
+      <div class="hamburger"><button id="menuBtn" aria-label="Menüyü aç" aria-expanded="false" aria-controls="drawer">☰ Menü</button></div>
+      <a class="brand" href="index.html">
+        <img src="assets/logo.png" alt="Lafkat" onerror="this.style.display='none'"><span class="t">Lafkat</span>
+      </a>
+      <nav class="hnav" aria-label="Ana menü">
+        <a href="index.html">Anasayfa</a>
+        <a href="forum.html">Forum</a>
+        <a href="liderlik.html">Liderlik</a>
+        <a href="arkadaslar.html">Arkadaşlar</a>
+        <a href="profil.html">Profil</a>
+        <a href="ayarlar.html">Ayarlar</a>
+        <a class="active" href="admin.html">Admin Yönetimi</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <div class="grid">
+      <!-- SOL: Yönetim içerikleri -->
+      <section class="card" aria-labelledby="gTitle">
+        <div class="hd" id="gTitle">Günün Cümlesi</div>
+        <div class="bd">
+          <div class="row">
+            <span class="pill">Bugünkü cümle:</span>
+            <span id="todayText" style="font-weight:900">Arkadaşım gizlice defterime bir şeyler yazmış. Sayfayı açtığımda kocaman <u>_____</u> yazısını gördüm.</span>
+          </div>
+          <div class="row" style="margin-top:10px">
+            <textarea id="newSentence" placeholder="Yeni cümleyi yaz (____ içermeli)"></textarea>
+          </div>
+          <div class="row" style="margin-top:8px">
+            <button class="btn primary admin-only" id="setToday">Bugünün Cümlesi Yap</button>
+            <button class="btn admin-only" id="previewBtn">Önizleme</button>
+            <span class="hint">Not: Cümlede en az bir <strong>____</strong> olmalı (demo doğrulama).</span>
+          </div>
+        </div>
+      </section>
+
+      <aside class="card">
+        <div class="hd">Sistem</div>
+        <div class="bd">
+          <div class="row">
+            <span class="pill">Mod</span>
+            <label class="row" style="gap:8px">
+              <input type="radio" name="mode" value="demo" checked> DEMO
+            </label>
+            <label class="row" style="gap:8px">
+              <input type="radio" name="mode" value="live"> CANLI
+            </label>
+          </div>
+          <div class="row" style="margin-top:8px">
+            <button class="btn" id="exportJson">Bugünün verilerini dışa aktar (JSON)</button>
+          </div>
+          <div class="hint" style="margin-top:8px">CANLI modda Firebase/Firestore bağlantısı yapılacak.</div>
+        </div>
+      </aside>
+
+      <!-- ÖNERİLER -->
+      <section class="card" style="grid-column:1 / -1">
+        <div class="hd">Cümle Önerileri (Onay / Ret)</div>
+        <div class="bd">
+          <div class="row" style="margin-bottom:8px">
+            <input type="search" id="suggSearch" placeholder="Öneride ara..." />
+            <button class="btn" id="suggClear">Temizle</button>
+            <span class="hint">Öneriyi seçip “Bugünün Cümlesi Yap”a basabilirsin.</span>
+          </div>
+          <div class="table-wrap">
+            <table class="table" id="suggTable">
+              <thead><tr>
+                <th style="width:42px">#</th>
+                <th>Öneri</th>
+                <th>Gönderen</th>
+                <th>Tarih</th>
+                <th style="width:260px">İşlemler</th>
+              </tr></thead>
+              <tbody id="suggBody">
+                <!-- JS doldurur -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- MODERASYON -->
+      <section class="card" style="grid-column:1 / -1">
+        <div class="hd">Moderasyon Kuyruğu (Gönderi Sil)</div>
+        <div class="bd">
+          <div class="row" style="margin-bottom:8px">
+            <input type="search" id="modSearch" placeholder="Gönderide ara..." />
+            <button class="btn" id="modClear">Temizle</button>
+            <span class="hint">Kurallara uymayan içerikleri sil.</span>
+          </div>
+          <table class="table" id="modTable">
+            <thead><tr>
+              <th style="width:42px">#</th>
+              <th>Gönderi</th>
+              <th>Gönderen</th>
+              <th>Rapor</th>
+              <th style="width:200px">İşlemler</th>
+            </tr></thead>
+            <tbody id="modBody">
+              <!-- JS doldurur -->
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <!-- Toast & Lock -->
+  <div class="lock" id="lockMsg">🔒 Admin yetkisi yok (demo). URL’ye <strong>?admin=1</strong> ekleyin.</div>
+  <div id="toast" style="position:fixed;bottom:18px;left:50%;transform:translateX(-50%);background:#111;color:#fff;padding:10px 14px;border-radius:999px;opacity:0;pointer-events:none;transition:opacity .25s;z-index:80"></div>
+
+<script>
+  // ---------- Drawer ----------
+  const menuBtn=document.getElementById('menuBtn');
+  const drawer=document.getElementById('drawer');
+  const overlay=document.getElementById('overlay');
+  function openDrawer(){drawer.classList.add('open');overlay.classList.add('show');menuBtn.setAttribute('aria-expanded','true');document.body.style.overflow='hidden';}
+  function closeDrawer(){drawer.classList.remove('open');overlay.classList.remove('show');menuBtn.setAttribute('aria-expanded','false');document.body.style.overflow='';}
+  menuBtn.addEventListener('click', ()=> drawer.classList.contains('open')?closeDrawer():openDrawer());
+  overlay.addEventListener('click', closeDrawer);
+  window.addEventListener('keydown', e=>{ if(e.key==='Escape' && drawer.classList.contains('open')) closeDrawer(); });
+
+  // ---------- Role guard (demo) ----------
+  const isAdmin = (new URLSearchParams(location.search)).get("admin")==="1";
+  const toastEl=document.getElementById('toast');
+  const lockEl=document.getElementById('lockMsg');
+  const toast=(m)=>{toastEl.textContent=m;toastEl.style.opacity=1;setTimeout(()=>toastEl.style.opacity=0,1400)};
+
+  function setAdminReadonly(readonly){
+    document.querySelectorAll('.admin-only, .card button, .card input, .card textarea').forEach(el=>{
+      if(el.classList.contains('hnav') || el.closest('.drawer')) return;
+      if(readonly){ el.setAttribute('disabled','true'); el.style.opacity=.6; el.style.cursor='not-allowed'; }
+      else{ el.removeAttribute('disabled'); el.style.opacity=''; el.style.cursor=''; }
+    });
+    lockEl.classList.toggle('show', readonly);
+  }
+  setAdminReadonly(!isAdmin);
+
+  // ---------- Günün Cümlesi ----------
+  const todayText=document.getElementById('todayText');
+  const newSentence=document.getElementById('newSentence');
+  document.getElementById('setToday').addEventListener('click', ()=>{
+    const v=(newSentence.value||'').trim();
+    if(!v){ toast('Cümle boş olamaz'); return; }
+    if(!v.includes('____')){ toast('Cümlede en az bir ____ olmalı'); return; }
+    todayText.innerHTML = v;
+    newSentence.value='';
+    toast('Günün cümlesi güncellendi (demo)');
+  });
+  document.getElementById('previewBtn').addEventListener('click', ()=>{
+    const v=(newSentence.value||'').trim();
+    if(!v){ toast('Önizleme için bir cümle yaz'); return; }
+    toast('Önizleme: '+ v.replace(/\s+/g,' ').slice(0,80) + (v.length>80?'…':''));
+  });
+
+  // ---------- Öneriler (demo data) ----------
+  const suggData = [
+    {id:1, text:"Okul panosunda kocaman ____ yazıyordu; altında imza yoktu.", by:"@Lavanta", date:"04.09.2025"},
+    {id:2, text:"Sayfanın kenarına kırmızıyla ____ yazmış, yanına bir ok çizmiş.", by:"@Aydede", date:"04.09.2025"},
+    {id:3, text:"Kapakta sadece ____ yazıyordu; devamı iç sayfadaydı.", by:"@KumSaati", date:"03.09.2025"}
+  ];
+  const suggBody=document.getElementById('suggBody');
+  function renderSugg(list){
+    suggBody.innerHTML = list.map((s,idx)=>`
+      <tr data-id="${s.id}">
+        <td>${idx+1}</td>
+        <td>${s.text}</td>
+        <td>${s.by}</td>
+        <td>${s.date}</td>
+        <td>
+          <button class="btn admin-only" data-approve>Onayla</button>
+          <button class="btn danger admin-only" data-reject>Reddet</button>
+          <button class="btn admin-only" data-make-today>Bugünün Cümlesi Yap</button>
+        </td>
+      </tr>
+    `).join('');
+  }
+  renderSugg(suggData);
+
+  // Sugg actions
+  suggBody.addEventListener('click', (e)=>{
+    const tr = e.target.closest('tr'); if(!tr) return;
+    const id = +tr.dataset.id;
+    if(e.target.matches('[data-approve]')){ toast('Öneri onaylandı (demo)'); tr.remove(); }
+    if(e.target.matches('[data-reject]')){ toast('Öneri reddedildi (demo)'); tr.remove(); }
+    if(e.target.matches('[data-make-today]')){
+      const rec = suggData.find(x=>x.id===id);
+      if(rec){ todayText.textContent = rec.text; toast('Bugünün cümlesi olarak ayarlandı (demo)'); tr.remove(); }
+    }
+  });
+
+  // Sugg search
+  const suggSearch=document.getElementById('suggSearch');
+  document.getElementById('suggClear').addEventListener('click', ()=>{suggSearch.value=''; renderSugg(suggData);});
+  suggSearch.addEventListener('input', ()=>{
+    const q=suggSearch.value.trim().toLowerCase();
+    renderSugg(q ? suggData.filter(s=> (s.text+s.by+s.date).toLowerCase().includes(q)) : suggData);
+  });
+
+  // ---------- Moderasyon (demo) ----------
+  const modData = [
+    {id:101, text:"“Bence ____ yazısını görünce şok oldum!”", by:"@XUser", report:"Küfür (1)", raw:"kuvvetli dil"},
+    {id:102, text:"“____ yazıyordu, ama ben bunu görmezden geldim.”", by:"@YUser", report:"Spam (3)", raw:"tekrar"},
+    {id:103, text:"“Defterde ____ yazısı ve uygunsuz link.”", by:"@ZUser", report:"Telif/Link (2)", raw:"link"},
+  ];
+  const modBody=document.getElementById('modBody');
+  function renderMod(list){
+    modBody.innerHTML = list.map((m,idx)=>`
+      <tr data-id="${m.id}">
+        <td>${idx+1}</td>
+        <td>${m.text}<div class="hint">Tespit: ${m.raw}</div></td>
+        <td>${m.by}</td>
+        <td>${m.report}</td>
+        <td>
+          <button class="btn admin-only" data-keep>Kalmasına İzin Ver</button>
+          <button class="btn danger admin-only" data-delete>Sil</button>
+        </td>
+      </tr>
+    `).join('');
+  }
+  renderMod(modData);
+
+  document.getElementById('modClear').addEventListener('click', ()=>{document.getElementById('modSearch').value=''; renderMod(modData);});
+  document.getElementById('modSearch').addEventListener('input', (e)=>{
+    const q=e.target.value.trim().toLowerCase();
+    renderMod(q ? modData.filter(m=> (m.text+m.by+m.report).toLowerCase().includes(q)) : modData);
+  });
+  modBody.addEventListener('click', (e)=>{
+    const tr=e.target.closest('tr'); if(!tr) return;
+    if(e.target.matches('[data-keep]')){ toast('Gönderi bırakıldı (demo)'); tr.remove(); }
+    if(e.target.matches('[data-delete]')){ toast('Gönderi silindi (demo)'); tr.remove(); }
+  });
+
+  // ---------- Sistem: export JSON (demo) ----------
+  document.getElementById('exportJson').addEventListener('click', ()=>{
+    const data = {
+      date: new Date().toISOString(),
+      todaySentence: todayText.textContent,
+      suggestions: suggData,
+      moderation: modData
+    };
+    const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
+    const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='lafkat_admin_snapshot.json'; a.click();
+    URL.revokeObjectURL(a.href);
+  });
+
+  // ---------- Apply read-only state if not admin ----------
+  if(!isAdmin){ setAdminReadonly(true); }
+</script>
+</body>
+</html>
