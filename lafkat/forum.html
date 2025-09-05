@@ -130,7 +130,8 @@
   function openDrawer(){drawer.classList.add('open');overlay.classList.add('show');menuBtn.setAttribute('aria-expanded','true');document.body.style.overflow='hidden'; drawer.querySelector('a').focus();}
   function closeDrawer(){drawer.classList.remove('open');overlay.classList.remove('show');menuBtn.setAttribute('aria-expanded','false');document.body.style.overflow='';}
   menuBtn.addEventListener('click', ()=> drawer.classList.contains('open')?closeDrawer():openDrawer());
-  overlay.addEventListener('click', closeDrawer); window.addEventListener('keydown', e=>{ if(e.key==='Escape' && drawer.classList.contains('open')) closeDrawer(); });
+  overlay.addEventListener('click', closeDrawer);
+  window.addEventListener('keydown', e=>{ if(e.key==='Escape' && drawer.classList.contains('open')) closeDrawer(); });
 
   // Tabs
   const tabs=[{btn:'tab-pop',panel:'panel-pop'},{btn:'tab-new',panel:'panel-new'},{btn:'tab-chat',panel:'panel-chat'}];
@@ -148,43 +149,68 @@
     getAggregateFromServer, count
   } from "https://www.gstatic.com/firebasejs/10.12.1/firebase-firestore.js";
 
-  // Auth guard
+  /* DOM referansları */
+  const adminLink1 = document.getElementById('adminLink1');
+  const adminLink2 = document.getElementById('adminLink2');
+  const logoutDrawer = document.getElementById('logoutDrawer');
+
+  /* Auth guard */
   let me=null, meProfile=null, activeSentenceId=null;
   onAuthStateChanged(auth, async (user)=>{
     if(!user){ location.href='giris.html?next=forum.html'; return; }
     me=user;
+
     try{
       const token=await getIdTokenResult(user,true);
-      if(token.claims?.admin){ adminLink1.style.display=adminLink2.style.display='inline-block'; adminLink1.href=adminLink2.href='admin.html';}
+      if(token.claims?.admin){
+        adminLink1.style.display=adminLink2.style.display='inline-block';
+        adminLink1.href=adminLink2.href='admin.html';
+      }
     }catch(_){}
-    // Profili oku
+
     try{
       const u=await getDoc(doc(db,'users', user.uid));
       meProfile=u.exists()?u.data():null;
     }catch(_){}
+
     await loadActiveSentence();
-    // İlk yüklemeler
     await loadPopular(true);
     await loadNewest(true);
-    // Sohbeti bağla
     bindChat();
   });
 
-  // Çıkış
-  document.getElementById('logoutDrawer').addEventListener('click', async (e)=>{ e.preventDefault(); try{await signOut(auth);}catch(_){ } location.href='giris.html'; });
+  /* Çıkış */
+  logoutDrawer.addEventListener('click', async (e)=>{
+    e.preventDefault();
+    try{ await signOut(auth); }catch(_){}
+    location.href='giris.html';
+  });
 
-  // Aktif cümle (isActive==true en yeni; yoksa bugünün ID’si)
+  /* Aktif cümle (isActive yoksa son oluşturulana, o da yoksa bugünün ID’sine düş) */
   async function loadActiveSentence(){
     try{
-      const r = await getDocs(query(collection(db,'sentences'), where('isActive','==',true), orderBy('createdAt','desc'), limit(1)));
-      if(!r.empty){ activeSentenceId=r.docs[0].id; return; }
-    }catch(_){}
+      const r1 = await getDocs(
+        query(collection(db,'sentences'), where('isActive','==',true), orderBy('createdAt','desc'), limit(1))
+      );
+      if(!r1.empty){ activeSentenceId=r1.docs[0].id; console.log('[Forum] activeSentenceId (isActive):',activeSentenceId); return; }
+    }catch(e){ console.warn('[Forum] isActive query failed:', e); }
+
+    try{
+      const r2 = await getDocs(
+        query(collection(db,'sentences'), orderBy('createdAt','desc'), limit(1))
+      );
+      if(!r2.empty){ activeSentenceId=r2.docs[0].id; console.log('[Forum] activeSentenceId (latest):',activeSentenceId); return; }
+    }catch(e){ console.warn('[Forum] latest sentence query failed:', e); }
+
     activeSentenceId=(new Date()).toISOString().slice(0,10);
+    console.log('[Forum] fallback activeSentenceId (today):', activeSentenceId);
   }
 
-  // ------- FEED RENDER HELPERS -------
+  /* ------- FEED ------- */
   const popFeed=document.getElementById('popFeed');
   const newFeed=document.getElementById('newFeed');
+  const popMore=document.getElementById('popMore');
+  const newMore=document.getElementById('newMore');
   let popCursor=null, newCursor=null;
 
   function postHTML(id, x){
@@ -198,38 +224,60 @@
           <button class="btn" data-vote="like">👍 <span class="lk">${x.likes||0}</span></button>
           <button class="btn" data-vote="dislike">👎 <span class="dk">${x.dislikes||0}</span></button>
         </div>
-      </article>
-    `;
+      </article>`;
   }
 
   async function loadPopular(reset=false){
     if(!activeSentenceId) return;
-    if(reset){ popFeed.innerHTML=''; popCursor=null; }
-    const qy = popCursor
-      ? query(collection(db,'completions'), where('sentenceId','==',activeSentenceId), orderBy('likes','desc'), orderBy('createdAt','desc'), startAfter(popCursor), limit(10))
-      : query(collection(db,'completions'), where('sentenceId','==',activeSentenceId), orderBy('likes','desc'), orderBy('createdAt','desc'), limit(10));
-    const snap=await getDocs(qy);
-    if(!snap.empty){
-      popCursor = snap.docs[snap.docs.length-1];
-      snap.forEach(d=> popFeed.insertAdjacentHTML('beforeend', postHTML(d.id, d.data())));
+    if(reset){ popFeed.innerHTML=''; popCursor=null; popMore.disabled=false; }
+    try{
+      const qy = popCursor
+        ? query(collection(db,'completions'), where('sentenceId','==',activeSentenceId),
+                orderBy('likes','desc'), orderBy('createdAt','desc'),
+                startAfter(popCursor), limit(10))
+        : query(collection(db,'completions'), where('sentenceId','==',activeSentenceId),
+                orderBy('likes','desc'), orderBy('createdAt','desc'), limit(10));
+      const snap=await getDocs(qy);
+      if(snap.empty && reset){ popFeed.innerHTML='<div class="hint">Henüz gönderi yok</div>'; popMore.disabled=true; return; }
+      if(!snap.empty){
+        popCursor = snap.docs[snap.docs.length-1];
+        snap.forEach(d=> popFeed.insertAdjacentHTML('beforeend', postHTML(d.id, d.data())));
+        if(snap.size < 10) popMore.disabled = true;
+      }
+    }catch(err){
+      console.error('[Forum] loadPopular error:', err);
+      popFeed.innerHTML = `<div class="hint">Yüklenemedi: ${err.code || err.message}</div>`;
+      popMore.disabled = true;
     }
   }
+
   async function loadNewest(reset=false){
     if(!activeSentenceId) return;
-    if(reset){ newFeed.innerHTML=''; newCursor=null; }
-    const qy = newCursor
-      ? query(collection(db,'completions'), where('sentenceId','==',activeSentenceId), orderBy('createdAt','desc'), startAfter(newCursor), limit(10))
-      : query(collection(db,'completions'), where('sentenceId','==',activeSentenceId), orderBy('createdAt','desc'), limit(10));
-    const snap=await getDocs(qy);
-    if(!snap.empty){
-      newCursor = snap.docs[snap.docs.length-1];
-      snap.forEach(d=> newFeed.insertAdjacentHTML('beforeend', postHTML(d.id, d.data())));
+    if(reset){ newFeed.innerHTML=''; newCursor=null; newMore.disabled=false; }
+    try{
+      const qy = newCursor
+        ? query(collection(db,'completions'), where('sentenceId','==',activeSentenceId),
+                orderBy('createdAt','desc'), startAfter(newCursor), limit(10))
+        : query(collection(db,'completions'), where('sentenceId','==',activeSentenceId),
+                orderBy('createdAt','desc'), limit(10));
+      const snap=await getDocs(qy);
+      if(snap.empty && reset){ newFeed.innerHTML='<div class="hint">Henüz gönderi yok</div>'; newMore.disabled=true; return; }
+      if(!snap.empty){
+        newCursor = snap.docs[snap.docs.length-1];
+        snap.forEach(d=> newFeed.insertAdjacentHTML('beforeend', postHTML(d.id, d.data())));
+        if(snap.size < 10) newMore.disabled = true;
+      }
+    }catch(err){
+      console.error('[Forum] loadNewest error:', err);
+      newFeed.innerHTML = `<div class="hint">Yüklenemedi: ${err.code || err.message}</div>`;
+      newMore.disabled = true;
     }
   }
-  document.getElementById('popMore').addEventListener('click', ()=>loadPopular(false));
-  document.getElementById('newMore').addEventListener('click', ()=>loadNewest(false));
 
-  // ---- Oy tekilleştirme (votes alt koleksiyonu) ----
+  popMore.addEventListener('click', ()=>loadPopular(false));
+  newMore.addEventListener('click', ()=>loadNewest(false));
+
+  /* ---- Oy tekilleştirme ---- */
   async function getVoteCounts(completionId){
     const base=collection(db,'completions', completionId, 'votes');
     const likeAgg = await getAggregateFromServer(query(base, where('type','==','like')), { likeCount: count() });
@@ -241,13 +289,10 @@
     const ref=doc(db,'completions', completionId, 'votes', me.uid);
     const snap=await getDoc(ref);
     const now=serverTimestamp();
-    if(!snap.exists()){
-      await setDoc(ref, { type, createdAt: now, updatedAt: now });
-      return;
-    }
+    if(!snap.exists()){ return setDoc(ref, { type, createdAt: now, updatedAt: now }); }
     const prev=snap.data()?.type;
-    if(prev===type){ await deleteDoc(ref); return; }
-    await setDoc(ref, { type, createdAt: snap.data()?.createdAt||now, updatedAt: now });
+    if(prev===type) return deleteDoc(ref);
+    return setDoc(ref, { type, createdAt: snap.data()?.createdAt||now, updatedAt: now });
   }
   function bindVoteDelegation(container){
     container.addEventListener('click', async (e)=>{
@@ -261,13 +306,13 @@
         const c = await getVoteCounts(cid);
         article.querySelector('.lk').textContent=c.likes;
         article.querySelector('.dk').textContent=c.dislikes;
-      }catch(err){ console.error(err); }
+      }catch(err){ console.error('[vote]', err); }
     });
   }
   bindVoteDelegation(popFeed);
   bindVoteDelegation(newFeed);
 
-  // ---- Canlı sohbet ----
+  /* ---- Canlı sohbet ---- */
   const chatBox=document.getElementById('chatBox');
   const chatInput=document.getElementById('chatInput');
   const sendChat=document.getElementById('sendChat');
@@ -279,29 +324,33 @@
     return `<div><strong>@${who}</strong>: ${txt}</div>`;
   }
   function bindChat(){
-    // anlık akış (son 50)
     const qChat=query(collection(db,'forum_messages'), orderBy('createdAt','desc'), limit(50));
     onSnapshot(qChat, (snap)=>{
       chatBox.innerHTML='';
       snap.forEach(docu => chatBox.insertAdjacentHTML('beforeend', renderMsg(docu)));
+    }, (err)=>{
+      console.error('[Forum] chat subscribe error:', err);
+      chatBox.innerHTML = `<div class="hint">Sohbet yüklenemedi: ${err.code || err.message}</div>`;
     });
-    // gönder
+
     async function send(){
       const v=(chatInput.value||'').trim(); if(!v) return;
-      await addDoc(collection(db,'forum_messages'), {
-        uid: me.uid,
-        nickname: meProfile?.nickname || 'Anonim',
-        text: v,
-        createdAt: serverTimestamp()
-      });
-      chatInput.value='';
-      chatInput.focus();
+      try{
+        await addDoc(collection(db,'forum_messages'), {
+          uid: me.uid, nickname: meProfile?.nickname || 'Anonim',
+          text: v, createdAt: serverTimestamp()
+        });
+        chatInput.value=''; chatInput.focus();
+      }catch(err){
+        console.error('[Forum] chat send error:', err);
+        alert('Sohbet mesajı gönderilemedi: ' + (err.code || err.message));
+      }
     }
     sendChat.addEventListener('click', send);
     chatInput.addEventListener('keydown', e=>{ if(e.key==='Enter' && !e.shiftKey){ e.preventDefault(); send(); } });
   }
 
-  // util
+  /* util */
   function escapeHtml(s){ return s.replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])); }
 </script>
 
