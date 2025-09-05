@@ -10,6 +10,7 @@
   *{box-sizing:border-box}
   body{ margin:0; font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif; color:var(--ink);
         background:linear-gradient(180deg,var(--orange-1),var(--orange-2)); background-attachment:fixed;}
+  /* Topbar / Drawer */
   .topbar{position:sticky;top:0;z-index:60;backdrop-filter:blur(6px);background:rgba(255,255,255,.30);border-bottom:1px solid rgba(255,255,255,.45)}
   .topbar-inner{max-width:1200px;margin:auto;padding:10px 16px;display:flex;align-items:center;gap:10px}
   .hamburger button{appearance:none;background:#fff;border:1px solid rgba(0,0,0,.12);border-radius:10px;padding:8px 10px;font-weight:800;cursor:pointer}
@@ -19,6 +20,7 @@
   nav.hnav{margin-left:auto;display:none;gap:8px;flex-wrap:wrap}
   nav.hnav a{color:#1b1b1b;text-decoration:none;font-weight:600;background:rgba(255,255,255,.85);padding:8px 12px;border-radius:12px;border:1px solid rgba(255,255,255,.55)}
   nav.hnav a.active{outline:3px solid rgba(255,255,255,.7)}
+  @media (min-width:980px){ nav.hnav{display:flex}.hamburger{display:none} }
   .overlay{position:fixed;inset:0;background:rgba(0,0,0,.45);opacity:0;pointer-events:none;transition:opacity .25s;z-index:55}
   .overlay.show{opacity:1;pointer-events:auto}
   .drawer{position:fixed;inset:0 auto 0 0;width:min(84vw,320px);background:#fff;border-right:1px solid rgba(0,0,0,.08);box-shadow:var(--shadow);
@@ -28,14 +30,16 @@
   .drawer nav{display:grid;gap:8px;padding:12px}
   .drawer nav a{padding:10px 12px;border-radius:12px;border:1px solid rgba(0,0,0,.08);text-decoration:none;color:#1b1b1b;background:#fff;font-weight:700}
   .drawer .foot{margin-top:auto;padding:12px;border-top:1px solid rgba(0,0,0,.06)}
-  @media (min-width:980px){ nav.hnav{display:flex}.hamburger{display:none} }
+  /* Sayfa */
   .wrap{max-width:1000px;margin:22px auto;padding:0 16px}
   .card{background:var(--card);border-radius:var(--radius);box-shadow:var(--shadow);border:1px solid var(--ring)}
   .card .hd{padding:14px 16px;border-bottom:1px solid rgba(0,0,0,.06);font-weight:800}
   .card .bd{padding:14px 16px}
+  /* Tabs */
   .tabs{display:flex;gap:6px;padding:8px;background:rgba(255,255,255,.55);border-bottom:1px solid rgba(0,0,0,.06)}
   .tab{flex:1;padding:10px;border:0;border-radius:12px;font-weight:800;cursor:pointer;background:#fff}
   .tab[aria-selected="true"]{background:linear-gradient(180deg,#ffb37a,#ff8e3a)}
+  /* Feed */
   .post{background:#fff;border:1px solid rgba(0,0,0,.08);border-radius:12px;padding:12px;margin-bottom:12px}
   .meta{font-size:13px;color:var(--muted);margin-bottom:6px}
   .vote{display:flex;gap:8px;margin-top:8px;flex-wrap:wrap}
@@ -112,7 +116,7 @@
           <div class="chat-wrap">
             <div class="chat-messages" id="chatBox" aria-live="polite"></div>
             <div class="chat-row">
-              <textarea id="chatInput" class="chat-input" rows="2" placeholder="Mesajını yaz..."></textarea>
+              <textarea id="chatInput" class="chat-input" rows="2" placeholder="Mesajını yaz... (Enter: Gönder · Shift+Enter: Yeni satır)"></textarea>
               <button class="btn" id="sendChat">Gönder</button>
             </div>
             <div class="hint">Enter = gönder, Shift+Enter = satır sonu.</div>
@@ -123,23 +127,23 @@
   </main>
 
 <script>
-  // Drawer & UI
+  /* Drawer & küçük yardımcılar */
   const menuBtn=document.getElementById('menuBtn');
   const drawer=document.getElementById('drawer');
   const overlay=document.getElementById('overlay');
   function openDrawer(){drawer.classList.add('open');overlay.classList.add('show');menuBtn.setAttribute('aria-expanded','true');document.body.style.overflow='hidden'; drawer.querySelector('a').focus();}
   function closeDrawer(){drawer.classList.remove('open');overlay.classList.remove('show');menuBtn.setAttribute('aria-expanded','false');document.body.style.overflow='';}
   menuBtn.addEventListener('click', ()=> drawer.classList.contains('open')?closeDrawer():openDrawer());
-  overlay.addEventListener('click', closeDrawer);
-  window.addEventListener('keydown', e=>{ if(e.key==='Escape' && drawer.classList.contains('open')) closeDrawer(); });
+  overlay.addEventListener('click', closeDrawer); window.addEventListener('keydown', e=>{ if(e.key==='Escape' && drawer.classList.contains('open')) closeDrawer(); });
 
-  // Tabs
+  /* Sekmeler */
   const tabs=[{btn:'tab-pop',panel:'panel-pop'},{btn:'tab-new',panel:'panel-new'},{btn:'tab-chat',panel:'panel-chat'}];
   function switchTo(id){tabs.forEach(t=>{const b=document.getElementById(t.btn),p=document.getElementById(t.panel);const on=t.btn===id;b.setAttribute('aria-selected',on?'true':'false');p.classList.toggle('hidden',!on);});}
   tabs.forEach(t=>document.getElementById(t.btn).addEventListener('click',()=>switchTo(t.btn)));
+  // Varsayılan: Popüler açık
 </script>
 
-<!-- Firebase entegrasyonu -->
+<!-- Firebase -->
 <script type="module">
   import { auth, db } from "./firebase-init.js";
   import { onAuthStateChanged, signOut, getIdTokenResult } from "https://www.gstatic.com/firebasejs/10.12.1/firebase-auth.js";
@@ -149,10 +153,17 @@
     getAggregateFromServer, count
   } from "https://www.gstatic.com/firebasejs/10.12.1/firebase-firestore.js";
 
-  /* DOM referansları */
+  /* DOM */
   const adminLink1 = document.getElementById('adminLink1');
   const adminLink2 = document.getElementById('adminLink2');
   const logoutDrawer = document.getElementById('logoutDrawer');
+  const popFeed=document.getElementById('popFeed');
+  const newFeed=document.getElementById('newFeed');
+  const popMore=document.getElementById('popMore');
+  const newMore=document.getElementById('newMore');
+  const chatBox=document.getElementById('chatBox');
+  const chatInput=document.getElementById('chatInput');
+  const sendChat=document.getElementById('sendChat');
 
   /* Auth guard */
   let me=null, meProfile=null, activeSentenceId=null;
@@ -179,46 +190,28 @@
     bindChat();
   });
 
-  /* Çıkış */
-  logoutDrawer.addEventListener('click', async (e)=>{
-    e.preventDefault();
-    try{ await signOut(auth); }catch(_){}
-    location.href='giris.html';
-  });
+  logoutDrawer.addEventListener('click', async (e)=>{ e.preventDefault(); try{await signOut(auth);}catch(_){ } location.href='giris.html'; });
 
-  /* Aktif cümle (isActive yoksa son oluşturulana, o da yoksa bugünün ID’sine düş) */
+  /* Aktif cümle (isActive en yeni; yoksa YY-MM-DD fallback) */
   async function loadActiveSentence(){
     try{
-      const r1 = await getDocs(
-        query(collection(db,'sentences'), where('isActive','==',true), orderBy('createdAt','desc'), limit(1))
-      );
-      if(!r1.empty){ activeSentenceId=r1.docs[0].id; console.log('[Forum] activeSentenceId (isActive):',activeSentenceId); return; }
-    }catch(e){ console.warn('[Forum] isActive query failed:', e); }
-
-    try{
-      const r2 = await getDocs(
-        query(collection(db,'sentences'), orderBy('createdAt','desc'), limit(1))
-      );
-      if(!r2.empty){ activeSentenceId=r2.docs[0].id; console.log('[Forum] activeSentenceId (latest):',activeSentenceId); return; }
-    }catch(e){ console.warn('[Forum] latest sentence query failed:', e); }
-
+      const r = await getDocs(query(collection(db,'sentences'), where('isActive','==',true), orderBy('createdAt','desc'), limit(1)));
+      if(!r.empty){ activeSentenceId=r.docs[0].id; return; }
+    }catch(_){}
     activeSentenceId=(new Date()).toISOString().slice(0,10);
-    console.log('[Forum] fallback activeSentenceId (today):', activeSentenceId);
   }
 
-  /* ------- FEED ------- */
-  const popFeed=document.getElementById('popFeed');
-  const newFeed=document.getElementById('newFeed');
-  const popMore=document.getElementById('popMore');
-  const newMore=document.getElementById('newMore');
+  /* ---- FEED ---- */
   let popCursor=null, newCursor=null;
 
+  function escapeHtml(s){ return String(s).replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])); }
   function postHTML(id, x){
-    const text = escapeHtml(String(x.text||''));
-    const nick = x.nickname || 'Anonim';
+    const text = escapeHtml(x.text||'');
+    const nick = escapeHtml(x.nickname || 'Anonim');
+    const created = x.createdAt?.toDate ? x.createdAt.toDate().toLocaleString() : '';
     return `
       <article class="post" data-id="${id}">
-        <div class="meta">@${nick}</div>
+        <div class="meta">@${nick} ${created?('— '+created):''}</div>
         ${text}
         <div class="vote">
           <button class="btn" data-vote="like">👍 <span class="lk">${x.likes||0}</span></button>
@@ -228,48 +221,65 @@
   }
 
   async function loadPopular(reset=false){
-    if(!activeSentenceId) return;
     if(reset){ popFeed.innerHTML=''; popCursor=null; popMore.disabled=false; }
-    try{
+
+    // Önce bugünün aktif cümlesi
+    let snap=null;
+    if(activeSentenceId){
       const qy = popCursor
-        ? query(collection(db,'completions'), where('sentenceId','==',activeSentenceId),
-                orderBy('likes','desc'), orderBy('createdAt','desc'),
-                startAfter(popCursor), limit(10))
-        : query(collection(db,'completions'), where('sentenceId','==',activeSentenceId),
-                orderBy('likes','desc'), orderBy('createdAt','desc'), limit(10));
-      const snap=await getDocs(qy);
-      if(snap.empty && reset){ popFeed.innerHTML='<div class="hint">Henüz gönderi yok</div>'; popMore.disabled=true; return; }
-      if(!snap.empty){
-        popCursor = snap.docs[snap.docs.length-1];
-        snap.forEach(d=> popFeed.insertAdjacentHTML('beforeend', postHTML(d.id, d.data())));
-        if(snap.size < 10) popMore.disabled = true;
-      }
-    }catch(err){
-      console.error('[Forum] loadPopular error:', err);
-      popFeed.innerHTML = `<div class="hint">Yüklenemedi: ${err.code || err.message}</div>`;
+        ? query(collection(db,'completions'), where('sentenceId','==',activeSentenceId), orderBy('likes','desc'), orderBy('createdAt','desc'), startAfter(popCursor), limit(10))
+        : query(collection(db,'completions'), where('sentenceId','==',activeSentenceId), orderBy('likes','desc'), orderBy('createdAt','desc'), limit(10));
+      snap = await getDocs(qy);
+    }
+
+    // Fallback: son 24 saat içinde en çok beğenilenler
+    if(!snap || snap.empty){
+      const since = new Date(Date.now() - 24*60*60*1000);
+      const fbQ = query(
+        collection(db,'completions'),
+        where('createdAt','>=', since),
+        orderBy('createdAt','desc'),
+        limit(10)
+      );
+      snap = await getDocs(fbQ);
+    }
+
+    if(!snap.empty){
+      popCursor = snap.docs[snap.docs.length-1];
+      snap.forEach(d=> popFeed.insertAdjacentHTML('beforeend', postHTML(d.id, d.data())));
+      if(snap.size < 10) popMore.disabled = true;
+    } else {
+      popFeed.innerHTML = `<div class="hint">Henüz gönderi yok</div>`;
       popMore.disabled = true;
     }
   }
 
   async function loadNewest(reset=false){
-    if(!activeSentenceId) return;
     if(reset){ newFeed.innerHTML=''; newCursor=null; newMore.disabled=false; }
-    try{
+
+    // Önce bugünün aktif cümlesi
+    let snap=null;
+    if(activeSentenceId){
       const qy = newCursor
-        ? query(collection(db,'completions'), where('sentenceId','==',activeSentenceId),
-                orderBy('createdAt','desc'), startAfter(newCursor), limit(10))
-        : query(collection(db,'completions'), where('sentenceId','==',activeSentenceId),
-                orderBy('createdAt','desc'), limit(10));
-      const snap=await getDocs(qy);
-      if(snap.empty && reset){ newFeed.innerHTML='<div class="hint">Henüz gönderi yok</div>'; newMore.disabled=true; return; }
-      if(!snap.empty){
-        newCursor = snap.docs[snap.docs.length-1];
-        snap.forEach(d=> newFeed.insertAdjacentHTML('beforeend', postHTML(d.id, d.data())));
-        if(snap.size < 10) newMore.disabled = true;
-      }
-    }catch(err){
-      console.error('[Forum] loadNewest error:', err);
-      newFeed.innerHTML = `<div class="hint">Yüklenemedi: ${err.code || err.message}</div>`;
+        ? query(collection(db,'completions'), where('sentenceId','==',activeSentenceId), orderBy('createdAt','desc'), startAfter(newCursor), limit(10))
+        : query(collection(db,'completions'), where('sentenceId','==',activeSentenceId), orderBy('createdAt','desc'), limit(10));
+      snap = await getDocs(qy);
+    }
+
+    // Fallback: tüm gönderilerden en yeniler
+    if(!snap || snap.empty){
+      const fbQ = newCursor
+        ? query(collection(db,'completions'), orderBy('createdAt','desc'), startAfter(newCursor), limit(10))
+        : query(collection(db,'completions'), orderBy('createdAt','desc'), limit(10));
+      snap = await getDocs(fbQ);
+    }
+
+    if(!snap.empty){
+      newCursor = snap.docs[snap.docs.length-1];
+      snap.forEach(d=> newFeed.insertAdjacentHTML('beforeend', postHTML(d.id, d.data())));
+      if(snap.size < 10) newMore.disabled = true;
+    } else {
+      newFeed.innerHTML = `<div class="hint">Henüz gönderi yok</div>`;
       newMore.disabled = true;
     }
   }
@@ -277,7 +287,7 @@
   popMore.addEventListener('click', ()=>loadPopular(false));
   newMore.addEventListener('click', ()=>loadNewest(false));
 
-  /* ---- Oy tekilleştirme ---- */
+  /* Oy tekilleştirme (subcollection votes/{uid}) */
   async function getVoteCounts(completionId){
     const base=collection(db,'completions', completionId, 'votes');
     const likeAgg = await getAggregateFromServer(query(base, where('type','==','like')), { likeCount: count() });
@@ -289,7 +299,7 @@
     const ref=doc(db,'completions', completionId, 'votes', me.uid);
     const snap=await getDoc(ref);
     const now=serverTimestamp();
-    if(!snap.exists()){ return setDoc(ref, { type, createdAt: now, updatedAt: now }); }
+    if(!snap.exists()) return setDoc(ref, { type, createdAt: now, updatedAt: now });
     const prev=snap.data()?.type;
     if(prev===type) return deleteDoc(ref);
     return setDoc(ref, { type, createdAt: snap.data()?.createdAt||now, updatedAt: now });
@@ -312,11 +322,7 @@
   bindVoteDelegation(popFeed);
   bindVoteDelegation(newFeed);
 
-  /* ---- Canlı sohbet ---- */
-  const chatBox=document.getElementById('chatBox');
-  const chatInput=document.getElementById('chatInput');
-  const sendChat=document.getElementById('sendChat');
-
+  /* Canlı sohbet */
   function renderMsg(d){
     const x=d.data();
     const who = escapeHtml(x.nickname || 'Anonim');
@@ -324,37 +330,28 @@
     return `<div><strong>@${who}</strong>: ${txt}</div>`;
   }
   function bindChat(){
+    if(!chatBox) return;
     const qChat=query(collection(db,'forum_messages'), orderBy('createdAt','desc'), limit(50));
     onSnapshot(qChat, (snap)=>{
       chatBox.innerHTML='';
       snap.forEach(docu => chatBox.insertAdjacentHTML('beforeend', renderMsg(docu)));
-    }, (err)=>{
-      console.error('[Forum] chat subscribe error:', err);
-      chatBox.innerHTML = `<div class="hint">Sohbet yüklenemedi: ${err.code || err.message}</div>`;
     });
-
     async function send(){
       const v=(chatInput.value||'').trim(); if(!v) return;
-      try{
-        await addDoc(collection(db,'forum_messages'), {
-          uid: me.uid, nickname: meProfile?.nickname || 'Anonim',
-          text: v, createdAt: serverTimestamp()
-        });
-        chatInput.value=''; chatInput.focus();
-      }catch(err){
-        console.error('[Forum] chat send error:', err);
-        alert('Sohbet mesajı gönderilemedi: ' + (err.code || err.message));
-      }
+      await addDoc(collection(db,'forum_messages'), {
+        uid: me.uid,
+        nickname: meProfile?.nickname || 'Anonim',
+        text: v,
+        createdAt: serverTimestamp()
+      });
+      chatInput.value=''; chatInput.focus();
     }
     sendChat.addEventListener('click', send);
     chatInput.addEventListener('keydown', e=>{ if(e.key==='Enter' && !e.shiftKey){ e.preventDefault(); send(); } });
   }
-
-  /* util */
-  function escapeHtml(s){ return s.replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])); }
 </script>
 
-<!-- Firebase init -->
+<!-- Firebase init (tek satır) -->
 <script type="module"> import "./firebase-init.js"; </script>
 </body>
 </html>
