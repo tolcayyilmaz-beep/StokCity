@@ -175,5 +175,9 @@
   sendChat?.addEventListener('click', send);
   chatInput?.addEventListener('keydown', e=>{ if(e.key==='Enter' && !e.shiftKey){ e.preventDefault(); send(); }});
 </script>
+<!-- Firebase başlat (tüm sayfalarda ortak) -->
+<script type="module">
+  import "./firebase-init.js";
+</script>
 </body>
 </html>
