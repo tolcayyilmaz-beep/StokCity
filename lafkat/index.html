@@ -135,9 +135,7 @@
         <div class="bd">
           <div class="daily" id="dailyBox">
             <div class="label">Bugün</div>
-            <div class="sentence" id="dailySentence">
-              ...
-            </div>
+            <div class="sentence" id="dailySentence">...</div>
           </div>
 
           <div class="row" style="margin-top:12px">
@@ -154,8 +152,6 @@
             <button class="btn btn-ghost" id="shareBtn">Paylaş</button>
             <button class="btn btn-ghost" id="copyBtn">Kopyala</button>
           </div>
-
-          <!-- Demo makale kaldırıldı -->
         </div>
       </section>
 
@@ -172,7 +168,7 @@
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
 <script>
-  // Drawer logic
+  /* Drawer + UI yardımcıları */
   const menuBtn = document.getElementById('menuBtn');
   const drawer = document.getElementById('drawer');
   const overlay = document.getElementById('overlay');
@@ -182,12 +178,10 @@
   overlay.addEventListener('click', closeDrawer);
   window.addEventListener('keydown', e=>{ if(e.key==='Escape' && drawer.classList.contains('open')) closeDrawer(); });
 
-  // UI helpers
   const completion=document.getElementById('completion'), counter=document.getElementById('counter');
   completion.addEventListener('input', ()=> counter.textContent=`${completion.value.length}/240`);
   const toast=(m)=>{const t=document.getElementById('toast'); t.textContent=m; t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),1600)};
   function copyText(txt){navigator.clipboard?.writeText(txt).then(()=>toast('Kopyalandı'));}
-
   copyBtn.addEventListener('click', ()=> copyText(`Lafkat: ${document.getElementById('dailySentence').innerText.replace(/\s+/g,' ').trim()} #SendeKatıl`));
   shareBtn.addEventListener('click', async ()=>{
     const text=`Lafkat: ${document.getElementById('dailySentence').innerText.replace(/\s+/g,' ').trim()} #SendeKatıl`;
@@ -196,60 +190,50 @@
   });
 </script>
 
-<!-- 🔐 Auth + Firestore entegrasyonu -->
+<!-- 🔐 Auth + Firestore -->
 <script type="module">
   import { auth, db } from "./firebase-init.js";
   import {
     onAuthStateChanged, signOut, getIdTokenResult
   } from "https://www.gstatic.com/firebasejs/10.12.1/firebase-auth.js";
   import {
-    doc, getDoc, setDoc, addDoc, collection, query, where, orderBy, limit, getDocs, serverTimestamp
+    doc, getDoc, setDoc, deleteDoc,
+    addDoc, collection, query, where, orderBy, limit, getDocs,
+    serverTimestamp, getAggregateFromServer, count
   } from "https://www.gstatic.com/firebasejs/10.12.1/firebase-firestore.js";
 
-  const adminLink1 = document.getElementById('adminLink1');
-  const adminLink2 = document.getElementById('adminLink2');
-  const logoutBtn  = document.getElementById('logoutBtn');
-  const sendBtn    = document.getElementById('sendBtn');
-  const quotaEl    = document.getElementById('quota');
-  const sentenceEl = document.getElementById('dailySentence');
+  const adminLink1=document.getElementById('adminLink1');
+  const adminLink2=document.getElementById('adminLink2');
+  const logoutBtn=document.getElementById('logoutBtn');
+  const sendBtn=document.getElementById('sendBtn');
+  const quotaEl=document.getElementById('quota');
+  const sentenceEl=document.getElementById('dailySentence');
 
-  let currentUser=null;
-  let currentProfile=null;
-  let currentSentenceId=null;
+  let currentUser=null, currentProfile=null, currentSentenceId=null;
 
-  // === Giriş kontrolü ve admin linkleri
+  /* === Auth akışı === */
   onAuthStateChanged(auth, async (user)=>{
-    if(!user){
-      const next = encodeURIComponent('index.html');
-      location.href = `giris.html?next=${next}`;
-      return;
-    }
-    currentUser = user;
+    if(!user){ location.href='giris.html?next=index.html'; return; }
+    currentUser=user;
 
-    // Admin link
     try{
-      const token = await getIdTokenResult(user, true);
+      const token=await getIdTokenResult(user,true);
       if(token.claims?.admin){
-        adminLink1.style.display = adminLink2.style.display = 'inline-block';
-        adminLink1.href = adminLink2.href = 'admin.html';
+        adminLink1.style.display=adminLink2.style.display='inline-block';
+        adminLink1.href=adminLink2.href='admin.html';
       }
     }catch(e){}
 
-    // E-posta doğrulanmamışsa Gönder kilitli kalsın
     if(!user.emailVerified){
-      sendBtn.classList.add('disabled');
-      sendBtn.disabled = true;
-      sendBtn.title = 'E-posta doğrulanmamış';
+      sendBtn.disabled=true; sendBtn.classList.add('disabled'); sendBtn.title='E-posta doğrulanmamış';
     }
 
-    // Profil (nickname için)
     try{
-      const uref = doc(db,'users', user.uid);
-      const usnap = await getDoc(uref);
-      currentProfile = usnap.exists() ? usnap.data() : null;
+      const uref=doc(db,'users',user.uid);
+      const usnap=await getDoc(uref);
+      currentProfile=usnap.exists()?usnap.data():null;
     }catch(e){ console.warn('[UserProfile]', e); }
 
-    // Günün cümlesini ve kotaları yükle
     await loadSentence();
     await refreshQuota();
     await fillSidebars();
@@ -261,85 +245,76 @@
     location.href='giris.html';
   });
 
-  // === Günün cümlesi: aktif doc veya bugünün tarihi
+  /* === Günün cümlesi === */
   async function loadSentence(){
-    sentenceEl.textContent = 'Yükleniyor...';
-    currentSentenceId = null;
+    sentenceEl.textContent='Yükleniyor...';
+    currentSentenceId=null;
 
-    // 1) isActive == true, en yeni 1
+    // isActive == true, en yeni
     try{
-      const q1 = query(collection(db,'sentences'), where('isActive','==',true), orderBy('createdAt','desc'), limit(1));
-      const r1 = await getDocs(q1);
+      const q1=query(collection(db,'sentences'), where('isActive','==',true), orderBy('createdAt','desc'), limit(1));
+      const r1=await getDocs(q1);
       if(!r1.empty){
-        const d = r1.docs[0];
-        currentSentenceId = d.id;
-        sentenceEl.innerHTML = (d.data().text || '').toString();
+        const d=r1.docs[0];
+        currentSentenceId=d.id;
+        sentenceEl.innerHTML=(d.data().text||'').toString();
         return;
       }
     }catch(e){ console.warn('[Sentences active]', e); }
 
-    // 2) fallback: bugünün tarihi ID
+    // fallback: YYYY-MM-DD ID’li doküman
     try{
-      const today = new Date();
-      const id = today.toISOString().slice(0,10); // YYYY-MM-DD
-      const dref = doc(db,'sentences', id);
-      const dsnap = await getDoc(dref);
-      if(dsnap.exists()){
-        currentSentenceId = id;
-        sentenceEl.innerHTML = (dsnap.data().text || '').toString();
+      const id=(new Date()).toISOString().slice(0,10); // YYYY-MM-DD
+      const ds=await getDoc(doc(db,'sentences', id));
+      if(ds.exists()){
+        currentSentenceId=id;
+        sentenceEl.innerHTML=(ds.data().text||'').toString();
         return;
       }
     }catch(e){ console.warn('[Sentences today]', e); }
 
-    sentenceEl.textContent = 'Bugün için cümle bulunamadı.';
+    sentenceEl.textContent='Bugün için cümle bulunamadı.';
   }
 
-  // === Günlük kota: aynı kullanıcı, aynı gün/cümle için 5 sınırı
+  /* === Günlük 5 hak === */
   async function refreshQuota(){
-    if(!currentUser || !currentSentenceId){ quotaEl.textContent = '0'; return; }
+    if(!currentUser || !currentSentenceId){ quotaEl.textContent='0'; return; }
     try{
-      const qC = query(
+      const qC=query(
         collection(db,'completions'),
         where('userId','==', currentUser.uid),
         where('sentenceId','==', currentSentenceId)
       );
-      const snap = await getDocs(qC);
-      const used = snap.size;
-      const remain = Math.max(0, 5 - used);
-      quotaEl.textContent = remain;
-      // E-posta doğrulanmışsa buton durumu
+      const snap=await getDocs(qC);
+      const used=snap.size;
+      const remain=Math.max(0, 5 - used);
+      quotaEl.textContent=remain;
+
       if(currentUser.emailVerified && remain>0){
-        sendBtn.disabled = false;
-        sendBtn.classList.remove('disabled');
-        sendBtn.title = '';
+        sendBtn.disabled=false; sendBtn.classList.remove('disabled'); sendBtn.title='';
       }else{
-        sendBtn.disabled = true;
-        sendBtn.classList.add('disabled');
-        if(!currentUser.emailVerified) sendBtn.title='E-posta doğrulanmamış';
-        else sendBtn.title='Günlük hakkın doldu';
+        sendBtn.disabled=true; sendBtn.classList.add('disabled');
+        sendBtn.title = !currentUser.emailVerified ? 'E-posta doğrulanmamış' : 'Günlük hakkın doldu';
       }
     }catch(e){
       console.error('[Quota]', e);
-      quotaEl.textContent = '0';
-      sendBtn.disabled = true;
-      sendBtn.classList.add('disabled');
+      quotaEl.textContent='0';
+      sendBtn.disabled=true; sendBtn.classList.add('disabled');
     }
   }
 
-  // === Gönderi ekleme
+  /* === Gönderi ekleme === */
   sendBtn.addEventListener('click', async ()=>{
-    const v = document.getElementById('completion').value.trim();
+    const v=document.getElementById('completion').value.trim();
     if(!v) return window.toast?.('Lütfen cümleni yaz.');
     if(!currentUser) return;
-    if(!currentUser.emailVerified){ window.toast?.('E-postanı doğrulamalısın'); return; }
-    if(!currentSentenceId){ window.toast?.('Bugünün cümlesi yüklenemedi'); return; }
+    if(!currentUser.emailVerified) return window.toast?.('E-postanı doğrulamalısın');
+    if(!currentSentenceId) return window.toast?.('Bugünün cümlesi yüklenemedi');
 
-    // Kota kontrolü
-    const remain = parseInt(document.getElementById('quota').textContent||'0',10);
+    const remain=parseInt(document.getElementById('quota').textContent||'0',10);
     if(remain<=0) return window.toast?.('Günlük hakkın doldu');
 
     try{
-      // yaz
       await addDoc(collection(db,'completions'), {
         sentenceId: currentSentenceId,
         userId: currentUser.uid,
@@ -349,41 +324,67 @@
         dislikes: 0,
         createdAt: serverTimestamp()
       });
-
-      // UI reset
       document.getElementById('completion').value='';
       document.getElementById('counter').textContent='0/240';
       window.toast?.('Gönderildi');
-
-      // Kota & sağ panelleri güncelle
       await refreshQuota();
       await fillSidebars();
-
     }catch(err){
       console.error('[AddCompletion]', err);
       window.toast?.('Gönderilemedi: ' + (err.code||err.message));
     }
   });
 
-  // === Sağ panel: Top3 (likes DESC) & Son 10 (createdAt DESC)
+  /* === Oy sayımı (aggregate) === */
+  async function getVoteCounts(completionId){
+    const base=collection(db,'completions', completionId, 'votes');
+    const likeAgg = await getAggregateFromServer(query(base, where('type','==','like')), { likeCount: count() });
+    const dislikeAgg = await getAggregateFromServer(query(base, where('type','==','dislike')), { dislikeCount: count() });
+    return {
+      likes: likeAgg.data().likeCount || 0,
+      dislikes: dislikeAgg.data().dislikeCount || 0
+    };
+  }
+
+  /* === Oy tekilleştirme === */
+  async function toggleVote(completionId, type){ // 'like' | 'dislike'
+    if(!currentUser) return window.toast?.('Önce giriş yapmalısın');
+    const myVoteRef = doc(db, 'completions', completionId, 'votes', currentUser.uid);
+    const snap = await getDoc(myVoteRef);
+    const now  = serverTimestamp();
+
+    if(!snap.exists()){
+      await setDoc(myVoteRef, { type, createdAt: now, updatedAt: now });
+      return { changed:true };
+    }
+    const prev = snap.data()?.type;
+    if(prev === type){
+      await deleteDoc(myVoteRef);
+      return { changed:true };
+    }
+    await setDoc(myVoteRef, { type, createdAt: snap.data()?.createdAt || now, updatedAt: now });
+    return { changed:true };
+  }
+
+  /* === Sağ paneller === */
   async function fillSidebars(){
-    const top3El = document.getElementById('top3');
-    const latestEl = document.getElementById('latestList');
-    top3El.innerHTML = ''; latestEl.innerHTML='';
+    const top3El=document.getElementById('top3');
+    const latestEl=document.getElementById('latestList');
+    top3El.innerHTML=''; latestEl.innerHTML='';
 
     if(!currentSentenceId) return;
 
     try{
-      // Top 3
-      const qTop = query(
+      // Top 3 (parent.likes alanına göre — Cloud Function ile güncelleniyor)
+      const qTop=query(
         collection(db,'completions'),
         where('sentenceId','==', currentSentenceId),
         orderBy('likes','desc'),
         limit(3)
       );
-      const sTop = await getDocs(qTop);
+      const sTop=await getDocs(qTop);
       if(sTop.empty){
-        top3El.innerHTML = `<div class="hint">Henüz gönderi yok</div>`;
+        top3El.innerHTML=`<div class="hint">Henüz gönderi yok</div>`;
       }else{
         sTop.forEach(d=>{
           const x=d.data();
@@ -398,39 +399,105 @@
         });
       }
 
-      // Son 10
-      const qLat = query(
+      // Son 10 (createdAt desc) + oy butonları
+      const qLat=query(
         collection(db,'completions'),
         where('sentenceId','==', currentSentenceId),
         orderBy('createdAt','desc'),
         limit(10)
       );
-      const sLat = await getDocs(qLat);
+      const sLat=await getDocs(qLat);
       if(sLat.empty){
-        latestEl.innerHTML = `<div class="rowitem hint">Henüz gönderi yok</div>`;
+        latestEl.innerHTML=`<div class="rowitem hint">Henüz gönderi yok</div>`;
       }else{
-        sLat.forEach(d=>{
+        for(const d of sLat.docs){
           const x=d.data();
-          const text = (x.text||'').toString();
-          const nick = x.nickname || 'Anonim';
-          const row=document.createElement('div');
-          row.className='rowitem hint';
-          row.innerHTML = `<strong>@${nick}</strong>: “${escapeHtml(text).slice(0,160)}”`;
-          latestEl.appendChild(row);
-        });
-      }
+          const cid=d.id;
+          const text=(x.text||'').toString();
+          const nick=x.nickname || 'Anonim';
 
+          const row=document.createElement('div');
+          row.className='rowitem';
+          row.innerHTML=`
+            <div style="display:flex;gap:8px;align-items:center;justify-content:space-between">
+              <div class="hint"><strong>@${nick}</strong>: “${escapeHtml(text).slice(0,160)}”</div>
+              <div class="row" style="gap:6px">
+                <button class="btn btn-ghost" data-vote="like" data-id="${cid}">👍 <span class="lk">0</span></button>
+                <button class="btn btn-ghost" data-vote="dislike" data-id="${cid}">👎 <span class="dk">0</span></button>
+              </div>
+            </div>
+          `;
+          latestEl.appendChild(row);
+
+          try{
+            const c=await getVoteCounts(cid);
+            row.querySelector('.lk').textContent=c.likes;
+            row.querySelector('.dk').textContent=c.dislikes;
+          }catch(e){}
+        }
+
+        // tıklamaları tek sefer bağla
+        latestEl.addEventListener('click', async (e)=>{
+          const btn=e.target.closest('button[data-vote]');
+          if(!btn) return;
+          const type=btn.getAttribute('data-vote');
+          const cid =btn.getAttribute('data-id');
+          try{
+            const res=await toggleVote(cid, type);
+            if(res?.changed){
+              const parent=btn.parentElement;
+              const c=await getVoteCounts(cid);
+              parent.querySelector('.lk').textContent=c.likes;
+              parent.querySelector('.dk').textContent=c.dislikes;
+              // Top 3 değişmiş olabilir; yeniden yükle (hafif maliyet)
+              await fillTop3Only();
+            }
+          }catch(err){
+            console.error('[Vote]', err);
+            window.toast?.('Oy verilemedi: ' + (err.code||err.message));
+          }
+        }, { once:true });
+      }
     }catch(e){
       console.error('[Sidebars]', e);
-      top3El.innerHTML = `<div class="hint">Yüklenemedi</div>`;
-      latestEl.innerHTML = `<div class="rowitem hint">Yüklenemedi</div>`;
+      top3El.innerHTML=`<div class="hint">Yüklenemedi</div>`;
+      latestEl.innerHTML=`<div class="rowitem hint">Yüklenemedi</div>`;
     }
   }
 
-  // Basit XSS koruması
-  function escapeHtml(s){
-    return s.replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+  async function fillTop3Only(){
+    const top3El=document.getElementById('top3');
+    top3El.innerHTML='';
+    try{
+      const qTop=query(
+        collection(db,'completions'),
+        where('sentenceId','==', currentSentenceId),
+        orderBy('likes','desc'),
+        limit(3)
+      );
+      const sTop=await getDocs(qTop);
+      if(sTop.empty){
+        top3El.innerHTML=`<div class="hint">Henüz gönderi yok</div>`;
+      }else{
+        sTop.forEach(d=>{
+          const x=d.data();
+          const initials=(x.nickname||'?').trim()[0]?.toUpperCase()||'?';
+          const item=document.createElement('div');
+          item.className='item';
+          item.innerHTML=`
+            <div class="avatar">${initials}</div>
+            <div><strong>@${x.nickname||'Anonim'}</strong><div class="hint">👍 ${x.likes||0}</div></div>
+          `;
+          top3El.appendChild(item);
+        });
+      }
+    }catch(e){
+      top3El.innerHTML=`<div class="hint">Yenilenemedi</div>`;
+    }
   }
+
+  // XSS koruması
+  function escapeHtml(s){ return s.replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])); }
 </script>
 </body>
 </html>
