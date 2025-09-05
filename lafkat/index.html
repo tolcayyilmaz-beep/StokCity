@@ -85,14 +85,14 @@
     <nav>
       <a href="index.html">Anasayfa</a>
       <a href="forum.html">Forum</a>
-      <a href="Liderlik.html>Liderlik</a>
+      <a href="liderlik.html">Liderlik</a>
       <a href="arkadaslar.html">Arkadaşlar</a>
       <a href="profil.html">Profil</a>
       <a href="ayarlar.html">Ayarlar</a>
       <a href="#" id="adminLink1" style="display:none">Admin Yönetimi</a>
     </nav>
     <div class="foot">
-      <a href="#" style="display:inline-block;text-decoration:none;color:#b12020;font-weight:800">Çıkış</a>
+      <a href="#" id="logoutBtn" style="display:inline-block;text-decoration:none;color:#b12020;font-weight:800">Çıkış</a>
     </div>
   </aside>
 
@@ -197,9 +197,6 @@
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
 <script>
-  // Admin link (demo): ?admin=1
-  (new URLSearchParams(location.search)).get("admin")==="1" && (adminLink1.style.display=adminLink2.style.display="inline-block");
-
   // Drawer logic
   const menuBtn = document.getElementById('menuBtn');
   const drawer = document.getElementById('drawer');
@@ -231,12 +228,41 @@
   document.querySelector('[data-like]').addEventListener('click', e=>{ const el=e.currentTarget.querySelector('.lk'); el.textContent=(+el.textContent)+1; });
   document.querySelector('[data-dislike]').addEventListener('click', e=>{ const el=e.currentTarget.querySelector('.dk'); el.textContent=(+el.textContent)+1; });
 </script>
+
+<!-- 🔐 Auth kontrolü ve admin/çıkış davranışı -->
 <script type="module">
-  import "./firebase-init.js";
-</script>
-<!-- Firebase başlat (tüm sayfalarda ortak) -->
-<script type="module">
-  import "./firebase-init.js";
+  import { auth } from "./firebase-init.js";
+  import { onAuthStateChanged, signOut, getIdTokenResult } from "https://www.gstatic.com/firebasejs/10.12.1/firebase-auth.js";
+
+  const adminLink1 = document.getElementById('adminLink1');
+  const adminLink2 = document.getElementById('adminLink2');
+  const logoutBtn  = document.getElementById('logoutBtn');
+
+  // Giriş kontrolü: kullanıcı yoksa giris.html'e yönlendir
+  onAuthStateChanged(auth, async (user)=>{
+    if(!user){
+      // opsiyonel: geri dönülecek sayfayı parametre olarak ekle
+      const next = encodeURIComponent('index.html');
+      location.href = `giris.html?next=${next}`;
+      return;
+    }
+    // Admin claim varsa admin linklerini göster
+    try{
+      const token = await getIdTokenResult(user, true);
+      if(token.claims?.admin){
+        adminLink1.style.display = 'inline-block';
+        adminLink2.style.display = 'inline-block';
+        adminLink1.href = adminLink2.href = 'admin.html';
+      }
+    }catch(e){}
+  });
+
+  // Çıkış
+  logoutBtn.addEventListener('click', async (e)=>{
+    e.preventDefault();
+    try{ await signOut(auth); }catch(_){}
+    location.href = 'giris.html';
+  });
 </script>
 </body>
 </html>
