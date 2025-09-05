@@ -231,5 +231,12 @@
   document.querySelector('[data-like]').addEventListener('click', e=>{ const el=e.currentTarget.querySelector('.lk'); el.textContent=(+el.textContent)+1; });
   document.querySelector('[data-dislike]').addEventListener('click', e=>{ const el=e.currentTarget.querySelector('.dk'); el.textContent=(+el.textContent)+1; });
 </script>
+<script type="module">
+  import "./firebase-init.js";
+</script>
+<!-- Firebase başlat (tüm sayfalarda ortak) -->
+<script type="module">
+  import "./firebase-init.js";
+</script>
 </body>
 </html>
