@@ -50,6 +50,7 @@
   .toast{position:fixed;bottom:18px;left:50%;transform:translateX(-50%);background:#111;color:#fff;padding:10px 14px;border-radius:999px;opacity:0;pointer-events:none;transition:opacity .25s}
   .toast.show{opacity:1}
   .links a{color:#2b2b2b}
+  .mini-note{font-size:13px;color:#5a3a14;background:#fff3e0;border:1px dashed rgba(0,0,0,.12);padding:8px 10px;border-radius:10px}
 </style>
 </head>
 <body>
@@ -84,15 +85,13 @@
           <div class="links hint">Devam ederek <a href="#">Kullanım Şartları</a> ve <a href="#">Gizlilik</a>’i kabul etmiş olursun.</div>
         </div>
       </form>
-
-      <!-- Giriş sayfasından doğrulama notu kaldırıldı -->
     </section>
 
     <!-- Yan panel -->
     <aside class="card right">
       <h1>Bugünün Cümlesi</h1>
       <p class="hint">Giriş yapmadan sadece okuyabilirsin:</p>
-      <div class="mini-note" id="dailyBox" style="font-size:13px;color:#5a3a14;background:#fff3e0;border:1px dashed rgba(0,0,0,.12);padding:8px 10px;border-radius:10px">
+      <div class="mini-note" id="dailyBox">
         Arkadaşım gizlice defterime bir şeyler yazmış. Sayfayı açtığımda kocaman <u>_____</u> yazısını gördüm.
       </div>
       <div style="height:8px"></div>
@@ -102,31 +101,62 @@
 
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
-<script>
-  const toast=(m)=>{const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),1400)};
+<!-- 🔧 TEK MODULE SCRIPT: Firebase init + giriş akışı -->
+<script type="module">
+  import { auth } from "./firebase-init.js";
+  import {
+    signInWithEmailAndPassword,
+    sendEmailVerification,
+    sendPasswordResetEmail
+  } from "https://www.gstatic.com/firebasejs/10.12.1/firebase-auth.js";
 
-  // Şifre göster
+  const toast=(m)=>{const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),1600)};
+
+  // Şifre göster/gizle
   document.getElementById('showPw').addEventListener('change', (e)=>{
     document.getElementById('lpass').type = e.target.checked ? 'text' : 'password';
   });
 
-  // Giriş (demo)
-  document.getElementById('loginForm').addEventListener('submit', (e)=>{
+  // Giriş (email doğrulaması kontrolü ile)
+  document.getElementById('loginForm').addEventListener('submit', async (e)=>{
     e.preventDefault();
     const email=document.getElementById('lemail').value.trim();
-    const pass=document.getElementById('lpass').value;
+    const pass =document.getElementById('lpass').value;
+
     if(!email || !pass) return toast('E-posta ve şifre gerekli');
-    if(pass.length<6) return toast('Şifre en az 6 karakter olmalı');
-    toast('Giriş başarılı (demo)');
-    setTimeout(()=> location.href='index.html', 700);
+
+    try{
+      const { user } = await signInWithEmailAndPassword(auth, email, pass);
+
+      if(!user.emailVerified){
+        const again = confirm('E-posta doğrulanmamış. Doğrulama e-postasını yeniden göndereyim mi?');
+        if(again){
+          try{ await sendEmailVerification(user); toast('Doğrulama e-postası gönderildi'); }catch(err){ toast('Gönderilemedi: '+(err.code||err.message)); }
+        }
+        return; // Doğrulanıncaya kadar içeri alma
+      }
+
+      toast('Giriş başarılı');
+      setTimeout(()=> location.href='index.html', 700);
+
+    }catch(err){
+      console.error('[Login]', err);
+      toast('Giriş başarısız: ' + (err.code || err.message));
+    }
   });
 
-  // Şifre sıfırlama (demo)
-  document.getElementById('forgot').addEventListener('click', (e)=>{
+  // Şifre sıfırlama (gerçek akış)
+  document.getElementById('forgot').addEventListener('click', async (e)=>{
     e.preventDefault();
-    const email=prompt('E-posta adresini gir:');
+    const email = prompt('E-posta adresini gir:');
     if(!email) return;
-    toast('Sıfırlama bağlantısı gönderildi (demo)');
+    try{
+      await sendPasswordResetEmail(auth, email);
+      toast('Sıfırlama bağlantısı gönderildi');
+    }catch(err){
+      console.error('[Reset]', err);
+      toast('Gönderilemedi: ' + (err.code || err.message));
+    }
   });
 </script>
 </body>
