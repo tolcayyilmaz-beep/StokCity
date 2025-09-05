@@ -118,99 +118,119 @@
         <li>Günlük 5 hak, rozet & liderlik</li>
       </ul>
       <div class="mini-note">Topluluk kuralları: Küfür, nefret söylemi ve telif ihlallerine tolerans yoktur.</div>
-      <!-- Anasayfaya dön butonu kaldırıldı -->
     </aside>
   </div>
 
-<script>
-  // ---- Nickname otomatik kontrol (debounce + temel doğrulama) ----
-  const nickInput = document.getElementById('nick');
-  const nickState = document.getElementById('nickState');
+<!-- 🔧 TEK BİR MODULE SCRIPT: Firebase init + kayıt akışı -->
+<script type="module">
+import { app, auth, db } from "./firebase-init.js";
+import {
+  createUserWithEmailAndPassword,
+  sendEmailVerification,
+  deleteUser
+} from "https://www.gstatic.com/firebasejs/10.12.1/firebase-auth.js";
+import {
+  doc, runTransaction, serverTimestamp, getDoc
+} from "https://www.gstatic.com/firebasejs/10.12.1/firebase-firestore.js";
 
-  const reserved = ['admin','lafkat','tolcay','test','user','guest','moderator','support']
-    .map(x => x.toLowerCase());
+/* ---------- Nickname canlı kontrol ---------- */
+const nickInput = document.getElementById('nick');
+const nickState = document.getElementById('nickState');
+const syntaxOk  = v => /^[a-z0-9._-]{3,20}$/i.test(v);
 
-  let nickTimer = null;
+let debounce;
+nickInput.addEventListener('input', ()=>{
+  const raw=(nickInput.value||'').trim();
+  const v=raw.replace(/\s+/g,'');
+  if(raw!==v) nickInput.value=v;
 
-  function validateNickSyntax(v){
-    // 3-20 karakter, harf/rakam/altçizgi/nokta/çizgi; boşluk yok
-    const okLen = v.length>=3 && v.length<=20;
-    const okChars = /^[a-z0-9._-]+$/i.test(v);
-    return okLen && okChars;
-  }
+  if(!v){ setState('', '3–20 karakter, boşluk yok'); return; }
+  if(!syntaxOk(v)){ setState('invalid', 'Geçersiz biçim'); return; }
 
-  function setState(type, text){
-    nickState.textContent = text;
-    nickState.classList.remove('valid','invalid','checking');
-    if(type) nickState.classList.add(type);
-  }
-
-  async function checkNickAvailability(v){
-    // DEMO: basit yerel kontrol. Canlıda backend/Firebase sorgusu yapılacak.
-    const taken = reserved.includes(v.toLowerCase());
-    // Küçük bir “checking” gecikmesi simüle edelim
-    await new Promise(r=>setTimeout(r,150));
-    return !taken;
-  }
-
-  nickInput.addEventListener('input', ()=>{
-    const raw = (nickInput.value || '').trim();
-    const v = raw.replace(/\s+/g,''); // boşlukları anında at
-
-    if(raw !== v) nickInput.value = v;
-
-    if(!v){
-      setState(null,'3–20 karakter, boşluk yok');
-      return;
+  setState('checking','Kontrol ediliyor…');
+  clearTimeout(debounce);
+  debounce=setTimeout(async ()=>{
+    try{
+      const s=await getDoc(doc(db,'nicknames', v.toLowerCase()));
+      if(s.exists()) setState('invalid','Bu nick kullanılamaz');
+      else setState('valid','Uygun ✔');
+    }catch(err){
+      console.error('[NickCheck] ', err);
+      setState('checking','Ağ hatası, tekrar dene');
     }
-    if(!validateNickSyntax(v)){
-      setState('invalid','Geçersiz biçim (harf/rakam/._- ve 3–20 karakter)');
-      return;
-    }
+  }, 400);
+});
 
-    // debounce
-    setState('checking','Uygunluk kontrol ediliyor…');
-    clearTimeout(nickTimer);
-    nickTimer = setTimeout(async ()=>{
-      const ok = await checkNickAvailability(v);
-      if(nickInput.value !== v) return; // arada değişmişse es geç
-      if(ok) setState('valid','Uygun ✔');
-      else setState('invalid','Bu nick kullanılamaz');
-    }, 500);
-  });
+function setState(cls, text){
+  nickState.textContent=text;
+  nickState.className = 'state ' + (cls||'hint');
+}
 
-  // ---- Şifre doğrulama ----
-  function validatePasswords(){
-    const p1=document.getElementById('pass').value;
-    const p2=document.getElementById('pass2').value;
-    if(p1.length<6) return {ok:false,msg:'Şifre en az 6 karakter olmalı'};
-    if(p1!==p2) return {ok:false,msg:'Şifreler eşleşmiyor'};
-    return {ok:true};
+/* ---------- Form submit: kayıt + nick claim + profil yaz + doğrulama ---------- */
+document.getElementById('regForm').addEventListener('submit', async (e)=>{
+  e.preventDefault();
+  const fname=document.getElementById('fname').value.trim();
+  const lname=document.getElementById('lname').value.trim();
+  const email=document.getElementById('email').value.trim();
+  const nick =(nickInput.value||'').trim();
+  const pass =document.getElementById('pass').value;
+  const pass2=document.getElementById('pass2').value;
+  const terms=document.getElementById('terms').checked;
+
+  if(!fname||!lname||!email||!nick){ alert('Tüm alanlar zorunlu'); return; }
+  if(!syntaxOk(nick)){ alert('Nick geçersiz'); return; }
+  if(pass.length<6){ alert('Şifre en az 6 karakter'); return; }
+  if(pass!==pass2){ alert('Şifreler eşleşmiyor'); return; }
+  if(!terms){ alert('Şartları kabul edin'); return; }
+
+  // 1) Auth hesabını oluştur
+  let cred;
+  try{
+    cred = await createUserWithEmailAndPassword(auth, email, pass);
+  }catch(err){
+    console.error('[AuthCreate] ', err);
+    alert('Kayıt başarısız: ' + (err.code || err.message));
+    return;
   }
 
-  // ---- Kayıt (demo) ----
-  document.getElementById('regForm').addEventListener('submit', async (e)=>{
-    e.preventDefault();
-    const fname=document.getElementById('fname').value.trim();
-    const lname=document.getElementById('lname').value.trim();
-    const email=document.getElementById('email').value.trim();
-    const nick=(nickInput.value||'').trim();
-    const terms=document.getElementById('terms').checked;
+  const user = cred.user;
+  const nickLower = nick.toLowerCase();
 
-    if(!fname||!lname||!email||!nick){ alert('Tüm alanlar zorunlu'); return; }
-    if(!validateNickSyntax(nick)){ alert('Nick geçersiz'); return; }
+  try{
+    // 2) Transaction: nick'i claim et + kullanıcı profilini yaz
+    await runTransaction(db, async (tx)=>{
+      const nickRef = doc(db,'nicknames', nickLower);
+      if((await tx.get(nickRef)).exists()) throw new Error('NICK_TAKEN');
 
-    setState('checking','Son kontrol yapılıyor…');
-    const ok = await checkNickAvailability(nick);
-    if(!ok){ setState('invalid','Bu nick kullanılamaz'); alert('Lütfen başka bir nick seçin'); return; }
+      tx.set(nickRef, { uid:user.uid, createdAt: serverTimestamp() });
 
-    const passValid=validatePasswords(); if(!passValid.ok){ alert(passValid.msg); return; }
-    if(!terms){ alert('Şartları kabul etmelisiniz'); return; }
+      tx.set(doc(db,'users', user.uid), {
+        email,
+        name: `${fname} ${lname}`,
+        nickname: nick,
+        nickname_lower: nickLower,
+        createdAt: serverTimestamp(),
+        verified: user.emailVerified || false,
+        stats: { totalPosts:0, totalLikes:0, points:0, badges:[] }
+      });
+    });
 
-    // Demo: başarılı akış
-    alert('Kayıt başarılı! Doğrulama e-postası gönderildi (demo).');
+    // 3) E-posta doğrulama
+    await sendEmailVerification(user);
+    alert('Kayıt başarılı! Doğrulama e-postası gönderildi.');
     location.href='giris.html';
-  });
+
+  }catch(err){
+    console.error('[NickClaim/Txn] ', err);
+    // Nick çakışması veya rules hatasında temizle:
+    try{ await deleteUser(user); }catch(_) {}
+    if(err && err.message==='NICK_TAKEN'){
+      alert('Bu nick başkası tarafından alındı. Lütfen başka bir nick seçin.');
+    }else{
+      alert('Kayıt sırasında hata: ' + (err.code || err.message));
+    }
+  }
+});
 </script>
 </body>
 </html>
