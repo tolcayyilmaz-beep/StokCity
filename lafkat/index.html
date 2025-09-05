@@ -72,6 +72,7 @@
   .weekly{display:flex;align-items:center;gap:12px;background:linear-gradient(180deg,#fff,#fff3e6);padding:12px 14px;border-radius:14px;border:1px solid rgba(0,0,0,.08)}
   .toast{position:fixed;bottom:18px;left:50%;transform:translateX(-50%);background:#111;color:#fff;padding:10px 14px;border-radius:999px;opacity:0;pointer-events:none;transition:opacity .25s;z-index:70}
   .toast.show{opacity:1}
+  .disabled{opacity:.6;pointer-events:none}
 </style>
 </head>
 <body>
@@ -135,12 +136,12 @@
           <div class="daily" id="dailyBox">
             <div class="label">Bugün</div>
             <div class="sentence" id="dailySentence">
-              Arkadaşım gizlice defterime bir şeyler yazmış. Sayfayı açtığımda kocaman <u>_____</u> yazısını gördüm.
+              ...
             </div>
           </div>
 
           <div class="row" style="margin-top:12px">
-            <div class="chip">Kalan hak: <span id="quota">5</span>/5</div>
+            <div class="chip">Kalan hak: <span id="quota">0</span>/5</div>
             <div class="chip">#SendeKatıl</div>
             <span class="hint" id="counter">0/240</span>
           </div>
@@ -149,47 +150,21 @@
           <textarea id="completion" maxlength="240" placeholder="Boşluğu yaratıcı bir şekilde tamamla..."></textarea>
 
           <div class="row" style="margin-top:10px">
-            <button class="btn btn-primary" id="sendBtn">Gönder</button>
+            <button class="btn btn-primary" id="sendBtn" disabled>Gönder</button>
             <button class="btn btn-ghost" id="shareBtn">Paylaş</button>
             <button class="btn btn-ghost" id="copyBtn">Kopyala</button>
           </div>
 
-          <!-- Demo gönderi -->
-          <article class="card" style="margin-top:14px">
-            <div class="bd">
-              <div class="hint">Gönderen: <strong>@NarPortakalı</strong></div>
-              <p style="margin:.4rem 0 0">“Sayfayı açtığımda kocaman <strong>‘İpucu: Beni bul!’</strong> yazısını gördüm; sayfanın içinde minik bir harita bile vardı.”</p>
-              <div class="row" style="margin-top:8px">
-                <button class="btn btn-ghost" data-like>👍 Beğendim <span class="lk">21</span></button>
-                <button class="btn btn-ghost" data-dislike>👎 Beğenmedim <span class="dk">2</span></button>
-                <div class="chip" style="margin-left:auto">💬 6 yorum</div>
-              </div>
-            </div>
-          </article>
+          <!-- Demo makale kaldırıldı -->
         </div>
       </section>
 
       <aside aria-label="Sağ panel" class="card">
         <div class="hd">Bugünün İlk 3’ü</div>
-        <div class="bd mini" id="top3">
-          <div class="item"><div class="avatar">A</div><div><strong>@Aydede</strong><div class="hint">👍 128</div></div></div>
-          <div class="item"><div class="avatar">K</div><div><strong>@KumSaati</strong><div class="hint">👍 103</div></div></div>
-          <div class="item"><div class="avatar">M</div><div><strong>@Mimoza</strong><div class="hint">👍 97</div></div></div>
-        </div>
+        <div class="bd mini" id="top3"></div>
 
         <div class="hd">Son 10 Gönderi</div>
-        <div class="bd list" id="latestList">
-          <div class="rowitem hint"><strong>@GalaksiTreni</strong>: “… <em>‘Sürpriz Kutusu’</em> yazıyordu.”</div>
-          <div class="rowitem hint"><strong>@SihirliSilgi</strong>: “… <em>‘Beni Çevir’</em> yazıyordu.”</div>
-          <div class="rowitem hint"><strong>@LimonKabuğu</strong>: “… <em>‘Kopya Çekme’</em> yazıyordu.”</div>
-          <div class="rowitem hint"><strong>@TebeşirTozu</strong>: “… <em>‘Gizemli Kulüp’</em> yazıyordu.”</div>
-          <div class="rowitem hint"><strong>@RüzgarGülü</strong>: “… <em>‘Devamı Arkada’</em> yazıyordu.”</div>
-          <div class="rowitem hint"><strong>@Lavanta</strong>: “… <em>‘Bakma!’</em> yazıyordu.”</div>
-          <div class="rowitem hint"><strong>@KutupYıldızı</strong>: “… <em>‘Görev 1’</em> yazıyordu.”</div>
-          <div class="rowitem hint"><strong>@Akasya</strong>: “… <em>‘Sakın Açma’</em> yazıyordu.”</div>
-          <div class="rowitem hint"><strong>@Poyraz</strong>: “… <em>‘Harita’</em> yazıyordu.”</div>
-          <div class="rowitem hint"><strong>@SerinSohbet</strong>: “… <em>‘Yeni Level’</em> yazıyordu.”</div>
-        </div>
+        <div class="bd list" id="latestList"></div>
       </aside>
     </div>
   </main>
@@ -207,62 +182,255 @@
   overlay.addEventListener('click', closeDrawer);
   window.addEventListener('keydown', e=>{ if(e.key==='Escape' && drawer.classList.contains('open')) closeDrawer(); });
 
-  // Home demo logic
+  // UI helpers
   const completion=document.getElementById('completion'), counter=document.getElementById('counter');
   completion.addEventListener('input', ()=> counter.textContent=`${completion.value.length}/240`);
-  let quota=5; const quotaEl=document.getElementById('quota');
-  const toast=(m)=>{const t=document.getElementById('toast'); t.textContent=m; t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),1400)};
+  const toast=(m)=>{const t=document.getElementById('toast'); t.textContent=m; t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),1600)};
   function copyText(txt){navigator.clipboard?.writeText(txt).then(()=>toast('Kopyalandı'));}
 
-  document.getElementById('sendBtn').addEventListener('click', ()=>{
-    const v=completion.value.trim(); if(!v) return toast('Lütfen cümleni yaz.');
-    if(quota<=0) return toast('Günlük hakkın doldu.');
-    quota--; quotaEl.textContent=quota; completion.value=''; counter.textContent='0/240'; toast('Gönderildi (demo)');
-  });
-  const dailySentence=document.getElementById('dailySentence').innerText.replace(/\s+/g,' ').trim();
+  copyBtn.addEventListener('click', ()=> copyText(`Lafkat: ${document.getElementById('dailySentence').innerText.replace(/\s+/g,' ').trim()} #SendeKatıl`));
   shareBtn.addEventListener('click', async ()=>{
-    const data={title:'Lafkat', text:`Lafkat: ${dailySentence} #SendeKatıl`, url:location.href};
-    try{ if(navigator.share) await navigator.share(data); else copyText(`${data.text} ${data.url}`);}catch(e){}
+    const text=`Lafkat: ${document.getElementById('dailySentence').innerText.replace(/\s+/g,' ').trim()} #SendeKatıl`;
+    const data={title:'Lafkat', text, url:location.href};
+    try{ if(navigator.share) await navigator.share(data); else copyText(`${text} ${location.href}`);}catch(e){}
   });
-  copyBtn.addEventListener('click', ()=> copyText(`Lafkat: ${dailySentence} #SendeKatıl`));
-  document.querySelector('[data-like]').addEventListener('click', e=>{ const el=e.currentTarget.querySelector('.lk'); el.textContent=(+el.textContent)+1; });
-  document.querySelector('[data-dislike]').addEventListener('click', e=>{ const el=e.currentTarget.querySelector('.dk'); el.textContent=(+el.textContent)+1; });
 </script>
 
-<!-- 🔐 Auth kontrolü ve admin/çıkış davranışı -->
+<!-- 🔐 Auth + Firestore entegrasyonu -->
 <script type="module">
-  import { auth } from "./firebase-init.js";
-  import { onAuthStateChanged, signOut, getIdTokenResult } from "https://www.gstatic.com/firebasejs/10.12.1/firebase-auth.js";
+  import { auth, db } from "./firebase-init.js";
+  import {
+    onAuthStateChanged, signOut, getIdTokenResult
+  } from "https://www.gstatic.com/firebasejs/10.12.1/firebase-auth.js";
+  import {
+    doc, getDoc, setDoc, addDoc, collection, query, where, orderBy, limit, getDocs, serverTimestamp
+  } from "https://www.gstatic.com/firebasejs/10.12.1/firebase-firestore.js";
 
   const adminLink1 = document.getElementById('adminLink1');
   const adminLink2 = document.getElementById('adminLink2');
   const logoutBtn  = document.getElementById('logoutBtn');
+  const sendBtn    = document.getElementById('sendBtn');
+  const quotaEl    = document.getElementById('quota');
+  const sentenceEl = document.getElementById('dailySentence');
 
-  // Giriş kontrolü: kullanıcı yoksa giris.html'e yönlendir
+  let currentUser=null;
+  let currentProfile=null;
+  let currentSentenceId=null;
+
+  // === Giriş kontrolü ve admin linkleri
   onAuthStateChanged(auth, async (user)=>{
     if(!user){
-      // opsiyonel: geri dönülecek sayfayı parametre olarak ekle
       const next = encodeURIComponent('index.html');
       location.href = `giris.html?next=${next}`;
       return;
     }
-    // Admin claim varsa admin linklerini göster
+    currentUser = user;
+
+    // Admin link
     try{
       const token = await getIdTokenResult(user, true);
       if(token.claims?.admin){
-        adminLink1.style.display = 'inline-block';
-        adminLink2.style.display = 'inline-block';
+        adminLink1.style.display = adminLink2.style.display = 'inline-block';
         adminLink1.href = adminLink2.href = 'admin.html';
       }
     }catch(e){}
+
+    // E-posta doğrulanmamışsa Gönder kilitli kalsın
+    if(!user.emailVerified){
+      sendBtn.classList.add('disabled');
+      sendBtn.disabled = true;
+      sendBtn.title = 'E-posta doğrulanmamış';
+    }
+
+    // Profil (nickname için)
+    try{
+      const uref = doc(db,'users', user.uid);
+      const usnap = await getDoc(uref);
+      currentProfile = usnap.exists() ? usnap.data() : null;
+    }catch(e){ console.warn('[UserProfile]', e); }
+
+    // Günün cümlesini ve kotaları yükle
+    await loadSentence();
+    await refreshQuota();
+    await fillSidebars();
   });
 
-  // Çıkış
   logoutBtn.addEventListener('click', async (e)=>{
     e.preventDefault();
     try{ await signOut(auth); }catch(_){}
-    location.href = 'giris.html';
+    location.href='giris.html';
   });
+
+  // === Günün cümlesi: aktif doc veya bugünün tarihi
+  async function loadSentence(){
+    sentenceEl.textContent = 'Yükleniyor...';
+    currentSentenceId = null;
+
+    // 1) isActive == true, en yeni 1
+    try{
+      const q1 = query(collection(db,'sentences'), where('isActive','==',true), orderBy('createdAt','desc'), limit(1));
+      const r1 = await getDocs(q1);
+      if(!r1.empty){
+        const d = r1.docs[0];
+        currentSentenceId = d.id;
+        sentenceEl.innerHTML = (d.data().text || '').toString();
+        return;
+      }
+    }catch(e){ console.warn('[Sentences active]', e); }
+
+    // 2) fallback: bugünün tarihi ID
+    try{
+      const today = new Date();
+      const id = today.toISOString().slice(0,10); // YYYY-MM-DD
+      const dref = doc(db,'sentences', id);
+      const dsnap = await getDoc(dref);
+      if(dsnap.exists()){
+        currentSentenceId = id;
+        sentenceEl.innerHTML = (dsnap.data().text || '').toString();
+        return;
+      }
+    }catch(e){ console.warn('[Sentences today]', e); }
+
+    sentenceEl.textContent = 'Bugün için cümle bulunamadı.';
+  }
+
+  // === Günlük kota: aynı kullanıcı, aynı gün/cümle için 5 sınırı
+  async function refreshQuota(){
+    if(!currentUser || !currentSentenceId){ quotaEl.textContent = '0'; return; }
+    try{
+      const qC = query(
+        collection(db,'completions'),
+        where('userId','==', currentUser.uid),
+        where('sentenceId','==', currentSentenceId)
+      );
+      const snap = await getDocs(qC);
+      const used = snap.size;
+      const remain = Math.max(0, 5 - used);
+      quotaEl.textContent = remain;
+      // E-posta doğrulanmışsa buton durumu
+      if(currentUser.emailVerified && remain>0){
+        sendBtn.disabled = false;
+        sendBtn.classList.remove('disabled');
+        sendBtn.title = '';
+      }else{
+        sendBtn.disabled = true;
+        sendBtn.classList.add('disabled');
+        if(!currentUser.emailVerified) sendBtn.title='E-posta doğrulanmamış';
+        else sendBtn.title='Günlük hakkın doldu';
+      }
+    }catch(e){
+      console.error('[Quota]', e);
+      quotaEl.textContent = '0';
+      sendBtn.disabled = true;
+      sendBtn.classList.add('disabled');
+    }
+  }
+
+  // === Gönderi ekleme
+  sendBtn.addEventListener('click', async ()=>{
+    const v = document.getElementById('completion').value.trim();
+    if(!v) return window.toast?.('Lütfen cümleni yaz.');
+    if(!currentUser) return;
+    if(!currentUser.emailVerified){ window.toast?.('E-postanı doğrulamalısın'); return; }
+    if(!currentSentenceId){ window.toast?.('Bugünün cümlesi yüklenemedi'); return; }
+
+    // Kota kontrolü
+    const remain = parseInt(document.getElementById('quota').textContent||'0',10);
+    if(remain<=0) return window.toast?.('Günlük hakkın doldu');
+
+    try{
+      // yaz
+      await addDoc(collection(db,'completions'), {
+        sentenceId: currentSentenceId,
+        userId: currentUser.uid,
+        nickname: currentProfile?.nickname || 'Anonim',
+        text: v,
+        likes: 0,
+        dislikes: 0,
+        createdAt: serverTimestamp()
+      });
+
+      // UI reset
+      document.getElementById('completion').value='';
+      document.getElementById('counter').textContent='0/240';
+      window.toast?.('Gönderildi');
+
+      // Kota & sağ panelleri güncelle
+      await refreshQuota();
+      await fillSidebars();
+
+    }catch(err){
+      console.error('[AddCompletion]', err);
+      window.toast?.('Gönderilemedi: ' + (err.code||err.message));
+    }
+  });
+
+  // === Sağ panel: Top3 (likes DESC) & Son 10 (createdAt DESC)
+  async function fillSidebars(){
+    const top3El = document.getElementById('top3');
+    const latestEl = document.getElementById('latestList');
+    top3El.innerHTML = ''; latestEl.innerHTML='';
+
+    if(!currentSentenceId) return;
+
+    try{
+      // Top 3
+      const qTop = query(
+        collection(db,'completions'),
+        where('sentenceId','==', currentSentenceId),
+        orderBy('likes','desc'),
+        limit(3)
+      );
+      const sTop = await getDocs(qTop);
+      if(sTop.empty){
+        top3El.innerHTML = `<div class="hint">Henüz gönderi yok</div>`;
+      }else{
+        sTop.forEach(d=>{
+          const x=d.data();
+          const initials=(x.nickname||'?').trim()[0]?.toUpperCase()||'?';
+          const item=document.createElement('div');
+          item.className='item';
+          item.innerHTML=`
+            <div class="avatar">${initials}</div>
+            <div><strong>@${x.nickname||'Anonim'}</strong><div class="hint">👍 ${x.likes||0}</div></div>
+          `;
+          top3El.appendChild(item);
+        });
+      }
+
+      // Son 10
+      const qLat = query(
+        collection(db,'completions'),
+        where('sentenceId','==', currentSentenceId),
+        orderBy('createdAt','desc'),
+        limit(10)
+      );
+      const sLat = await getDocs(qLat);
+      if(sLat.empty){
+        latestEl.innerHTML = `<div class="rowitem hint">Henüz gönderi yok</div>`;
+      }else{
+        sLat.forEach(d=>{
+          const x=d.data();
+          const text = (x.text||'').toString();
+          const nick = x.nickname || 'Anonim';
+          const row=document.createElement('div');
+          row.className='rowitem hint';
+          row.innerHTML = `<strong>@${nick}</strong>: “${escapeHtml(text).slice(0,160)}”`;
+          latestEl.appendChild(row);
+        });
+      }
+
+    }catch(e){
+      console.error('[Sidebars]', e);
+      top3El.innerHTML = `<div class="hint">Yüklenemedi</div>`;
+      latestEl.innerHTML = `<div class="rowitem hint">Yüklenemedi</div>`;
+    }
+  }
+
+  // Basit XSS koruması
+  function escapeHtml(s){
+    return s.replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+  }
 </script>
 </body>
 </html>
