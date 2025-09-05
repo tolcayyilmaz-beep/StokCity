@@ -184,5 +184,9 @@
     document.getElementById('searchResult').textContent = q ? `'${q}' için istek gönderildi (demo).` : 'Arama boş.';
   });
 </script>
+<!-- Firebase başlat (tüm sayfalarda ortak) -->
+<script type="module">
+  import "./firebase-init.js";
+</script>
 </body>
 </html>
