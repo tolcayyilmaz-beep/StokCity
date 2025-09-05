@@ -338,5 +338,9 @@
     a.querySelector('[data-delete]').addEventListener('click', ()=>{ a.remove(); const p=document.getElementById('statPosts'); p.textContent = Math.max(0,(+p.textContent)-1); toast('Gönderi silindi (demo)'); });
   });
 </script>
+<!-- Firebase başlat (tüm sayfalarda ortak) -->
+<script type="module">
+  import "./firebase-init.js";
+</script>
 </body>
 </html>
