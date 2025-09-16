@@ -1,280 +1,217 @@
 <!doctype html>
 <html lang="tr">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Karar Mercii – Karar anında yanında</title>
-  <meta name="description" content="Karar Mercii: Kararsız kaldığında tek dokunuşla hızlı, eğlenceli ve tarafsız öneriler. Kendi kartlarını oluştur, mini oyunlarla eğlen." />
-  <meta name="theme-color" content="#7C4DFF" />
-  <link rel="icon" href="assets/favicon.png" />
-  <style>
-    :root{
-      /* Canlı ve ışıl ışıl palet */
-      --brand:   #7C4DFF;
-      --brand2:  #00E0C6;
-      --brand3:  #FF6D6D;
-      --brand4:  #FFC857;
-      --ink:     #101221;
-      --muted:   #5f6b7a;
-      --card:    #ffffff;
-      --ring:    #e9eef6;
-      --glass:   rgba(255,255,255,.55);
-      --glow:    rgba(124,77,255,.25);
-    }
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+<title>Karar Mercii – Öne Çıkan Görseller</title>
+<style>
+  :root{
+    --brand1:#7C4DFF; --brand2:#40E0D0; --brand3:#FF7A7A;
+    --ink:#1f2330; --muted:#6b7280; --bg:#f7f7fb;
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0; font-family:system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+    color:var(--ink); background:
+      radial-gradient(1200px 600px at -10% -20%, #e8e2ff 0%, transparent 60%),
+      radial-gradient(1200px 600px at 110% 120%, #ffe3ea 0%, transparent 60%),
+      linear-gradient(180deg,#ffffff, #f4f8ff 40%, #fff);
+  }
+  header{
+    position:sticky; top:0; z-index:5;
+    background:linear-gradient(90deg, var(--brand1), var(--brand2));
+    color:#fff; padding:14px 18px; box-shadow:0 6px 24px rgba(0,0,0,.08);
+  }
+  header h1{margin:0; font-size:20px; letter-spacing:.2px}
 
-    /* Reset & base */
-    *{ box-sizing: border-box }
-    html,body{ height:100% }
-    body{
-      margin:0;
-      color:var(--ink);
-      font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans";
-      -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale;
-      overflow-x:hidden;
-      /* IŞIL IŞIL ANİMASYONLU DEGRADE ARKAPLAN */
-      background:
-        radial-gradient(1200px 900px at 10% -10%, rgba(255,255,255,.8), transparent 60%),
-        radial-gradient(900px 700px at 110% 0%, rgba(255,255,255,.8), transparent 55%),
-        linear-gradient(120deg, #f8f4ff 0%, #e6fffb 45%, #fff2f4 100%);
-    }
+  .wrap{max-width:1100px; margin:22px auto; padding:0 16px}
 
-    /* Neon hareketli şerit */
-    .bg-gradient{
-      position:fixed; inset:-20vmax;
-      background: conic-gradient(from 0deg,
-        #7C4DFF, #00E0C6, #FFC857, #FF6D6D, #7C4DFF);
-      filter: blur(80px) saturate(140%);
-      opacity:.18;
-      animation: spin 28s linear infinite;
-      z-index:-2;
-    }
-    @keyframes spin{ to{ transform: rotate(360deg) } }
+  /* Slider (mobil) -------------------------------------------------------- */
+  .slider{
+    position:relative;
+    border-radius:18px; overflow:hidden;
+    box-shadow:0 14px 40px rgba(124,77,255,.18), 0 6px 18px rgba(0,0,0,.06);
+    background:#fff;
+  }
+  .slides{display:flex; transition:transform .6s ease-in-out; will-change:transform}
+  .slide{min-width:100%; display:flex; flex-direction:column; align-items:center; background:#fff}
+  .figure{
+    width:100%; aspect-ratio:1132/2048;  /* hedef oran */
+    background:#fafafa; display:block; overflow:hidden;
+  }
+  .figure img{
+    width:100%; height:100%; object-fit:cover; display:block;
+  }
+  .caption{
+    width:100%; padding:12px 14px 16px; background:#fff;
+    border-top:1px solid #eef0f4; font-weight:700; letter-spacing:.2px;
+  }
+  .sub{display:block; font-weight:500; color:var(--muted); margin-top:2px}
 
-    /* Yumuşak parıltı baloncukları */
-    .blob{ position:fixed; border-radius:50%; filter: blur(40px); opacity:.22; z-index:-1 }
-    .b1{ width:28vmax; height:28vmax; background:#7C4DFF; left:-6vmax; top:6vmax; animation: float1 12s ease-in-out infinite }
-    .b2{ width:24vmax; height:24vmax; background:#00E0C6; right:-5vmax; top:10vmax; animation: float2 14s ease-in-out infinite }
-    .b3{ width:22vmax; height:22vmax; background:#FF6D6D; left:20vmax; bottom:-6vmax; animation: float3 16s ease-in-out infinite }
+  .dots{position:absolute; left:0; right:0; bottom:12px; display:flex; gap:8px; justify-content:center; z-index:2}
+  .dot{
+    width:8px; height:8px; border-radius:999px; background:rgba(255,255,255,.55); box-shadow:0 0 0 1px rgba(0,0,0,.08) inset;
+    transition:transform .2s, background .2s;
+  }
+  .dot.active{background:#fff; transform:scale(1.4)}
+  .arrows{
+    position:absolute; inset:0; pointer-events:none; display:flex; justify-content:space-between; align-items:center;
+    padding:0 4px;
+  }
+  .arrow{
+    pointer-events:auto; width:42px; height:42px; border-radius:999px; border:0; cursor:pointer;
+    background:rgba(0,0,0,.18); color:#fff; backdrop-filter:blur(4px);
+    display:grid; place-items:center; font-size:18px;
+  }
 
-    @keyframes float1{ 0%,100%{ transform:translateY(0)} 50%{ transform:translateY(-20px)} }
-    @keyframes float2{ 0%,100%{ transform:translateY(0)} 50%{ transform:translateY(18px)} }
-    @keyframes float3{ 0%,100%{ transform:translateY(0)} 50%{ transform:translateY(-24px)} }
+  /* Masaüstünde grid; slider gizlenir ------------------------------------ */
+  .grid{display:none; gap:18px; margin-top:22px}
+  .card{
+    background:#fff; border-radius:16px; overflow:hidden;
+    box-shadow:0 10px 28px rgba(64,224,208,.15), 0 4px 10px rgba(0,0,0,.06);
+  }
+  .thumb{width:100%; aspect-ratio:9/16; object-fit:cover; display:block}
+  .card .caption{padding:10px 12px}
 
-    .wrap{ max-width:1120px; margin:0 auto; padding:18px 16px 40px }
-
-    header{ display:flex; align-items:center; justify-content:space-between; gap:12px }
-    .brand{ display:flex; align-items:center; gap:12px; backdrop-filter:saturate(120%) }
-    .brand img{
-      width:52px; height:52px; border-radius:16px; object-fit:cover;
-      border:1px solid var(--ring); background:#fff;
-      box-shadow:
-        0 10px 28px rgba(124,77,255,.35),
-        0 0 0 6px rgba(124,77,255,.08);
-    }
-    .brand h1{ margin:0; font-size:24px; letter-spacing:.2px }
-    .cta{
-      display:inline-flex; align-items:center; gap:10px;
-      padding:12px 16px; border-radius:14px; text-decoration:none; font-weight:800;
-      color:#042a25; background:linear-gradient(135deg, #00E0C6, #66F0E3);
-      box-shadow: 0 8px 24px rgba(0,224,198,.35), inset 0 0 0 1px rgba(255,255,255,.6);
-      transition: transform .15s ease, box-shadow .15s ease, filter .15s ease;
-      white-space:nowrap;
-    }
-    .cta:hover{ transform:translateY(-1px); filter:saturate(1.1); box-shadow: 0 12px 30px rgba(0,224,198,.45) }
-
-    /* Hero grid */
-    .hero{ display:grid; gap:18px; margin-top:18px; grid-template-columns:1fr }
-
-    .card{
-      position:relative;
-      background: rgba(255,255,255,.86);
-      border: 1px solid var(--ring);
-      border-radius: 22px;
-      padding: 20px;
-      box-shadow:
-        0 12px 36px rgba(16,18,33,.08),
-        0 0 0 8px rgba(255,255,255,.35);
-    }
-    .card:after{
-      content:""; position:absolute; inset:-1px; border-radius:22px;
-      background: radial-gradient(60% 60% at 20% 10%, rgba(255,255,255,.9), transparent 60%);
-      pointer-events:none; mix-blend-mode:soft-light;
-    }
-
-    .intro h2{
-      margin:0 0 10px;
-      font-size:28px; line-height:1.15;
-      background: linear-gradient(135deg, var(--brand) 0%, var(--brand2) 50%, var(--brand4) 100%);
-      -webkit-background-clip:text; background-clip:text; color:transparent;
-      text-shadow: 0 8px 28px var(--glow);
-    }
-    .intro p{ margin:0; color:var(--muted); font-size:15.8px; line-height:1.7 }
-    .badges{ margin-top:14px; display:flex; gap:8px; flex-wrap:wrap }
-    .pill{
-      padding:8px 12px; border-radius:999px; font-weight:800; font-size:12px; letter-spacing:.2px;
-      color:#2d2f55; background:linear-gradient(135deg,#f5f7ff,#eef8ff);
-      border:1px solid var(--ring);
-      box-shadow: 0 6px 14px rgba(124,77,255,.10);
-    }
-
-    /* Galeri (6 görsel) — 1132x2048 oranı */
-    .gallery{ display:grid; grid-template-columns: repeat(2, 1fr); gap:12px }
-    .shot{
-      position:relative; overflow:hidden; border-radius:18px; aspect-ratio:1132/2048;
-      background:#f7f8ff; border:1px solid var(--ring);
-      box-shadow: 0 10px 26px rgba(16,18,33,.08), 0 0 0 6px rgba(255,255,255,.4);
-    }
-    .shot img{
-      width:100%; height:100%; object-fit:cover; display:block;
-      opacity:1; transition:opacity .35s ease, transform .7s ease;
-      transform: scale(1.015);
-    }
-    .shot:hover img{ transform: scale(1.03) }
-
-    .glow{
-      position:absolute; inset:auto 0 -18px 0; height:36px;
-      background: radial-gradient(60% 100% at 50% 0%, rgba(124,77,255,.35), transparent 70%);
-      filter: blur(14px); pointer-events:none;
-    }
-
-    /* Desktop */
-    @media (min-width: 960px){
-      .hero{ grid-template-columns:1.05fr 1fr }
-      .intro h2{ font-size:34px }
-      .brand h1{ font-size:26px }
-      .gallery{ grid-template-columns: repeat(3, 1fr) }
-    }
-
-    footer{ margin-top:30px; color:#6b7280; font-size:12.5px; text-align:center }
-
-    /* Hareket azaltma */
-    @media (prefers-reduced-motion: reduce){
-      .bg-gradient,.b1,.b2,.b3{ animation:none }
-      .shot img{ transition:none }
-    }
-  </style>
+  @media (min-width:900px){
+    .slider{display:none}
+    .grid{display:grid; grid-template-columns:repeat(3, 1fr)}
+  }
+</style>
 </head>
 <body>
-  <!-- Arkaplan efektleri -->
-  <div class="bg-gradient" aria-hidden="true"></div>
-  <div class="blob b1" aria-hidden="true"></div>
-  <div class="blob b2" aria-hidden="true"></div>
-  <div class="blob b3" aria-hidden="true"></div>
+  <header><h1>Karar Mercii – Öne Çıkan Ekranlar</h1></header>
 
-  <div class="wrap">
-    <header>
-      <div class="brand">
-        <img src="assets/icon.png" alt="Karar Mercii Logosu">
-        <h1>Karar Mercii</h1>
+  <main class="wrap">
+    <!-- Mobil: tam genişlik slider -->
+    <section class="slider" id="kmSlider" aria-label="Uygulama ekranları">
+      <div class="slides">
+        <!-- 1 -->
+        <article class="slide">
+          <figure class="figure"><img src="assets/screens/s1.jpg" alt="Anasayfa – hızlı erişim kutuları"></figure>
+          <figcaption class="caption">Anasayfa <span class="sub">Hızlı erişim & menüler</span></figcaption>
+        </article>
+        <!-- 2 -->
+        <article class="slide">
+          <figure class="figure"><img src="assets/screens/s2.jpg" alt="Bugün ne pişirsem – kategori seçimi"></figure>
+          <figcaption class="caption">Bugün ne pişirsem? <span class="sub">Kategori seçimi</span></figcaption>
+        </article>
+        <!-- 3 -->
+        <article class="slide">
+          <figure class="figure"><img src="assets/screens/s3.jpg" alt="Bugün ne pişirsem – karıştırma & sonuç"></figure>
+          <figcaption class="caption">Pişirsem – Sonuç <span class="sub">Karıştırma & öneri</span></figcaption>
+        </article>
+        <!-- 4 -->
+        <article class="slide">
+          <figure class="figure"><img src="assets/screens/s4.jpg" alt="Bugün ne yesem – kategori grid"></figure>
+          <figcaption class="caption">Bugün ne yesem? <span class="sub">Kategori grid</span></figcaption>
+        </article>
+        <!-- 5 -->
+        <article class="slide">
+          <figure class="figure"><img src="assets/screens/s5.jpg" alt="Bugün ne izlesem – film önerisi"></figure>
+          <figcaption class="caption">Ne izlesem? <span class="sub">Film önerisi kartı</span></figcaption>
+        </article>
+        <!-- 6 -->
+        <article class="slide">
+          <figure class="figure"><img src="assets/screens/s6.jpg" alt="Rakam Kararı – ayarlar ve kutular"></figure>
+          <figcaption class="caption">Rakam Kararı <span class="sub">Parametreler & kutular</span></figcaption>
+        </article>
+        <!-- 7 -->
+        <article class="slide">
+          <figure class="figure"><img src="assets/screens/s7.jpg" alt="Özel Kartlar – 6 renkli kart"></figure>
+          <figcaption class="caption">Özel Kartlar <span class="sub">6 renkli, isim değiştirilebilir</span></figcaption>
+        </article>
+        <!-- 8 -->
+        <article class="slide">
+          <figure class="figure"><img src="assets/screens/s8.jpg" alt="Özel Kartlar – kelime listesi"></figure>
+          <figcaption class="caption">Kişisel Liste <span class="sub">Kelime ekle & sil</span></figcaption>
+        </article>
+        <!-- 9 -->
+        <article class="slide">
+          <figure class="figure"><img src="assets/screens/s9.jpg" alt="Karar Mercii – sihirli küre deneyimi"></figure>
+          <figcaption class="caption">Sihirli Küre <span class="sub">Rastgele karar, efektli</span></figcaption>
+        </article>
+        <!-- 10 -->
+        <article class="slide">
+          <figure class="figure"><img src="assets/screens/s10.jpg" alt="Doğruluk mu Cesaret mi – çark"></figure>
+          <figcaption class="caption">Parti Oyunu <span class="sub">Doğruluk / Cesaret</span></figcaption>
+        </article>
       </div>
-      <a class="cta" href="https://play.google.com/store/apps/details?id=com.kararmercii.app&hl=tr" target="_blank" rel="noopener">
-        Google Play’de indir
-      </a>
-    </header>
 
-    <main class="hero">
-      <!-- Güncellenen tanıtım -->
-      <section class="intro card">
-        <h2>Karar anında yanında</h2>
-        <p>
-          Karar Mercii, kararsız kaldığın anlarda tek dokunuşla yardım eden akıllı bir karar arkadaşı.
-          “Bugün ne yesem/pisirsem/izlesem?” gibi günlük seçimlerden parti oyunlarına kadar
-          <strong>hızlı, eğlenceli ve tarafsız</strong> öneriler sunar.
-        </p>
-        <p style="margin-top:10px">
-          Uygulama sadece hazır kartlardan seçim yapmakla kalmaz, aynı zamanda kullanıcının kendi kartlarını
-          oluşturmasına da imkan tanır. Böylece kişisel tercihlerden oluşan kart desteleri hazırlanabilir
-          ve bu kartlardan rastgele seçimler yapılabilir.
-        </p>
-        <p style="margin-top:10px">
-          Ayrıca programda eğlenceyi artırmak için mini oyunlar da yer alır. Bu sayede Karar Mercii,
-          sadece günlük kararlar için değil, aynı zamanda keyifli vakit geçirmek için de ideal bir yardımcıdır.
-        </p>
+      <div class="arrows">
+        <button class="arrow" data-dir="-1" aria-label="Önceki">‹</button>
+        <button class="arrow" data-dir="1" aria-label="Sonraki">›</button>
+      </div>
+      <div class="dots" aria-hidden="true"></div>
+    </section>
 
-        <div class="badges" aria-hidden="true">
-          <span class="pill">Rastgele kararlar</span>
-          <span class="pill">Kişisel kart desteleri</span>
-          <span class="pill">Mini oyunlar</span>
-          <span class="pill">Hafif & hızlı</span>
-        </div>
-      </section>
+    <!-- Masaüstü: 3 sütun grid -->
+    <section class="grid" aria-label="Uygulama ekranları (ızgara)">
+      <!-- Kartları sliderdaki sırayla kopyaladım -->
+      <article class="card"><img class="thumb" src="assets/screens/s1.jpeg" alt=""><div class="caption">Anasayfa <span class="sub">Hızlı erişim</span></div></article>
+      <article class="card"><img class="thumb" src="assets/screens/s2.jpeg" alt=""><div class="caption">Pişirsem <span class="sub">Kategori</span></div></article>
+      <article class="card"><img class="thumb" src="assets/screens/s3.jpeg" alt=""><div class="caption">Pişirsem <span class="sub">Sonuç</span></div></article>
+      <article class="card"><img class="thumb" src="assets/screens/s4.jpeg" alt=""><div class="caption">Yesem <span class="sub">Kategori</span></div></article>
+      <article class="card"><img class="thumb" src="assets/screens/s5.jpeg" alt=""><div class="caption">İzlesem <span class="sub">Öneri</span></div></article>
+      <article class="card"><img class="thumb" src="assets/screens/s6.jpeg" alt=""><div class="caption">Rakam Kararı <span class="sub">Kutular</span></div></article>
+      <article class="card"><img class="thumb" src="assets/screens/s7.jpeg" alt=""><div class="caption">Özel Kartlar <span class="sub">Seçim</span></div></article>
+      <article class="card"><img class="thumb" src="assets/screens/s8.jpeg" alt=""><div class="caption">Kişisel Liste <span class="sub">Düzenle</span></div></article>
+      <article class="card"><img class="thumb" src="assets/screens/s9.jpeg" alt=""><div class="caption">Sihirli Küre <span class="sub">Efektli</span></div></article>
+      <article class="card"><img class="thumb" src="assets/screens/s10.jpeg" alt=""><div class="caption">Parti Oyunu <span class="sub">Çark</span></div></article>
+    </section>
+  </main>
 
-      <!-- 6 görsellik döngü galeri -->
-      <section class="card">
-        <div class="gallery" id="gallery">
-          <figure class="shot"><img alt="Ekran 1" loading="lazy"><span class="glow"></span></figure>
-          <figure class="shot"><img alt="Ekran 2" loading="lazy"><span class="glow"></span></figure>
-          <figure class="shot"><img alt="Ekran 3" loading="lazy"><span class="glow"></span></figure>
-          <figure class="shot"><img alt="Ekran 4" loading="lazy"><span class="glow"></span></figure>
-          <figure class="shot"><img alt="Ekran 5" loading="lazy"><span class="glow"></span></figure>
-          <figure class="shot"><img alt="Ekran 6" loading="lazy"><span class="glow"></span></figure>
-        </div>
-      </section>
-    </main>
+<script>
+(function(){
+  const root = document.getElementById('kmSlider');
+  if(!root) return;
 
-    <footer>
-      © <span id="y"></span> Karar Mercii — “Her kararsızlığa bir çözüm”
-    </footer>
-  </div>
+  const slides = root.querySelector('.slides');
+  const items  = [...root.querySelectorAll('.slide')];
+  const dotsEl = root.querySelector('.dots');
+  const prev   = root.querySelector('[data-dir="-1"]');
+  const next   = root.querySelector('[data-dir="1"]');
 
-  <script>
-    // Yıl
-    document.getElementById('y').textContent = new Date().getFullYear();
+  let i = 0, auto, touchX = null;
 
-    // Görsel havuzu: 1132x2048 (veya yakın) boyutlarında ekran görüntülerinizi ekleyin
-    const IMAGE_POOL = [
-      "assets/screens/ss01.jpeg",
-      "assets/screens/ss02.jpeg",
-      "assets/screens/ss03.jpeg",
-      "assets/screens/ss04.jpeg",
-      "assets/screens/ss05.jpeg",
-      "assets/screens/ss06.jpeg",
-      "assets/screens/ss07.jpeg",
-      "assets/screens/ss08.jpeg",
-      "assets/screens/ss09.jpeg",
-      "assets/screens/ss10.jpeg",
-      "assets/screens/ss11.jpeg",
-      "assets/screens/ss12.jpeg",
-      "assets/screens/ss13.jpeg",
-      "assets/screens/ss14.jpeg",
-      "assets/screens/ss15.jpeg",
-      "assets/screens/ss16.jpeg",
-      "assets/screens/ss17.jpeg",
-      "assets/screens/ss18.jpeg",
-      "assets/screens/ss19.jpeg",
-      "assets/screens/ss20.jpeg"
-    ];
+  function buildDots(){
+    dotsEl.innerHTML = '';
+    items.forEach((_, idx)=>{
+      const b = document.createElement('div');
+      b.className = 'dot' + (idx===0?' active':'');
+      b.addEventListener('click', ()=>go(idx));
+      dotsEl.appendChild(b);
+    });
+  }
 
-    const gallery = document.getElementById('gallery');
-    const slots = Array.from(gallery.querySelectorAll('img'));
+  function go(n){
+    i = (n + items.length) % items.length;
+    slides.style.transform = `translateX(${-i*100}%)`;
+    [...dotsEl.children].forEach((d,idx)=>d.classList.toggle('active', idx===i));
+    restart();
+  }
 
-    function pickUnique(n, pool){
-      const arr = [...pool];
-      // Fisher–Yates shuffle
-      for(let i=arr.length-1;i>0;i--){
-        const j=Math.floor(Math.random()*(i+1)); [arr[i],arr[j]]=[arr[j],arr[i]];
-      }
-      return arr.slice(0,n);
-    }
+  function step(dir){ go(i + dir); }
 
-    // İlk yerleşim
-    function setInitial(){
-      const first = pickUnique(6, IMAGE_POOL);
-      slots.forEach((img, i)=> img.src = first[i]);
-    }
-    setInitial();
+  function restart(){
+    clearInterval(auto);
+    auto = setInterval(()=>step(1), 10000); // 10 sn
+  }
 
-    // 10 sn’de bir fade ile değiştir
-    const ROTATE_MS = 10000;
-    setInterval(()=>{
-      const next = pickUnique(6, IMAGE_POOL);
-      slots.forEach((img, i)=>{
-        const newSrc = next[i];
-        if (img.src.endsWith(newSrc)) return;
-        img.style.opacity = 0;
-        setTimeout(()=>{ img.src = newSrc; img.style.opacity = 1; }, 240);
-      });
-    }, ROTATE_MS);
-  </script>
+  // Touch swipe
+  slides.addEventListener('touchstart', e=>{touchX = e.touches[0].clientX;},{passive:true});
+  slides.addEventListener('touchmove', e=>{
+    if(touchX===null) return;
+    const dx = e.touches[0].clientX - touchX;
+    if(Math.abs(dx) > 40){ step(dx<0?1:-1); touchX=null; }
+  }, {passive:true});
+  slides.addEventListener('touchend', ()=>{touchX=null});
+
+  prev.addEventListener('click', ()=>step(-1));
+  next.addEventListener('click', ()=>step(1));
+
+  buildDots(); restart();
+})();
+</script>
 </body>
 </html>
