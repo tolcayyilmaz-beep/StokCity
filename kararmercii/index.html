@@ -11,6 +11,14 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
 
+  <!-- Open Graph / Twitter -->
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="Karar Mercii – Kararsızlıklarınıza Eğlenceli Çözümler" />
+  <meta property="og:description" content="Bugün ne pişirsem, ne yesem, ne izlesem? Tek tıkla eğlence!" />
+  <meta property="og:url" content="https://www.stokcity.com.tr/kararmercii" />
+  <meta property="og:image" content="assets/og-cover.jpg" />
+  <meta name="twitter:card" content="summary_large_image" />
+
   <style>
     :root{
       --bg1: #1b0044;
@@ -28,8 +36,8 @@
     *{box-sizing:border-box}
     html,body{height:100%}
     body{
-      margin:0;
-      font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
+      margin:0; padding-top:84px;
+      font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
       color:var(--txt);
       background: radial-gradient(1200px 600px at 10% -10%, #ff7ab6 0%, transparent 60%),
                   radial-gradient(900px 500px at 110% 10%, #7cf9bb 0%, transparent 50%),
@@ -40,8 +48,9 @@
 
     .container{width:min(1100px, 100%); margin-inline:auto; padding: clamp(16px, 2.8vw, 28px)}
 
+    /* Header */
     header{
-      position:fixed; top:0; left:0; right:0; z-index:50;
+      position:fixed; top:0; left:0; right:0; z-index:60;
       backdrop-filter: blur(8px);
       background: linear-gradient( to bottom, rgba(0,0,0,.45), rgba(0,0,0,.15) );
       border-bottom: 1px solid rgba(255,255,255,.1);
@@ -51,8 +60,7 @@
     .brand img{ width:44px; height:44px; border-radius:12px; object-fit:contain; box-shadow: var(--shadow); }
     .brand h1{ font-size: clamp(18px, 4.2vw, 28px); margin:0; letter-spacing:.2px; }
 
-    main{margin-top:80px}
-
+    /* Hero */
     .hero{ padding-top:20px; padding-bottom:6px; }
     .hero-card{
       background: var(--glass);
@@ -63,6 +71,7 @@
     .hero h2{ font-size: clamp(22px, 6vw, 40px); margin:0 0 8px }
     .hero p{ margin:0; color:var(--muted); font-size: clamp(14px, 3.5vw, 18px) }
 
+    /* Carousel */
     .carousel-wrap{ margin-top:14px; }
     .carousel{
       position:relative; overflow:hidden; border-radius: 18px; border:1px solid rgba(255,255,255,.15);
@@ -78,6 +87,20 @@
     .slide{ position:relative; scroll-snap-align:center; border-radius:14px; overflow:hidden; background:#0e0e15 }
     .slide img{ width:100%; height: 100%; display:block; object-fit:cover; aspect-ratio: 1080/2162; }
 
+    .arrow{ position:absolute; inset:0; pointer-events:none }
+    .arrow button{
+      pointer-events:auto; position:absolute; top:50%; transform: translateY(-50%);
+      border:none; width:44px; height:44px; border-radius:50%;
+      background: var(--glass-strong); color:var(--txt); cursor:pointer;
+      display:grid; place-items:center; backdrop-filter: blur(8px);
+    }
+    .arrow .prev{ left:10px } .arrow .next{ right:10px }
+
+    .dots{ display:flex; gap:8px; justify-content:center; padding:10px }
+    .dot{ width:8px; height:8px; border-radius:50%; background:rgba(255,255,255,.35); transition:transform .15s ease }
+    .dot.active{ background:#fff; transform:scale(1.4) }
+
+    /* Features */
     .features{ display:grid; gap:14px; margin-top:20px }
     .feat{
       background: linear-gradient(135deg, rgba(255,255,255,.12), rgba(255,255,255,.06));
@@ -86,13 +109,25 @@
     .feat h3{ margin:0 0 8px; font-size: clamp(16px, 4vw, 22px) }
     .feat p{ margin:0; color:var(--muted) }
 
+    /* Footer */
     footer{ margin-top:28px; padding:18px; text-align:center; color: #e9e9f6; opacity:.95 }
+    .links{ display:flex; gap:10px; justify-content:center; flex-wrap:wrap; margin-top:8px }
+    .mini{ font-size:12px; opacity:.8 }
+
+    /* floating gradient orbs */
+    .orb{ position:fixed; width:260px; height:260px; border-radius:50%; filter: blur(40px); opacity:.35; z-index:-1 }
+    .orb.o1{ background: conic-gradient(from 120deg, #ff7ab6, #ffe156, #7cf9bb, #9dbbff, #ff7ab6); left:-80px; top:10% }
+    .orb.o2{ background: conic-gradient(from 40deg, #7cf9bb, #ffe156, #ff6b6b, #8f7aff, #7cf9bb); right:-80px; bottom:10% }
   </style>
 </head>
 <body>
+  <div class="orb o1"></div>
+  <div class="orb o2"></div>
+
+  <!-- Header fixed, only brand -->
   <header>
-    <div class="container topbar">
-      <a class="brand" href="#top">
+    <div class="container topbar" role="banner">
+      <a class="brand" href="#top" aria-label="Karar Mercii Ana Sayfa">
         <img src="assets/logo.png" alt="Karar Mercii Logo" />
         <h1>Karar Mercii</h1>
       </a>
@@ -100,37 +135,152 @@
   </header>
 
   <main id="top" class="container">
-    <section class="hero">
+    <!-- Hero -->
+    <section class="hero" aria-labelledby="hero-title">
       <div class="hero-card">
-        <h2>Kararsızlıklarınıza Eğlenceli Çözümler!</h2>
+        <h2 id="hero-title">Kararsızlıklarınıza <span style="background:linear-gradient(90deg,#ffe156,#7cf9bb,#9dbbff); -webkit-background-clip:text; background-clip:text; color:transparent">Eğlenceli Çözümler</span>!</h2>
         <p>“Bugün ne pişirsem?”, “Ne yesem?”, “Ne izlesem?” sorularına anında yaratıcı yanıtlar. Özel kartlar ile kendi seçeneklerinizi ekleyin, mini oyunlarla eğlenceyi katlayın.</p>
       </div>
     </section>
 
-    <section class="carousel-wrap">
+    <!-- Carousel -->
+    <section id="galeri" class="carousel-wrap" aria-label="Uygulama ekran görüntüleri">
       <div class="carousel">
-        <div class="track">
+        <div class="track" id="track">
           <figure class="slide"><img loading="lazy" src="assets/screens/screen01.jpg" alt="Karar Mercii ekran görüntüsü 1"></figure>
-          <!-- Diğer 16 görsel aynı şekilde -->
+          <figure class="slide"><img loading="lazy" src="assets/screens/screen02.jpg" alt="Karar Mercii ekran görüntüsü 2"></figure>
+          <figure class="slide"><img loading="lazy" src="assets/screens/screen03.jpg" alt="Karar Mercii ekran görüntüsü 3"></figure>
+          <figure class="slide"><img loading="lazy" src="assets/screens/screen04.jpg" alt="Karar Mercii ekran görüntüsü 4"></figure>
+          <figure class="slide"><img loading="lazy" src="assets/screens/screen05.jpg" alt="Karar Mercii ekran görüntüsü 5"></figure>
+          <figure class="slide"><img loading="lazy" src="assets/screens/screen06.jpg" alt="Karar Mercii ekran görüntüsü 6"></figure>
+          <figure class="slide"><img loading="lazy" src="assets/screens/screen07.jpg" alt="Karar Mercii ekran görüntüsü 7"></figure>
+          <figure class="slide"><img loading="lazy" src="assets/screens/screen08.jpg" alt="Karar Mercii ekran görüntüsü 8"></figure>
+          <figure class="slide"><img loading="lazy" src="assets/screens/screen09.jpg" alt="Karar Mercii ekran görüntüsü 9"></figure>
+          <figure class="slide"><img loading="lazy" src="assets/screens/screen10.jpg" alt="Karar Mercii ekran görüntüsü 10"></figure>
+          <figure class="slide"><img loading="lazy" src="assets/screens/screen11.jpg" alt="Karar Mercii ekran görüntüsü 11"></figure>
+          <figure class="slide"><img loading="lazy" src="assets/screens/screen12.jpg" alt="Karar Mercii ekran görüntüsü 12"></figure>
+          <figure class="slide"><img loading="lazy" src="assets/screens/screen13.jpg" alt="Karar Mercii ekran görüntüsü 13"></figure>
+          <figure class="slide"><img loading="lazy" src="assets/screens/screen14.jpg" alt="Karar Mercii ekran görüntüsü 14"></figure>
+          <figure class="slide"><img loading="lazy" src="assets/screens/screen15.jpg" alt="Karar Mercii ekran görüntüsü 15"></figure>
+          <figure class="slide"><img loading="lazy" src="assets/screens/screen16.jpg" alt="Karar Mercii ekran görüntüsü 16"></figure>
+          <figure class="slide"><img loading="lazy" src="assets/screens/screen17.jpg" alt="Karar Mercii ekran görüntüsü 17"></figure>
+        </div>
+        <div class="arrow" aria-hidden="true">
+          <button class="prev" id="prev" title="Geri">◀</button>
+          <button class="next" id="next" title="İleri">▶</button>
         </div>
       </div>
+      <div class="dots" id="dots" aria-hidden="true"></div>
     </section>
 
-    <section class="features">
-      <article class="feat"><h3>🎉 Rastgele Eğlenceli Cevaplar</h3><p>Kararsız kaldığınız her an için sürpriz ve yaratıcı öneriler.</p></article>
-      <article class="feat"><h3>🍳 Bugün Ne Pişirsem?</h3><p>Tek yemek veya tam menü önerileriyle mutfakta hız kazanın.</p></article>
-      <article class="feat"><h3>🍔 Bugün Ne Yesem?</h3><p>Damak tadınıza uygun rastgele seçenekler.</p></article>
-      <article class="feat"><h3>🎬 Bugün Ne İzlesem?</h3><p>Film, dizi, belgesel ve daha fazlası.</p></article>
-      <article class="feat"><h3>🃏 Özel Kartlar</h3><p>Kendi kelimelerinizi ekleyin, uygulama sizin için rastgele seçsin.</p></article>
-      <article class="feat"><h3>🕹️ Mini Oyunlar</h3><p>Doğruluk mu cesaret mi, bilgi yarışması ve daha fazlası.</p></article>
-      <article class="feat"><h3>🧥🎵 Yakında</h3><p><strong>Bugün Ne Giysem?</strong> ve <strong>Bugün Ne Dinlesem?</strong> geliyor.</p></article>
+    <!-- Features -->
+    <section class="features" aria-label="Özellikler">
+      <article class="feat">
+        <h3>🎉 Rastgele Eğlenceli Cevaplar</h3>
+        <p>Kararsız kaldığınız her an için sürpriz, komik ve yaratıcı öneriler.</p>
+      </article>
+      <article class="feat">
+        <h3>🍳 Bugün Ne Pişirsem?</h3>
+        <p>Tek yemek veya tam menü önerileriyle mutfakta hız kazanın.</p>
+      </article>
+      <article class="feat">
+        <h3>🍔 Bugün Ne Yesem?</h3>
+        <p>Dışarıda ya da evde – damak tadınıza uygun rastgele seçenekler.</p>
+      </article>
+      <article class="feat">
+        <h3>🎬 Bugün Ne İzlesem?</h3>
+        <p>Film, dizi, belgesel ve daha fazlası – karar fazlalığına veda!</p>
+      </article>
+      <article class="feat">
+        <h3>🃏 Özel Kartlar</h3>
+        <p>Kendi kelimelerinizi ekleyin, uygulama sizin için rastgele seçsin.</p>
+      </article>
+      <article class="feat">
+        <h3>🕹️ Mini Oyunlar</h3>
+        <p>Doğruluk mu cesaret mi, ceza oyunu, bilgi yarışması ve zar atma ile eğlenceyi artırın.</p>
+      </article>
+      <article class="feat">
+        <h3>🧥🎵 Yakında</h3>
+        <p><strong>Bugün Ne Giysem?</strong> ve <strong>Bugün Ne Dinlesem?</strong> menüleri çok yakında.</p>
+      </article>
+    </section>
+
+    <!-- CTA (Play Store) -->
+    <section class="hero" aria-label="İndir">
+      <div class="hero-card" style="text-align:center">
+        <h2>Kararlarını şansa bırak, eğlenceyi keşfet!</h2>
+        <p>Karar Mercii şimdi Google Play'de.</p>
+        <p style="margin-top:12px">
+          <a class="btn" href="https://play.google.com/store/apps/details?id=com.kararmercii.app" target="_blank" rel="noopener">Google Play'de İndir</a>
+        </p>
+      </div>
     </section>
   </main>
 
   <footer>
-    <div>© <span id="y"></span> Karar Mercii • stokcity.com.tr/kararmercii</div>
+    <div>© <span id="y"></span> Karar Mercii • <a href="https://www.stokcity.com.tr/kararmercii" target="_blank" rel="noopener">stokcity.com.tr/kararmercii</a></div>
+    <div class="links mini">
+      <a href="#top">Yukarı Çık</a>
+      <span>•</span>
+      <a href="mailto:info@stokcity.com.tr">İletişim</a>
+      <span>•</span>
+      <a href="https://play.google.com/store/apps/details?id=com.kararmercii.app" target="_blank" rel="noopener">İndir</a>
+    </div>
   </footer>
 
-  <script>document.getElementById('y').textContent=new Date().getFullYear();</script>
+  <script>
+    // Yıl otomatik
+    document.getElementById('y').textContent = new Date().getFullYear();
+
+    // Basit carousel kontrolü (oklar + noktalar)
+    const track = document.getElementById('track');
+    const slides = Array.from(track.querySelectorAll('.slide'));
+    const prevBtn = document.getElementById('prev');
+    const nextBtn = document.getElementById('next');
+    const dotsEl = document.getElementById('dots');
+
+    // Dots oluştur
+    slides.forEach((_, i)=>{
+      const d=document.createElement('div'); d.className='dot' + (i===0?' active':''); d.dataset.i=i; dotsEl.appendChild(d);
+      d.addEventListener('click', ()=> goTo(i));
+    });
+
+    let index=0, isSnapping=false;
+
+    function goTo(i){
+      index = Math.max(0, Math.min(i, slides.length-1));
+      const target = slides[index];
+      target.scrollIntoView({behavior:'smooth', inline:'center'});
+      updateDots();
+    }
+
+    function updateDots(){
+      dotsEl.querySelectorAll('.dot').forEach((el, i)=>{
+        el.classList.toggle('active', i===index);
+      });
+    }
+
+    prevBtn.addEventListener('click', ()=> goTo(index-1));
+    nextBtn.addEventListener('click', ()=> goTo(index+1));
+
+    // Kaydırma ile aktif slaytı saptama
+    let raf;
+    track.addEventListener('scroll', ()=>{
+      if (isSnapping) return;
+      cancelAnimationFrame(raf);
+      raf = requestAnimationFrame(()=>{
+        const rects = slides.map(s=>({ node:s, l: s.getBoundingClientRect().left }));
+        const near = rects.reduce((a,b)=> Math.abs(b.l)<Math.abs(a.l)? b : a );
+        index = slides.indexOf(near.node);
+        updateDots();
+      });
+    }, {passive:true});
+
+    // Klavye ile gezinme
+    document.addEventListener('keydown', (e)=>{
+      if(e.key==='ArrowRight') nextBtn.click();
+      if(e.key==='ArrowLeft') prevBtn.click();
+    });
+  </script>
 </body>
 </html>
