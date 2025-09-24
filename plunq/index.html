@@ -1,0 +1,233 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Plunq – Gizlilik Politikası / Privacy Policy</title>
+  <meta name="robots" content="noindex,follow" />
+  <style>
+    :root{
+      --bg:#0f1216;--card:#151a20;--ink:#e8eef6;--muted:#9fb3c8;--brand:#56b5f8;
+      --ok:#64d38a;--warn:#ffd166;
+    }
+    html,body{margin:0;padding:0;background:var(--bg);color:var(--ink);font:16px/1.6 system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,"Helvetica Neue",Arial;}
+    .wrap{max-width:900px;margin:auto;padding:40px 16px;}
+    .card{background:var(--card);border-radius:14px;padding:24px;box-shadow:0 8px 30px rgba(0,0,0,.25)}
+    h1{font-size:28px;margin:0 0 8px}
+    h2{font-size:20px;margin-top:28px}
+    p,li{color:var(--ink)}
+    .muted{color:var(--muted)}
+    .grid{display:grid;gap:14px}
+    .lang{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0 24px}
+    .btn{background:#1f2630;border:1px solid #2b3441;color:var(--ink);padding:8px 12px;border-radius:10px;cursor:pointer}
+    .btn[aria-current="true"]{border-color:var(--brand);box-shadow:0 0 0 2px rgba(86,181,248,.2)}
+    .badge{display:inline-block;padding:2px 8px;border-radius:999px;background:#1e2430;border:1px solid #2b3441;color:var(--muted);font-size:12px}
+    table{width:100%;border-collapse:collapse;margin-top:8px}
+    th,td{border:1px solid #2b3441;padding:10px;text-align:left;vertical-align:top}
+    th{background:#1a2029}
+    a{color:var(--brand);text-decoration:none}
+    a:hover{text-decoration:underline}
+    .notice{background:#17202a;border-left:4px solid var(--warn);padding:10px 12px;border-radius:8px;color:#ffe9b3}
+    footer{margin-top:28px;color:var(--muted);font-size:14px}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="card">
+      <div id="header">
+        <h1 id="title">Plunq – Gizlilik Politikası</h1>
+        <div class="muted" id="updated">Son Güncelleme: 24 Eylül 2025</div>
+        <div class="lang" aria-label="Dil seçin / Choose language">
+          <button class="btn" data-lang="tr" aria-current="true">Türkçe</button>
+          <button class="btn" data-lang="en">English</button>
+          <button class="btn" data-lang="de">Deutsch</button>
+          <button class="btn" data-lang="fr">Français</button>
+        </div>
+      </div>
+
+      <!-- CONTENT -->
+      <div id="content" class="grid"></div>
+
+      <footer id="footer" class="muted">
+        © <span id="year"></span> Plunq · StokCity ·
+        <a href="mailto:stokcity@gmail.com">stokcity@gmail.com</a> ·
+        <a href="https://www.stokcity.com.tr/plunq" rel="noopener">stokcity.com.tr/plunq</a>
+      </footer>
+    </div>
+  </div>
+
+  <script>
+    const t = {
+      tr: {
+        title: "Plunq – Gizlilik Politikası",
+        updated: "Son Güncelleme: 24 Eylül 2025",
+        intro: "Plunq (“uygulama”) kullanıcı gizliliğine önem verir. Bu metin hangi verileri topladığımızı, nasıl kullandığımızı ve haklarınızı açıklar.",
+        sections: [
+          {
+            h: "1. Toplanan Veriler ve Amaçları",
+            html: `
+            <div class="notice">Plunq; kişisel tanımlayıcı (ad, e-posta vb.) toplamaz. Reklam ve performans için sınırlı teknik veriler kullanılır.</div>
+            <table>
+              <thead><tr><th>Veri Türü</th><th>Detay</th><th>Amaç</th></tr></thead>
+              <tbody>
+                <tr><td><span class="badge">Reklam Kimliği</span></td><td>Google Advertising ID</td><td>Reklam gösterimi ve ölçümü</td></tr>
+                <tr><td><span class="badge">Yaklaşık Konum</span></td><td>IP adresinden ülke/şehir tahmini</td><td>Reklamların bölgesel hedeflenmesi</td></tr>
+                <tr><td><span class="badge">Uygulama Etkinliği</span></td><td>Ekran görüntüleme, temel etkileşimler</td><td>Kullanım analizi</td></tr>
+                <tr><td><span class="badge">Kilitlenme Günlükleri</span></td><td>Hata anındaki teknik loglar</td><td>Hata ayıklama ve kararlılık</td></tr>
+                <tr><td><span class="badge">Performans & Tanılama</span></td><td>Çalışma ve performans metrikleri</td><td>Performans iyileştirme</td></tr>
+              </tbody>
+            </table>`
+          },
+          { h: "2. Üçüncü Taraflarla Paylaşım",
+            html: `
+            Veriler; <strong>reklam sağlayıcılar</strong> (örn. Unity Ads), <strong>Google Play/Android Vitals</strong> (çökme ve performans raporları) ve varsa <strong>analitik hizmetlerle</strong> paylaşılabilir. Paylaşımlar mümkün olduğunca anonim/kimliksizdir.`},
+          { h: "3. Saklama Süresi ve Silme",
+            html: `Veriler yasal ve operasyonel gereksinimler doğrultusunda sınırlı süre saklanır. Silme/erişim talepleri için <a href="mailto:stokcity@gmail.com">stokcity@gmail.com</a> adresinden bize ulaşabilirsiniz.` },
+          { h: "4. Kullanıcı Hakları",
+            html: `Yürürlükteki mevzuata göre erişim, düzeltme, silme, işlemeyi kısıtlama ve itiraz haklarına sahipsiniz.` },
+          { h: "5. Çocukların Gizliliği",
+            html: `Plunq çocuklara yönelik değildir ve 13 yaş altından bilerek veri toplamaz.` },
+          { h: "6. Değişiklikler",
+            html: `Bu politika zaman zaman güncellenebilir. Güncel sürüm bu sayfada yayımlanır.` },
+          { h: "7. İletişim",
+            html: `Plunq · StokCity · <a href="mailto:stokcity@gmail.com">stokcity@gmail.com</a>` }
+        ]
+      },
+
+      en: {
+        title: "Plunq – Privacy Policy",
+        updated: "Last Updated: 24 September 2025",
+        intro: "Plunq (the “app”) respects your privacy. This policy explains what data we collect, how we use it, and your rights.",
+        sections: [
+          { h: "1. Data We Collect & Purposes",
+            html: `
+            <div class="notice">Plunq does not collect personally identifiable information (such as name or email). Limited technical data is used for ads and performance.</div>
+            <table>
+              <thead><tr><th>Data Type</th><th>Details</th><th>Purpose</th></tr></thead>
+              <tbody>
+                <tr><td><span class="badge">Advertising ID</span></td><td>Google Advertising ID</td><td>Ad delivery and measurement</td></tr>
+                <tr><td><span class="badge">Approx. Location</span></td><td>Derived from IP (country/city)</td><td>Regional ad targeting</td></tr>
+                <tr><td><span class="badge">App Activity</span></td><td>Screen views, basic interactions</td><td>Usage analytics</td></tr>
+                <tr><td><span class="badge">Crash Logs</span></td><td>Technical logs on errors</td><td>Debugging and stability</td></tr>
+                <tr><td><span class="badge">Performance & Diagnostics</span></td><td>Runtime/performance metrics</td><td>Improve performance</td></tr>
+              </tbody>
+            </table>`},
+          { h: "2. Sharing with Third Parties",
+            html: `Data may be shared with <strong>ad providers</strong> (e.g., Unity Ads), <strong>Google Play/Android Vitals</strong> (crash/performance), and optional <strong>analytics services</strong>. Sharing is anonymized wherever possible.` },
+          { h: "3. Retention & Deletion",
+            html: `Data is retained only as necessary. You can request deletion via <a href="mailto:stokcity@gmail.com">stokcity@gmail.com</a>.` },
+          { h: "4. Your Rights",
+            html: `Subject to applicable laws, you may access, correct, delete, restrict processing, or object.` },
+          { h: "5. Children’s Privacy",
+            html: `Plunq is not directed to children and does not knowingly collect data from users under 13.` },
+          { h: "6. Changes",
+            html: `We may update this policy from time to time. The latest version will be posted here.` },
+          { h: "7. Contact",
+            html: `Plunq · StokCity · <a href="mailto:stokcity@gmail.com">stokcity@gmail.com</a>` }
+        ]
+      },
+
+      de: {
+        title: "Plunq – Datenschutzerklärung",
+        updated: "Letzte Aktualisierung: 24. September 2025",
+        intro: "Plunq („App“) respektiert Ihre Privatsphäre. Diese Erklärung erläutert, welche Daten wir erheben, wie wir sie verwenden und welche Rechte Sie haben.",
+        sections: [
+          { h: "1. Erhobene Daten & Zwecke",
+            html: `
+            <div class="notice">Plunq erfasst keine personenbezogenen Identifikatoren (z. B. Name oder E-Mail). Für Werbung und Leistung werden nur begrenzte technische Daten verwendet.</div>
+            <table>
+              <thead><tr><th>Datentyp</th><th>Details</th><th>Zweck</th></tr></thead>
+              <tbody>
+                <tr><td><span class="badge">Werbe-ID</span></td><td>Google Advertising ID</td><td>Auslieferung und Messung von Werbung</td></tr>
+                <tr><td><span class="badge">Ungef. Standort</span></td><td>Aus IP abgeleitet (Land/Stadt)</td><td>Regionale Ausrichtung von Werbung</td></tr>
+                <tr><td><span class="badge">App-Aktivität</span></td><td>Bildschirmaufrufe, Interaktionen</td><td>Nutzungsanalyse</td></tr>
+                <tr><td><span class="badge">Absturzprotokolle</span></td><td>Technische Protokolle bei Fehlern</td><td>Fehlerbehebung & Stabilität</td></tr>
+                <tr><td><span class="badge">Leistung & Diagnose</span></td><td>Laufzeit-/Leistungsmetriken</td><td>Leistungsverbesserung</td></tr>
+              </tbody>
+            </table>`},
+          { h: "2. Weitergabe an Dritte",
+            html: `Daten können mit <strong>Werbeanbietern</strong> (z. B. Unity Ads), <strong>Google Play/Android Vitals</strong> (Absturz/Leistung) und ggf. <strong>Analyse-Diensten</strong> geteilt werden. Die Weitergabe erfolgt möglichst anonymisiert.`},
+          { h: "3. Aufbewahrung & Löschung",
+            html: `Daten werden nur so lange gespeichert, wie erforderlich. Löschanfragen an <a href="mailto:stokcity@gmail.com">stokcity@gmail.com</a>.`},
+          { h: "4. Ihre Rechte",
+            html: `Zugriffs-, Berichtigungs-, Lösch-, Einschränkungs- und Widerspruchsrechte gemäß geltendem Recht.`},
+          { h: "5. Datenschutz von Kindern",
+            html: `Plunq richtet sich nicht an Kinder und erfasst wissentlich keine Daten von unter 13-Jährigen.`},
+          { h: "6. Änderungen",
+            html: `Diese Richtlinie kann aktualisiert werden; die neueste Version wird hier veröffentlicht.`},
+          { h: "7. Kontakt",
+            html: `Plunq · StokCity · <a href="mailto:stokcity@gmail.com">stokcity@gmail.com</a>`}
+        ]
+      },
+
+      fr: {
+        title: "Plunq – Politique de Confidentialité",
+        updated: "Dernière mise à jour : 24 septembre 2025",
+        intro: "Plunq (« l’application ») respecte votre vie privée. Cette politique explique les données collectées, leur utilisation et vos droits.",
+        sections: [
+          { h: "1. Données collectées et finalités",
+            html: `
+            <div class="notice">Plunq ne collecte pas d’identifiants personnels (nom, e-mail, etc.). Des données techniques limitées sont utilisées pour la publicité et la performance.</div>
+            <table>
+              <thead><tr><th>Type de données</th><th>Détails</th><th>Finalité</th></tr></thead>
+              <tbody>
+                <tr><td><span class="badge">Identifiant publicitaire</span></td><td>Google Advertising ID</td><td>Diffusion et mesure des annonces</td></tr>
+                <tr><td><span class="badge">Localisation approx.</span></td><td>Dérivée de l’IP (pays/ville)</td><td>Ciblage régional des annonces</td></tr>
+                <tr><td><span class="badge">Activité de l’app</span></td><td>Écrans consultés, interactions</td><td>Analyse d’usage</td></tr>
+                <tr><td><span class="badge">Journaux de plantage</span></td><td>Logs techniques lors d’erreurs</td><td>Débogage et stabilité</td></tr>
+                <tr><td><span class="badge">Performance & Diagnostic</span></td><td>Métriques d’exécution</td><td>Amélioration des performances</td></tr>
+              </tbody>
+            </table>`},
+          { h: "2. Partage avec des tiers",
+            html: `Les données peuvent être partagées avec des <strong>fournisseurs de publicité</strong> (ex. Unity Ads), <strong>Google Play/Android Vitals</strong> (crash/performance) et, le cas échéant, des <strong>services d’analytique</strong>. Le partage est anonymisé autant que possible.`},
+          { h: "3. Conservation & Suppression",
+            html: `Les données sont conservées pour la durée nécessaire. Demandes de suppression : <a href="mailto:stokcity@gmail.com">stokcity@gmail.com</a>.`},
+          { h: "4. Vos droits",
+            html: `Droits d’accès, de rectification, de suppression, de limitation et d’opposition selon la loi applicable.`},
+          { h: "5. Enfants",
+            html: `Plunq n’est pas destiné aux enfants et ne collecte pas sciemment de données d’utilisateurs de moins de 13 ans.`},
+          { h: "6. Modifications",
+            html: `Cette politique peut être mise à jour. La version la plus récente est publiée ici.`},
+          { h: "7. Contact",
+            html: `Plunq · StokCity · <a href="mailto:stokcity@gmail.com">stokcity@gmail.com</a>`}
+        ]
+      }
+    };
+
+    // render
+    const $title = document.getElementById("title");
+    const $updated = document.getElementById("updated");
+    const $content = document.getElementById("content");
+    const $year = document.getElementById("year");
+    $year.textContent = new Date().getFullYear();
+
+    const setLang = (lang) => {
+      const d = t[lang] || t.tr;
+      document.documentElement.lang = lang;
+      $title.textContent = d.title;
+      $updated.textContent = d.updated;
+      $content.innerHTML = `
+        <p>${d.intro}</p>
+        ${d.sections.map(s => `<h2>${s.h}</h2>${s.html}`).join("")}
+      `;
+      // toggle buttons
+      document.querySelectorAll(".btn").forEach(b=>{
+        b.setAttribute("aria-current", b.dataset.lang===lang ? "true":"false");
+      });
+      // persist in URL
+      const u = new URL(location);
+      u.searchParams.set("lang", lang);
+      history.replaceState(null,"",u);
+    };
+
+    // from URL ?lang=
+    const urlLang = new URL(location).searchParams.get("lang");
+    setLang(["tr","en","de","fr"].includes(urlLang) ? urlLang : "tr");
+
+    // events
+    document.querySelectorAll(".btn").forEach(b=>{
+      b.addEventListener("click", ()=>setLang(b.dataset.lang));
+    });
+  </script>
+</body>
+</html>
