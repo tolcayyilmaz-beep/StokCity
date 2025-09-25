@@ -3,100 +3,319 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>StokCity</title>
-  <meta name="description" content="StokCity — Stok Sayım ve Takip uygulamaları" />
-
-  <!-- (İsteğe bağlı) İlk görseli önceden getir -->
-  <link rel="preload" as="image" href="gorsel1.webp" imagesrcset="gorsel1.webp" />
-
+  <title>StokCity • Vitrin</title>
   <style>
     :root{
-      --bg:#f7f9fc; --card:#ffffff; --text:#0f172a; --muted:#6b7280;
-      --accent:#2563eb; --bdr:rgba(2,6,23,.08);
+      --orange:#ff7a00;     /* Stok turuncu */
+      --blue:#1976d2;       /* City mavi */
+      --blue-700:#125aa0;
+      --bg:#ffffff;
+      --paper:#f7f9fc;
+      --text:#0f172a;
+      --muted:#94a3b8;
+      --ring:rgba(25,118,210,.15);
     }
     *{box-sizing:border-box}
-    html,body{margin:0;padding:0}
+    html,body{height:100%}
     body{
-      font:16px/1.6 system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;
-      background:var(--bg); color:var(--text);
+      margin:0;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      color:var(--text);
+      background:linear-gradient(180deg,#ffffff, #f6f7fb);
     }
-    .wrap{max-width:1200px; margin:32px auto; padding:0 16px}
-    header{display:flex; justify-content:center; margin:14px 0 26px}
-    header h1{margin:0; font-weight:900; letter-spacing:.3px; font-size:clamp(28px,5vw,44px)}
 
-    /* KARTLAR: yan yana, ortalı, eş boyut */
-    .row{
-      display:flex; gap:24px; justify-content:center; align-items:flex-start; flex-wrap:wrap;
+    /* --- Layout --------------------------------------------------------- */
+    .app{
+      display:grid;
+      grid-template-columns: 260px 1fr 320px; /* sidebar | main | banner */
+      gap:24px;
+      max-width:1400px;
+      margin:0 auto;
+      padding:16px 20px;
+    }
+
+    /* --- Sidebar -------------------------------------------------------- */
+    .sidebar{
+      position:sticky; top:16px;
+      align-self:start;
+      background:var(--paper);
+      border:1px solid #e6eaf2;
+      border-radius:16px;
+      padding:16px;
+      box-shadow:0 6px 18px rgba(0,0,0,.06);
+    }
+    .brand{
+      display:flex; align-items:center; gap:12px;
+      padding:8px 8px 16px; border-bottom:1px dashed #e3e8f2; margin-bottom:8px;
+    }
+    .brand img{width:42px; height:42px; object-fit:contain}
+    .brand .title{
+      font-weight:800; letter-spacing:.2px; line-height:1;
+      background: linear-gradient(90deg,var(--orange),var(--blue));
+      -webkit-background-clip:text; background-clip:text; color:transparent;
+      font-size:22px;
+    }
+
+    .menu{list-style:none; padding:6px; margin:0; display:flex; flex-direction:column; gap:6px}
+    .menu a{
+      text-decoration:none; color:#0f172a; font-weight:600;
+      display:flex; align-items:center; gap:10px;
+      padding:12px 12px;
+      border-radius:12px;
+      border:1px solid transparent;
+    }
+    .menu a:hover{
+      background:#fff; border-color:#e8eef8;
+      box-shadow:0 0 0 4px var(--ring);
+    }
+    .menu a .dot{
+      width:10px; height:10px; border-radius:50%;
+      background:linear-gradient(180deg,var(--orange),#ff9a3d);
+      box-shadow:0 0 0 3px rgba(255,122,0,.12);
+    }
+
+    /* --- Topbar for mobile --------------------------------------------- */
+    .topbar{
+      display:none;
+      position:sticky; top:0; z-index:20;
+      background:#fff; border-bottom:1px solid #eef2f7;
+      padding:10px 14px;
+      align-items:center; justify-content:space-between;
+    }
+    .hamburger{
+      border:0; background:var(--blue); color:#fff; padding:10px 12px;
+      border-radius:10px; font-weight:700;
+    }
+
+    /* --- Main (Vitrin) -------------------------------------------------- */
+    .main{
+      min-height:70vh;
+    }
+    .hero{
+      background: radial-gradient(1200px 600px at 20% -10%, rgba(255,122,0,.12) 0, transparent 70%),
+                  radial-gradient(900px 500px at 110% 20%, rgba(25,118,210,.15) 0, transparent 65%);
+      border:1px solid #e6eaf2;
+      border-radius:18px;
+      padding:18px;
+      box-shadow:0 10px 28px rgba(16,24,40,.06);
+    }
+    .hero h1{
+      margin:0 0 6px; font-size:28px;
+    }
+    .hero p{margin:0; color:var(--muted)}
+    .grid{
+      margin-top:18px;
+      display:grid;
+      grid-template-columns: repeat(2, minmax(0,1fr));
+      gap:16px;
     }
     .card{
-      flex:0 0 340px; /* sabit genişlik → tüm kartlar aynı */
-      background:var(--card);
-      border:1px solid var(--bdr);
-      border-radius:18px;
-      padding:14px;
-      text-align:center;
-      box-shadow:0 10px 30px rgba(2,6,23,.05);
+      background:#fff; border:1px solid #e6eaf2; border-radius:16px;
+      padding:18px; display:flex; gap:14px; align-items:center;
+      box-shadow:0 6px 18px rgba(0,0,0,.05);
     }
-    .card picture, .card img{display:block; width:100%}
     .card img{
-      height:320px;           /* eş yükseklik */
-      object-fit:cover;       /* orantıyı koru, taşanı kırp */
-      border-radius:14px;
-      background:#eef2ff;
+      width:72px; height:72px; border-radius:16px; object-fit:cover;
+      box-shadow:0 4px 14px rgba(0,0,0,.12);
     }
-    .title{font-weight:800; font-size:18px; margin:12px 0 4px}
-    .sub{color:var(--muted); font-size:14px}
-    footer{margin:26px 0 12px; text-align:center}
-    footer a{color:var(--accent); text-decoration:none; font-weight:600}
-    footer a:hover{text-decoration:underline}
+    .badge{
+      display:inline-block; padding:4px 10px; font-size:12px;
+      border-radius:999px; font-weight:700; letter-spacing:.2px;
+      color:#fff; background:linear-gradient(90deg,var(--blue),var(--blue-700));
+    }
+    .cta{
+      margin-top:18px; display:flex; gap:10px; flex-wrap:wrap;
+    }
+    .btn{
+      border:0; padding:12px 14px; border-radius:12px; font-weight:700;
+      background:linear-gradient(90deg,var(--orange),#ff9a3d); color:#fff;
+      box-shadow:0 6px 16px rgba(255,122,0,.25);
+      cursor:pointer;
+    }
+    .btn.sec{
+      background:#fff; color:var(--blue); border:1px solid #e1e8f5; box-shadow:none;
+    }
+
+    /* --- Right Banner --------------------------------------------------- */
+    .banner{
+      position:sticky; top:16px; align-self:start;
+      background:linear-gradient(180deg,#ffffff,#f6f8fd);
+      border:1px solid #e6eaf2; border-radius:16px;
+      padding:14px; box-shadow:0 10px 28px rgba(0,0,0,.07);
+      display:flex; flex-direction:column; gap:12px;
+    }
+    .banner h3{
+      margin:0; font-size:16px; color:#0f172a; font-weight:800;
+    }
+    .rotator{
+      display:flex; flex-direction:column; gap:12px;
+    }
+    .rotator img{
+      width:100%; aspect-ratio: 9 / 16; object-fit:cover;
+      border-radius:14px; border:1px solid #e5ebf5;
+      box-shadow:0 6px 18px rgba(0,0,0,.12);
+      background:#f3f6fb;
+    }
+    .hint{font-size:12px; color:var(--muted); text-align:center}
+
+    /* --- Responsive ----------------------------------------------------- */
+    @media (max-width: 1200px){
+      .app{ grid-template-columns: 240px 1fr }
+      .banner{ grid-column: 1 / -1; position:static; }
+      .banner .rotator{ flex-direction:row }
+      .banner .rotator img{ aspect-ratio:16/9 }
+    }
+    @media (max-width: 900px){
+      .topbar{ display:flex }
+      .app{ grid-template-columns: 1fr; padding:12px }
+      .sidebar{ display:none; position:static }
+      .grid{ grid-template-columns: 1fr }
+    }
+    /* show sidebar when toggled on mobile */
+    .sidebar.open{ display:block; z-index:30 }
   </style>
 </head>
 <body>
-  <div class="wrap">
-    <header><h1>StokCity</h1></header>
-
-    <section class="row" aria-label="Uygulamalar">
-      <!-- 1. Görsel -->
-      <figure class="card">
-        <picture>
-          <source srcset="gorsel1.webp?v=1" type="image/webp" />
-          <img src="gorsel1.jpg?v=1" alt="Stok Sayım SC" width="340" height="320" loading="lazy" decoding="async" />
-        </picture>
-        <figcaption>
-          <div class="title">Stok Sayım SC</div>
-          <div class="sub">Yayın aşamasında...</div>
-        </figcaption>
-      </figure>
-
-      <!-- 2. Görsel -->
-      <figure class="card">
-        <picture>
-          <source srcset="gorsel2.webp?v=1" type="image/webp" />
-          <img src="gorsel2.jpg?v=1" alt="Stok Takip SC" width="340" height="320" loading="lazy" decoding="async" />
-        </picture>
-        <figcaption>
-          <div class="title">Stok Takip SC</div>
-          <div class="sub">Çok yakında...</div>
-        </figcaption>
-      </figure>
-
-      <!-- 3. Görsel -->
-      <figure class="card">
-        <picture>
-          <source srcset="gorsel3.webp?v=1" type="image/webp" />
-          <img src="gorsel3.jpg?v=1" alt="Atölye SC" width="340" height="320" loading="lazy" decoding="async" />
-        </picture>
-        <figcaption>
-          <div class="title">Atölye SC</div>
-          <div class="sub">Çok yakında...</div>
-        </figcaption>
-      </figure>
-    </section>
-
-    <footer>
-      <a href="privacy-policy.html">Gizlilik Politikası</a>
-      <a href="privacy-policy-namaz.html">Gizlilik Politikası (Namaz Takip)</a>
-    </footer>
+  <!-- Topbar (only mobile) -->
+  <div class="topbar">
+    <div style="display:flex;align-items:center;gap:10px">
+      <img src="assets/logo.png" alt="StokCity Logo" width="32" height="32" />
+      <strong>StokCity</strong>
+    </div>
+    <button class="hamburger" aria-controls="sidebar" aria-expanded="false">Menü</button>
   </div>
+
+  <div class="app">
+    <!-- Sidebar -->
+    <aside id="sidebar" class="sidebar" aria-label="Ana menü">
+      <div class="brand">
+        <img src="assets/logo.png" alt="StokCity logo" />
+        <div class="title">Stok<span style="color:var(--blue)">City</span></div>
+      </div>
+      <nav>
+        <ul class="menu">
+          <li><a href="#anasayfa"><span class="dot"></span> Ana Sayfa</a></li>
+          <li><a href="#stok-sayim"><span class="dot"></span> Stok Sayım</a></li>
+          <li><a href="#karar-merci"><span class="dot"></span> Karar Mercii</a></li>
+          <li><a href="#namaz-takip"><span class="dot"></span> Namaz Takip</a></li>
+          <li><a href="#plunq"><span class="dot"></span> Plunq Game</a></li>
+          <li><a href="#hakkimizda"><span class="dot"></span> Hakkımızda</a></li>
+          <li><a href="#iletisim"><span class="dot"></span> İletişim</a></li>
+        </ul>
+      </nav>
+    </aside>
+
+    <!-- Main / Vitrin -->
+    <main class="main" id="anasayfa">
+      <section class="hero">
+        <span class="badge">Vitrin</span>
+        <h1>Uygulamalarımız</h1>
+        <p>Dört ikon alanı — buraya uygulama ikonlarını yerleştirebilirsin.</p>
+
+        <div class="grid" aria-label="Uygulama ikonu kartları">
+          <article class="card">
+            <img src="assets/icon1.png" alt="Uygulama 1 ikonu" />
+            <div>
+              <h3 style="margin:.2rem 0">StokCity</h3>
+              <p style="margin:0; color:var(--muted)">Stok & sayım yönetimi</p>
+            </div>
+          </article>
+
+          <article class="card">
+            <img src="assets/icon2.png" alt="Uygulama 2 ikonu" />
+            <div>
+              <h3 style="margin:.2rem 0">Karar Mercii</h3>
+              <p style="margin:0; color:var(--muted)">Hızlı seçimler</p>
+            </div>
+          </article>
+
+          <article class="card">
+            <img src="assets/icon3.png" alt="Uygulama 3 ikonu" />
+            <div>
+              <h3 style="margin:.2rem 0">Namaz Takip</h3>
+              <p style="margin:0; color:var(--muted)">Vakit & hatırlatıcı</p>
+            </div>
+          </article>
+
+          <article class="card">
+            <img src="assets/icon4.png" alt="Uygulama 4 ikonu" />
+            <div>
+              <h3 style="margin:.2rem 0">Plunq Game</h3>
+              <p style="margin:0; color:var(--muted)">Arcade mini oyun</p>
+            </div>
+          </article>
+        </div>
+
+        <div class="cta">
+          <button class="btn">Hemen Keşfet</button>
+          <button class="btn sec" onclick="document.querySelector('#iletisim').scrollIntoView({behavior:'smooth'})">İletişime Geç</button>
+        </div>
+      </section>
+
+      <!-- Basit içerik yerleri -->
+      <section id="stok-sayim" style="padding:28px 4px"></section>
+      <section id="karar-merci" style="padding:28px 4px"></section>
+      <section id="namaz-takip" style="padding:28px 4px"></section>
+      <section id="plunq" style="padding:28px 4px"></section>
+      <section id="hakkimizda" style="padding:28px 4px">
+        <h2>Hakkımızda</h2>
+        <p>StokCity ekibi; pratik, hızlı ve güvenilir mobil çözümler geliştirir.</p>
+      </section>
+      <section id="iletisim" style="padding:28px 4px">
+        <h2>İletişim</h2>
+        <p>E-posta: <a href="mailto:info@stokcity.com">info@stokcity.com</a></p>
+      </section>
+    </main>
+
+    <!-- Right Banner (2 görsel, 30 sn'de rastgele değişir) -->
+    <aside class="banner" aria-label="Ekran görüntüsü banner">
+      <h3>Ekran Görüntüleri</h3>
+      <div class="rotator">
+        <img id="banner1" src="assets/ss1.jpg" alt="Ekran görüntüsü 1" />
+        <img id="banner2" src="assets/ss2.jpg" alt="Ekran görüntüsü 2" />
+      </div>
+      <div class="hint">Görseller 30 saniyede bir rastgele yenilenir.</div>
+    </aside>
+  </div>
+
+  <script>
+    // --- Mobile menü toggle
+    const btn = document.querySelector('.hamburger');
+    const sidebar = document.getElementById('sidebar');
+    btn?.addEventListener('click', () => {
+      const open = sidebar.classList.toggle('open');
+      btn.setAttribute('aria-expanded', String(open));
+    });
+
+    // --- Banner rotasyonu: iki img aynı anda, her 30 sn rasgele değişsin
+    const bannerImgs = [
+      'assets/ss1.jpg','assets/ss2.jpg','assets/ss3.jpg',
+      'assets/ss4.jpg','assets/ss5.jpg','assets/ss6.jpg'
+    ];
+
+    function pickRandom(exceptSrc){
+      const pool = bannerImgs.filter(src => src !== exceptSrc);
+      return pool[Math.floor(Math.random() * pool.length)];
+    }
+
+    function rotate(el){
+      const current = el.getAttribute('src');
+      const next = pickRandom(current);
+      // küçük bir fade efekti
+      el.style.opacity = .0;
+      setTimeout(()=>{
+        el.setAttribute('src', next);
+        el.style.opacity = 1;
+      }, 180);
+    }
+
+    const b1 = document.getElementById('banner1');
+    const b2 = document.getElementById('banner2');
+
+    setInterval(()=>{
+      rotate(b1);
+      rotate(b2);
+    }, 5000); // 30 saniye
+  </script>
 </body>
 </html>
