@@ -3,43 +3,116 @@
 <head>
   <meta charset="UTF-8">
   <title>Zikir Admin Paneli</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
   <style>
     body {
       font-family: Arial, sans-serif;
       background: #f3f4f6;
-      padding: 20px;
+      padding: 10px;
     }
+
     .container {
-      max-width: 800px;
+      max-width: 500px;
       background: #fff;
-      padding: 20px;
+      padding: 16px;
       margin: auto;
-      border-radius: 8px;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+      border-radius: 10px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.08);
     }
-    h2 { text-align: center; }
-    label { font-weight: bold; margin-top: 10px; display: block; }
-    input, textarea, button {
+
+    h2 {
+      text-align: center;
+      margin-bottom: 15px;
+    }
+
+    label {
+      font-weight: bold;
+      margin-top: 12px;
+      display: block;
+      font-size: 14px;
+    }
+
+    input, textarea {
       width: 100%;
-      padding: 8px;
-      margin-top: 5px;
-      border-radius: 4px;
+      padding: 10px;
+      margin-top: 6px;
+      border-radius: 6px;
       border: 1px solid #ccc;
+      font-size: 15px;
     }
-    textarea { resize: vertical; }
-    button {
+
+    textarea {
+      resize: vertical;
+    }
+
+    .date-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 15px;
+    }
+
+    .date-row input {
+      flex: 1;
+      text-align: center;
+      font-size: 15px;
+    }
+
+    .nav-btn {
       background: #2563eb;
+      color: white;
+      border: none;
+      padding: 10px 14px;
+      border-radius: 50%;
+      font-size: 16px;
+      cursor: pointer;
+    }
+
+    .nav-btn:hover {
+      background: #1d4ed8;
+    }
+
+    .btn-row {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-top: 18px;
+    }
+
+    .save-btn {
+      background: #16a34a;
       color: white;
       font-size: 16px;
       border: none;
-      margin-top: 15px;
+      padding: 12px;
+      border-radius: 6px;
       cursor: pointer;
     }
-    button:hover { background: #1d4ed8; }
+
+    .save-btn:hover {
+      background: #15803d;
+    }
+
+    .delete-btn {
+      background: #dc2626;
+      color: white;
+      font-size: 16px;
+      border: none;
+      padding: 12px;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
+    .delete-btn:hover {
+      background: #b91c1c;
+    }
+
     .status {
-      margin-top: 10px;
+      margin-top: 12px;
       font-weight: bold;
       text-align: center;
+      font-size: 14px;
     }
   </style>
 </head>
@@ -48,8 +121,11 @@
 <div class="container">
   <h2>Zikir Veri Giriş Paneli</h2>
 
-  <label>Tarih Seç</label>
-  <input type="date" id="datePicker">
+  <div class="date-row">
+    <button class="nav-btn" onclick="changeDate(-1)">◀</button>
+    <input type="date" id="datePicker">
+    <button class="nav-btn" onclick="changeDate(1)">▶</button>
+  </div>
 
   <label>Zikir (Arapça)</label>
   <textarea id="zikirTextAr" rows="2"></textarea>
@@ -78,25 +154,27 @@
   <label>Toplam Katılımcı</label>
   <input type="number" id="totalParticipants" value="0">
 
-  <button onclick="saveData()">Kaydet / Güncelle</button>
+  <div class="btn-row">
+    <button class="save-btn" onclick="saveData()">💾 Kaydet / Güncelle</button>
+    <button class="delete-btn" onclick="deleteData()">🗑 Kayıt Sil</button>
+  </div>
 
   <div class="status" id="status"></div>
 </div>
 
-<!-- Firebase SDK -->
+<!-- Firebase -->
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-  import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+  import { getFirestore, doc, getDoc, setDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
   const firebaseConfig = {
-  apiKey: "AIzaSyDTNOGduGplnuGI0hTUGIGilt_q6ojrCJc",
-  authDomain: "namaztakipanalitik-cf0a3.firebaseapp.com",
-  projectId: "namaztakipanalitik-cf0a3",
-  storageBucket: "namaztakipanalitik-cf0a3.firebasestorage.app",
-  messagingSenderId: "753795773645",
-  appId: "1:753795773645:web:e73ae2e51cd55fb3722584"
-};
-
+    apiKey: "AIzaSyDTNOGduGplnuGI0hTUGIGilt_q6ojrCJc",
+    authDomain: "namaztakipanalitik-cf0a3.firebaseapp.com",
+    projectId: "namaztakipanalitik-cf0a3",
+    storageBucket: "namaztakipanalitik-cf0a3.firebasestorage.app",
+    messagingSenderId: "753795773645",
+    appId: "1:753795773645:web:e73ae2e51cd55fb3722584"
+  };
 
   const app = initializeApp(firebaseConfig);
   const db = getFirestore(app);
@@ -104,6 +182,17 @@
   const datePicker = document.getElementById("datePicker");
 
   datePicker.addEventListener("change", loadData);
+
+  window.changeDate = function (offset) {
+    if (!datePicker.value) return;
+
+    const current = new Date(datePicker.value);
+    current.setDate(current.getDate() + offset);
+
+    const newDate = current.toISOString().split("T")[0];
+    datePicker.value = newDate;
+    loadData();
+  };
 
   async function loadData() {
     const date = datePicker.value;
@@ -131,15 +220,13 @@
     }
   }
 
-function clearFields() {
-  document.querySelectorAll("input, textarea").forEach(el => {
-    if (el.id === "datePicker") return; // 📅 Tarihi silme
-
-    if (el.type === "number") el.value = 0;
-    else el.value = "";
-  });
-}
-
+  function clearFields() {
+    document.querySelectorAll("input, textarea").forEach(el => {
+      if (el.id === "datePicker") return;
+      if (el.type === "number") el.value = 0;
+      else el.value = "";
+    });
+  }
 
   window.saveData = async function () {
     const date = datePicker.value;
@@ -157,13 +244,29 @@ function clearFields() {
       mealEn: document.getElementById("mealEn").value,
       mealAr: document.getElementById("mealAr").value,
       totalDhikr: Number(document.getElementById("totalDhikr").value),
-      totalParticipants: Number(document.getElementById("totalParticipants").value),
+      totalParticipants: Number(document.getElementById("totalParticipants").value)
     };
 
     const ref = doc(db, "zikirler", date);
     await setDoc(ref, data, { merge: true });
 
     document.getElementById("status").innerText = "Kayıt başarıyla kaydedildi.";
+  };
+
+  window.deleteData = async function () {
+    const date = datePicker.value;
+    if (!date) {
+      alert("Lütfen bir tarih seç!");
+      return;
+    }
+
+    if (!confirm("Bu tarihe ait kaydı silmek istediğine emin misin?")) return;
+
+    const ref = doc(db, "zikirler", date);
+    await deleteDoc(ref);
+
+    clearFields();
+    document.getElementById("status").innerText = "Kayıt silindi.";
   };
 </script>
 
