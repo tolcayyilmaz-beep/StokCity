@@ -4,114 +4,993 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <title>Taner İş Kıyafetleri | Dijital Katalog</title>
+
   <style>
-    :root{--navy:#10243e;--orange:#f1840b;--ink:#0b1220;--muted:#5d6673;--line:#cbd1d8;--bg:#f7f7f6}*{box-sizing:border-box}html,body{margin:0;height:100%;font-family:Arial,Helvetica,sans-serif;color:var(--ink);background:#e9e9e7;overflow:hidden}.catalog{height:100vh;overflow-y:auto;scroll-snap-type:y mandatory;scroll-behavior:smooth;-webkit-overflow-scrolling:touch}.page{position:relative;min-height:100vh;scroll-snap-align:start;transition:opacity .55s ease, transform .55s ease;background:radial-gradient(circle at 50% 5%,#fff 0,#f8f8f7 38%,#ececea 100%);overflow:hidden;padding:clamp(22px,4vw,58px) clamp(18px,5vw,76px) 74px}.page:not(.active){opacity:.72;transform:scale(.985)}.page.active{opacity:1;transform:scale(1)}.page:before{content:"";position:absolute;inset:0;background-image:radial-gradient(#d8d8d8 1px,transparent 1px);background-size:18px 18px;opacity:.22;pointer-events:none}.logo{width:min(255px,48vw);display:block}.home{display:grid;grid-template-columns:44% 1fr;gap:50px;align-items:center}.left{position:relative;z-index:2}.home h1{font-size:clamp(42px,6vw,78px);line-height:.98;margin:70px 0 24px;font-weight:900;letter-spacing:-2.5px}.home p{font-size:clamp(17px,2.1vw,27px);line-height:1.45;color:#2b2f36;margin:0 0 54px}.features{display:grid;gap:24px}.feature{display:flex;align-items:center;gap:20px}.icon{width:70px;height:70px;border:1.4px solid #111;border-radius:50%;display:grid;place-items:center;font-size:28px;color:var(--navy);flex:none}.feature b{display:block;font-size:clamp(18px,2vw,27px);color:var(--navy);margin-bottom:5px}.feature span{font-size:clamp(14px,1.6vw,19px);color:#222}.divider{position:absolute;top:8%;bottom:6%;left:48%;width:1px;background:#192334}.hero-products{position:relative;z-index:2;display:grid;gap:16px;justify-items:center}.hero-products img{max-width:78%;max-height:29vh;object-fit:contain;filter:drop-shadow(0 18px 18px rgba(0,0,0,.13))}.footer{position:absolute;left:0;right:0;bottom:0;height:50px;background:var(--navy);color:white;display:flex;align-items:center;justify-content:center;letter-spacing:12px;font-size:19px;z-index:4}.footer:before{content:"";position:absolute;left:0;top:0;border-top:50px solid var(--orange);border-right:72px solid transparent}.product-page{display:grid;grid-template-columns:48% 1fr;gap:48px;align-items:start}.product-left,.product-right{position:relative;z-index:2}.product-left{border-right:1px solid #172335;min-height:calc(100vh - 130px);padding-right:36px}.showcase{display:grid;grid-template-columns:1fr;gap:22px;align-items:center;justify-items:center;margin-top:20px}.showcase img{max-width:88%;max-height:36vh;object-fit:contain;filter:drop-shadow(0 18px 16px rgba(0,0,0,.13))}.main-img{display:grid;place-items:center;margin:22px 0 26px}.main-img img{width:min(420px,85%);max-height:40vh;object-fit:contain;filter:drop-shadow(0 18px 16px rgba(0,0,0,.12))}.product-title{margin:14px 0 22px}.code{font-size:clamp(34px,4vw,55px);font-weight:900;color:var(--navy);letter-spacing:1px}.name{font-size:clamp(18px,2vw,28px);font-weight:900;color:var(--navy);margin-top:6px}.orange-line{width:72px;height:4px;background:var(--orange);margin:20px 0}.specs{display:grid;grid-template-columns:1fr 1fr;gap:10px 32px;margin:18px 0 34px;padding:0;list-style:none;font-size:clamp(14px,1.55vw,19px);line-height:1.55}.specs li:before{content:"- "}.colors{border-top:1px solid #87909b;padding-top:22px}.colors h3{font-size:clamp(20px,2.2vw,28px);color:var(--navy);margin:0 0 14px}.swatches{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;align-items:end}.swatch{text-align:center;color:var(--navy);font-size:16px}.swatch img{width:100%;height:108px;object-fit:contain;border-radius:14px;background:white;padding:6px}.swatch.active img{border:2px solid var(--orange)}.hint{position:fixed;right:15px;top:50%;z-index:10;display:grid;gap:8px}.dot{width:8px;height:8px;border-radius:50%;background:#aeb5bd}.dot.active{background:var(--orange);height:22px}.mobile-note{display:none}@media(max-width:760px){html,body{overflow:hidden}.page{padding:22px 18px 64px}.home,.product-page{display:block}.logo{width:178px;margin:0 auto}.home h1{font-size:42px;margin:24px 0 12px;text-align:left}.home p{font-size:16px;margin-bottom:22px}.features{grid-template-columns:1fr 1fr;gap:12px}.feature{gap:8px}.icon{width:42px;height:42px;font-size:18px}.feature b{font-size:14px}.feature span{font-size:11px}.divider{display:none}.hero-products{grid-template-columns:1fr 1fr;gap:6px;margin-top:18px}.hero-products img:first-child{grid-column:1/3;max-height:32vh}.hero-products img{max-width:100%;max-height:20vh}.footer{height:42px;font-size:12px;letter-spacing:7px}.footer:before{border-top-width:42px;border-right-width:56px}.product-left{border-right:0;min-height:auto;padding-right:0}.product-page .logo{width:156px}.showcase{grid-template-columns:1fr 1fr;gap:6px;margin-top:14px}.showcase img{max-width:100%;max-height:24vh}.main-img{margin:10px 0 8px}.main-img img{width:78%;max-height:25vh}.code{font-size:33px}.name{font-size:17px}.orange-line{margin:11px 0;width:54px}.specs{grid-template-columns:1fr 1fr;gap:3px 14px;font-size:12.5px;margin:8px 0 14px}.colors{padding-top:12px}.colors h3{font-size:17px;margin-bottom:8px}.swatches{gap:8px}.swatch{font-size:12px}.swatch img{height:68px}.hint{right:8px}.mobile-note{display:block;position:fixed;left:50%;bottom:52px;transform:translateX(-50%);z-index:20;background:rgba(16,36,62,.86);color:#fff;padding:8px 14px;border-radius:999px;font-size:12px;white-space:nowrap;animation:fadeout 4s forwards}@keyframes fadeout{0%,70%{opacity:1}100%{opacity:0;pointer-events:none}}}@media(min-width:1200px){.page{max-width:1180px;margin:0 auto;min-height:100vh}.catalog{background:#ddd}.footer{left:50%;transform:translateX(-50%);max-width:1180px}}
+    :root{
+      --navy:#10243e;
+      --orange:#f1840b;
+      --ink:#0b1220;
+      --muted:#5d6673;
+      --line:#cbd1d8;
+      --bg:#f7f7f6;
+    }
+
+    *{
+      box-sizing:border-box;
+    }
+
+    html,
+    body{
+      margin:0;
+      width:100%;
+      height:100%;
+      font-family:Arial,Helvetica,sans-serif;
+      color:var(--ink);
+      background:#e9e9e7;
+      overflow:hidden;
+    }
+
+    .catalog{
+      width:100vw;
+      height:100vh;
+      display:flex;
+      overflow-x:auto;
+      overflow-y:hidden;
+      scroll-snap-type:x mandatory;
+      scroll-behavior:smooth;
+      -webkit-overflow-scrolling:touch;
+      overscroll-behavior:none;
+      scrollbar-width:none;
+    }
+
+    .catalog::-webkit-scrollbar{
+      display:none;
+    }
+
+    .page{
+      position:relative;
+      width:100vw;
+      min-width:100vw;
+      height:100vh;
+      flex:none;
+      scroll-snap-align:start;
+      transition:opacity .55s ease, transform .55s ease;
+      background:radial-gradient(circle at 50% 5%,#fff 0,#f8f8f7 38%,#ececea 100%);
+      overflow:hidden;
+      padding:clamp(22px,4vw,58px) clamp(18px,5vw,76px) 74px;
+    }
+
+    .page:not(.active){
+      opacity:.72;
+      transform:scale(.985);
+    }
+
+    .page.active{
+      opacity:1;
+      transform:scale(1);
+    }
+
+    .page:before{
+      content:"";
+      position:absolute;
+      inset:0;
+      background-image:radial-gradient(#d8d8d8 1px,transparent 1px);
+      background-size:18px 18px;
+      opacity:.22;
+      pointer-events:none;
+    }
+
+    .logo{
+      width:min(255px,48vw);
+      display:block;
+    }
+
+    .home{
+      display:grid;
+      grid-template-columns:44% 1fr;
+      gap:50px;
+      align-items:center;
+    }
+
+    .left{
+      position:relative;
+      z-index:2;
+    }
+
+    .home h1{
+      font-size:clamp(42px,6vw,78px);
+      line-height:.98;
+      margin:70px 0 24px;
+      font-weight:900;
+      letter-spacing:-2.5px;
+    }
+
+    .home p{
+      font-size:clamp(17px,2.1vw,27px);
+      line-height:1.45;
+      color:#2b2f36;
+      margin:0 0 54px;
+    }
+
+    .features{
+      display:grid;
+      gap:24px;
+    }
+
+    .feature{
+      display:flex;
+      align-items:center;
+      gap:20px;
+    }
+
+    .icon{
+      width:70px;
+      height:70px;
+      border:1.4px solid #111;
+      border-radius:50%;
+      display:grid;
+      place-items:center;
+      font-size:28px;
+      color:var(--navy);
+      flex:none;
+    }
+
+    .feature b{
+      display:block;
+      font-size:clamp(18px,2vw,27px);
+      color:var(--navy);
+      margin-bottom:5px;
+    }
+
+    .feature span{
+      font-size:clamp(14px,1.6vw,19px);
+      color:#222;
+    }
+
+    .divider{
+      position:absolute;
+      top:8%;
+      bottom:6%;
+      left:48%;
+      width:1px;
+      background:#192334;
+    }
+
+    .hero-products{
+      position:relative;
+      z-index:2;
+      display:grid;
+      gap:16px;
+      justify-items:center;
+    }
+
+    .hero-products img{
+      max-width:78%;
+      max-height:29vh;
+      object-fit:contain;
+      filter:drop-shadow(0 18px 18px rgba(0,0,0,.13));
+    }
+
+    .footer{
+      position:absolute;
+      left:0;
+      right:0;
+      bottom:0;
+      height:50px;
+      background:var(--navy);
+      color:white;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      letter-spacing:12px;
+      font-size:19px;
+      z-index:4;
+    }
+
+    .footer:before{
+      content:"";
+      position:absolute;
+      left:0;
+      top:0;
+      border-top:50px solid var(--orange);
+      border-right:72px solid transparent;
+    }
+
+    .product-page{
+      display:grid;
+      grid-template-columns:48% 1fr;
+      gap:48px;
+      align-items:start;
+    }
+
+    .product-left,
+    .product-right{
+      position:relative;
+      z-index:2;
+    }
+
+    .product-left{
+      border-right:1px solid #172335;
+      min-height:calc(100vh - 130px);
+      padding-right:36px;
+    }
+
+    .showcase{
+      display:grid;
+      grid-template-columns:1fr;
+      gap:22px;
+      align-items:center;
+      justify-items:center;
+      margin-top:20px;
+    }
+
+    .showcase img{
+      max-width:88%;
+      max-height:36vh;
+      object-fit:contain;
+      filter:drop-shadow(0 18px 16px rgba(0,0,0,.13));
+    }
+
+    .main-img{
+      display:grid;
+      place-items:center;
+      margin:22px 0 26px;
+    }
+
+    .main-img img{
+      width:min(420px,85%);
+      max-height:40vh;
+      object-fit:contain;
+      filter:drop-shadow(0 18px 16px rgba(0,0,0,.12));
+    }
+
+    .product-title{
+      margin:14px 0 22px;
+    }
+
+    .code{
+      font-size:clamp(34px,4vw,55px);
+      font-weight:900;
+      color:var(--navy);
+      letter-spacing:1px;
+    }
+
+    .name{
+      font-size:clamp(18px,2vw,28px);
+      font-weight:900;
+      color:var(--navy);
+      margin-top:6px;
+    }
+
+    .orange-line{
+      width:72px;
+      height:4px;
+      background:var(--orange);
+      margin:20px 0;
+    }
+
+    .specs{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:10px 32px;
+      margin:18px 0 34px;
+      padding:0;
+      list-style:none;
+      font-size:clamp(14px,1.55vw,19px);
+      line-height:1.55;
+    }
+
+    .specs li:before{
+      content:"- ";
+    }
+
+    .colors{
+      border-top:1px solid #87909b;
+      padding-top:22px;
+    }
+
+    .colors h3{
+      font-size:clamp(20px,2.2vw,28px);
+      color:var(--navy);
+      margin:0 0 14px;
+    }
+
+    .swatches{
+      display:grid;
+      grid-template-columns:repeat(3,1fr);
+      gap:18px;
+      align-items:end;
+    }
+
+    .swatch{
+      text-align:center;
+      color:var(--navy);
+      font-size:16px;
+    }
+
+    .swatch img{
+      width:100%;
+      height:108px;
+      object-fit:contain;
+      border-radius:14px;
+      background:white;
+      padding:6px;
+    }
+
+    .swatch.active img{
+      border:2px solid var(--orange);
+    }
+
+    .hint{
+      position:fixed;
+      right:15px;
+      top:50%;
+      transform:translateY(-50%);
+      z-index:10;
+      display:grid;
+      gap:8px;
+    }
+
+    .dot{
+      width:8px;
+      height:8px;
+      border-radius:50%;
+      background:#aeb5bd;
+    }
+
+    .dot.active{
+      background:var(--orange);
+      height:22px;
+    }
+
+    .mobile-note{
+      display:none;
+    }
+
+    @media(max-width:760px){
+      html,
+      body{
+        width:100%;
+        height:100%;
+        overflow:hidden;
+      }
+
+      .catalog{
+        width:100vw;
+        height:100dvh;
+        overflow-x:auto;
+        overflow-y:hidden;
+        scroll-snap-type:x mandatory;
+      }
+
+      .page{
+        width:100vw;
+        min-width:100vw;
+        height:100dvh;
+        min-height:100dvh;
+        overflow:hidden;
+        padding:16px 14px 52px;
+      }
+
+      .home,
+      .product-page{
+        display:block;
+      }
+
+      .logo{
+        width:154px;
+        margin:0 auto;
+      }
+
+      .home h1{
+        font-size:34px;
+        line-height:.98;
+        margin:16px 0 10px;
+        letter-spacing:-1.4px;
+        text-align:left;
+      }
+
+      .home p{
+        font-size:14px;
+        line-height:1.35;
+        margin-bottom:14px;
+      }
+
+      .features{
+        grid-template-columns:1fr 1fr;
+        gap:8px 10px;
+      }
+
+      .feature{
+        gap:7px;
+      }
+
+      .icon{
+        width:34px;
+        height:34px;
+        font-size:15px;
+      }
+
+      .feature b{
+        font-size:12.5px;
+        margin-bottom:2px;
+      }
+
+      .feature span{
+        font-size:10px;
+        line-height:1.15;
+        display:block;
+      }
+
+      .divider{
+        display:none;
+      }
+
+      .hero-products{
+        grid-template-columns:1fr 1fr;
+        gap:5px;
+        margin-top:12px;
+      }
+
+      .hero-products img:first-child{
+        grid-column:1/3;
+        max-height:22vh;
+      }
+
+      .hero-products img{
+        max-width:100%;
+        max-height:14vh;
+      }
+
+      .footer{
+        height:42px;
+        font-size:12px;
+        letter-spacing:7px;
+      }
+
+      .footer:before{
+        border-top-width:42px;
+        border-right-width:56px;
+      }
+
+      .product-left{
+        border-right:0;
+        min-height:auto;
+        padding-right:0;
+      }
+
+      .product-page .logo{
+        width:138px;
+      }
+
+      .showcase{
+        grid-template-columns:1fr 1fr;
+        gap:5px;
+        margin-top:8px;
+      }
+
+      .showcase img{
+        max-width:100%;
+        max-height:16vh;
+      }
+
+      .main-img{
+        margin:6px 0 6px;
+      }
+
+      .main-img img{
+        width:62%;
+        max-height:18vh;
+      }
+
+      .product-title{
+        margin:6px 0 8px;
+      }
+
+      .code{
+        font-size:28px;
+      }
+
+      .name{
+        font-size:14.5px;
+        margin-top:2px;
+      }
+
+      .orange-line{
+        margin:7px 0;
+        width:48px;
+        height:3px;
+      }
+
+      .specs{
+        grid-template-columns:1fr 1fr;
+        gap:2px 10px;
+        font-size:11px;
+        line-height:1.25;
+        margin:6px 0 8px;
+      }
+
+      .colors{
+        padding-top:8px;
+      }
+
+      .colors h3{
+        font-size:14px;
+        margin-bottom:6px;
+      }
+
+      .swatches{
+        gap:6px;
+      }
+
+      .swatch{
+        font-size:10.5px;
+      }
+
+      .swatch img{
+        height:52px;
+        border-radius:10px;
+        padding:4px;
+      }
+
+      .hint{
+        right:8px;
+        top:50%;
+      }
+
+      .dot{
+        width:7px;
+        height:7px;
+      }
+
+      .dot.active{
+        height:19px;
+      }
+
+      .mobile-note{
+        display:block;
+        position:fixed;
+        left:50%;
+        bottom:50px;
+        transform:translateX(-50%);
+        z-index:20;
+        background:rgba(16,36,62,.86);
+        color:#fff;
+        padding:7px 13px;
+        border-radius:999px;
+        font-size:11px;
+        white-space:nowrap;
+        animation:fadeout 4s forwards;
+      }
+
+      @keyframes fadeout{
+        0%,70%{
+          opacity:1;
+        }
+
+        100%{
+          opacity:0;
+          pointer-events:none;
+        }
+      }
+    }
+
+    @media(max-width:380px){
+      .page{
+        padding:12px 12px 48px;
+      }
+
+      .home h1{
+        font-size:30px;
+        margin-top:12px;
+      }
+
+      .home p{
+        font-size:12.5px;
+        margin-bottom:10px;
+      }
+
+      .features{
+        gap:6px;
+      }
+
+      .icon{
+        width:30px;
+        height:30px;
+        font-size:13px;
+      }
+
+      .feature b{
+        font-size:11.5px;
+      }
+
+      .feature span{
+        font-size:9px;
+      }
+
+      .hero-products img:first-child{
+        max-height:20vh;
+      }
+
+      .hero-products img{
+        max-height:12vh;
+      }
+
+      .showcase img{
+        max-height:14vh;
+      }
+
+      .main-img img{
+        max-height:15vh;
+      }
+
+      .code{
+        font-size:24px;
+      }
+
+      .name{
+        font-size:13px;
+      }
+
+      .specs{
+        font-size:10px;
+      }
+
+      .swatch img{
+        height:44px;
+      }
+    }
+
+    @media(min-width:1200px){
+      .catalog{
+        background:#ddd;
+      }
+
+      .page{
+        max-width:1180px;
+        min-width:1180px;
+        margin:0 calc((100vw - 1180px) / 2);
+      }
+
+      .footer{
+        left:50%;
+        transform:translateX(-50%);
+        max-width:1180px;
+      }
+    }
   </style>
 </head>
+
 <body>
-  <div class="mobile-note">Kaydırarak sayfalar arasında gezebilirsiniz</div>
-  <div class="hint"><span class="dot active"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span></div>
+  <div class="mobile-note">Sağa / sola kaydırarak sayfalar arasında gezebilirsiniz</div>
+
+  <div class="hint">
+    <span class="dot active"></span>
+    <span class="dot"></span>
+    <span class="dot"></span>
+    <span class="dot"></span>
+  </div>
+
   <main class="catalog" id="catalog">
     <section class="page home">
       <div class="left">
         <img class="logo" src="assets/logo.jpg" alt="Taner İş Kıyafetleri">
+
         <h1>İş giyimde<br>güçlü görünüm.</h1>
+
         <p>Polar, polo yaka ve yuvarlak yaka ürün seçenekleriyle modern iş kıyafeti koleksiyonu.</p>
+
         <div class="features">
-          <div class="feature"><div class="icon">✓</div><div><b>Dayanıklı</b><span>Uzun ömürlü kullanım</span></div></div>
-          <div class="feature"><div class="icon">❄</div><div><b>Konforlu</b><span>Her mevsim rahatlık</span></div></div>
-          <div class="feature"><div class="icon">◈</div><div><b>Modern Tasarım</b><span>Şık ve profesyonel görünüm</span></div></div>
-          <div class="feature"><div class="icon">✦</div><div><b>Yüksek Kalite</b><span>Özenli kumaş ve işçilik</span></div></div>
-          <div class="feature"><div class="icon">✂</div><div><b>Özel Üretim</b><span>Kurumsal çözümler</span></div></div>
+          <div class="feature">
+            <div class="icon">✓</div>
+            <div>
+              <b>Dayanıklı</b>
+              <span>Uzun ömürlü kullanım</span>
+            </div>
+          </div>
+
+          <div class="feature">
+            <div class="icon">❄</div>
+            <div>
+              <b>Konforlu</b>
+              <span>Her mevsim rahatlık</span>
+            </div>
+          </div>
+
+          <div class="feature">
+            <div class="icon">◈</div>
+            <div>
+              <b>Modern Tasarım</b>
+              <span>Şık ve profesyonel görünüm</span>
+            </div>
+          </div>
+
+          <div class="feature">
+            <div class="icon">✦</div>
+            <div>
+              <b>Yüksek Kalite</b>
+              <span>Özenli kumaş ve işçilik</span>
+            </div>
+          </div>
+
+          <div class="feature">
+            <div class="icon">✂</div>
+            <div>
+              <b>Özel Üretim</b>
+              <span>Kurumsal çözümler</span>
+            </div>
+          </div>
         </div>
       </div>
+
       <div class="divider"></div>
+
       <div class="hero-products">
         <img src="assets/polar-on.png" alt="Polar iş montu">
         <img src="assets/polo-on.png" alt="Polo yaka tişört">
         <img src="assets/tshirt-on.png" alt="Yuvarlak yaka tişört">
       </div>
+
       <div class="footer">www.taner.com.tr</div>
     </section>
 
     <section class="page product-page">
       <div class="product-left">
         <img class="logo" src="assets/logo.jpg" alt="Taner İş Kıyafetleri">
-        <div class="showcase"><img src="assets/polar-on.png" alt="Polar ön"><img src="assets/polar-arka.png" alt="Polar arka"></div>
+
+        <div class="showcase">
+          <img src="assets/polar-on.png" alt="Polar ön">
+          <img src="assets/polar-arka.png" alt="Polar arka">
+        </div>
       </div>
+
       <div class="product-right">
-        <div class="main-img"><img src="assets/polar-kirmizi.webp" alt="Polar iş montu"></div>
-        <div class="product-title"><div class="code">TP-001</div><div class="name">POLAR İŞ MONTU</div><div class="orange-line"></div></div>
-        <ul class="specs"><li>Polar kumaş</li><li>Soğuk hava koşullarına uygun</li><li>Dik yaka</li><li>Fermuarlı ve çok cepli tasarım</li><li>Yan cepler</li><li>S - M - L - XL - XXL beden</li><li>Kol cep</li><li>Özel üretim yapılır</li></ul>
-        <div class="colors"><h3>RENK SEÇENEKLERİ</h3><div class="swatches"><div class="swatch active"><img src="assets/polar-kirmizi.webp"><span>Kırmızı</span></div><div class="swatch"><img src="assets/polar-siyah.webp"><span>Siyah</span></div><div class="swatch"><img src="assets/polar-gri.webp"><span>Gri</span></div></div></div>
+        <div class="main-img">
+          <img src="assets/polar-kirmizi.webp" alt="Polar iş montu">
+        </div>
+
+        <div class="product-title">
+          <div class="code">TP-001</div>
+          <div class="name">POLAR İŞ MONTU</div>
+          <div class="orange-line"></div>
+        </div>
+
+        <ul class="specs">
+          <li>Polar kumaş</li>
+          <li>Soğuk hava koşullarına uygun</li>
+          <li>Dik yaka</li>
+          <li>Fermuarlı ve çok cepli tasarım</li>
+          <li>Yan cepler</li>
+          <li>S - M - L - XL - XXL beden</li>
+          <li>Kol cep</li>
+          <li>Özel üretim yapılır</li>
+        </ul>
+
+        <div class="colors">
+          <h3>RENK SEÇENEKLERİ</h3>
+
+          <div class="swatches">
+            <div class="swatch active">
+              <img src="assets/polar-kirmizi.webp" alt="Kırmızı polar">
+              <span>Kırmızı</span>
+            </div>
+
+            <div class="swatch">
+              <img src="assets/polar-siyah.webp" alt="Siyah polar">
+              <span>Siyah</span>
+            </div>
+
+            <div class="swatch">
+              <img src="assets/polar-gri.webp" alt="Gri polar">
+              <span>Gri</span>
+            </div>
+          </div>
+        </div>
       </div>
+
       <div class="footer">www.taner.com.tr</div>
     </section>
 
     <section class="page product-page">
       <div class="product-left">
         <img class="logo" src="assets/logo.jpg" alt="Taner İş Kıyafetleri">
-        <div class="showcase"><img src="assets/polo-on.png" alt="Polo ön"><img src="assets/polo-arka.png" alt="Polo arka"></div>
+
+        <div class="showcase">
+          <img src="assets/polo-on.png" alt="Polo ön">
+          <img src="assets/polo-arka.png" alt="Polo arka">
+        </div>
       </div>
+
       <div class="product-right">
-        <div class="main-img"><img src="assets/polo-on.png" alt="Polo yaka tişört"></div>
-        <div class="product-title"><div class="code">TP-002</div><div class="name">UZUN KOL POLO YAKA</div><div class="orange-line"></div></div>
-        <ul class="specs"><li>Polo yaka tasarım</li><li>Kurumsal kullanıma uygun</li><li>Uzun kollu model</li><li>Nefes alabilen kumaş</li><li>Rahat kalıp</li><li>S - M - L - XL - XXL beden</li><li>Logo baskıya uygun</li><li>Toplu üretim yapılır</li></ul>
-        <div class="colors"><h3>RENK SEÇENEKLERİ</h3><div class="swatches"><div class="swatch active"><img src="assets/polo-gri.webp"><span>Gri</span></div><div class="swatch"><img src="assets/polo-lacivert.webp"><span>Lacivert</span></div><div class="swatch"><img src="assets/polo-siyah.webp"><span>Siyah</span></div></div></div>
+        <div class="main-img">
+          <img src="assets/polo-on.png" alt="Polo yaka tişört">
+        </div>
+
+        <div class="product-title">
+          <div class="code">TP-002</div>
+          <div class="name">UZUN KOL POLO YAKA</div>
+          <div class="orange-line"></div>
+        </div>
+
+        <ul class="specs">
+          <li>Polo yaka tasarım</li>
+          <li>Kurumsal kullanıma uygun</li>
+          <li>Uzun kollu model</li>
+          <li>Nefes alabilen kumaş</li>
+          <li>Rahat kalıp</li>
+          <li>S - M - L - XL - XXL beden</li>
+          <li>Logo baskıya uygun</li>
+          <li>Toplu üretim yapılır</li>
+        </ul>
+
+        <div class="colors">
+          <h3>RENK SEÇENEKLERİ</h3>
+
+          <div class="swatches">
+            <div class="swatch active">
+              <img src="assets/polo-gri.webp" alt="Gri polo">
+              <span>Gri</span>
+            </div>
+
+            <div class="swatch">
+              <img src="assets/polo-lacivert.webp" alt="Lacivert polo">
+              <span>Lacivert</span>
+            </div>
+
+            <div class="swatch">
+              <img src="assets/polo-siyah.webp" alt="Siyah polo">
+              <span>Siyah</span>
+            </div>
+          </div>
+        </div>
       </div>
+
       <div class="footer">www.taner.com.tr</div>
     </section>
 
     <section class="page product-page">
       <div class="product-left">
         <img class="logo" src="assets/logo.jpg" alt="Taner İş Kıyafetleri">
-        <div class="showcase"><img src="assets/tshirt-on.png" alt="Tişört ön"><img src="assets/tshirt-arka.png" alt="Tişört arka"></div>
+
+        <div class="showcase">
+          <img src="assets/tshirt-on.png" alt="Tişört ön">
+          <img src="assets/tshirt-arka.png" alt="Tişört arka">
+        </div>
       </div>
+
       <div class="product-right">
-        <div class="main-img"><img src="assets/tshirt-on.png" alt="Yuvarlak yaka tişört"></div>
-        <div class="product-title"><div class="code">TP-003</div><div class="name">YUVARLAK YAKA TİŞÖRT</div><div class="orange-line"></div></div>
-        <ul class="specs"><li>Yuvarlak yaka</li><li>Günlük iş kullanımı için ideal</li><li>Kısa kollu model</li><li>Yumuşak dokulu kumaş</li><li>Rahat ve modern kalıp</li><li>S - M - L - XL - XXL beden</li><li>Ön ve arka baskıya uygun</li><li>Firma logosu uygulanır</li></ul>
-        <div class="colors"><h3>RENK SEÇENEKLERİ</h3><div class="swatches"><div class="swatch active"><img src="assets/tshirt-gri.webp"><span>Gri</span></div><div class="swatch"><img src="assets/tshirt-kirmizi.webp"><span>Kırmızı</span></div><div class="swatch"><img src="assets/tshirt-sari.webp"><span>Sarı</span></div></div></div>
+        <div class="main-img">
+          <img src="assets/tshirt-on.png" alt="Yuvarlak yaka tişört">
+        </div>
+
+        <div class="product-title">
+          <div class="code">TP-003</div>
+          <div class="name">YUVARLAK YAKA TİŞÖRT</div>
+          <div class="orange-line"></div>
+        </div>
+
+        <ul class="specs">
+          <li>Yuvarlak yaka</li>
+          <li>Günlük iş kullanımı için ideal</li>
+          <li>Kısa kollu model</li>
+          <li>Yumuşak dokulu kumaş</li>
+          <li>Rahat ve modern kalıp</li>
+          <li>S - M - L - XL - XXL beden</li>
+          <li>Ön ve arka baskıya uygun</li>
+          <li>Firma logosu uygulanır</li>
+        </ul>
+
+        <div class="colors">
+          <h3>RENK SEÇENEKLERİ</h3>
+
+          <div class="swatches">
+            <div class="swatch active">
+              <img src="assets/tshirt-gri.webp" alt="Gri tişört">
+              <span>Gri</span>
+            </div>
+
+            <div class="swatch">
+              <img src="assets/tshirt-kirmizi.webp" alt="Kırmızı tişört">
+              <span>Kırmızı</span>
+            </div>
+
+            <div class="swatch">
+              <img src="assets/tshirt-sari.webp" alt="Sarı tişört">
+              <span>Sarı</span>
+            </div>
+          </div>
+        </div>
       </div>
+
       <div class="footer">www.taner.com.tr</div>
     </section>
   </main>
+
   <script>
-    const catalog=document.getElementById('catalog');
-    const pages=[...document.querySelectorAll('.page')];
-    const dots=[...document.querySelectorAll('.dot')];
-    let current=0, locked=false, startY=0;
+    const catalog = document.getElementById('catalog');
+    const pages = [...document.querySelectorAll('.page')];
+    const dots = [...document.querySelectorAll('.dot')];
+
+    let current = 0;
+    let locked = false;
+    let startX = 0;
+    let startY = 0;
+
+    function getPageWidth(){
+      return pages[0].getBoundingClientRect().width;
+    }
 
     function goToPage(index){
-      index=Math.max(0,Math.min(pages.length-1,index));
-      if(index===current && locked) return;
-      current=index;
-      locked=true;
-      pages[index].scrollIntoView({behavior:'smooth',block:'start'});
+      index = Math.max(0, Math.min(pages.length - 1, index));
+
+      if(index === current && locked) return;
+
+      current = index;
+      locked = true;
+
+      catalog.scrollTo({
+        left: pages[index].offsetLeft,
+        behavior: 'smooth'
+      });
+
       updateActive();
-      setTimeout(()=>locked=false,650);
+
+      setTimeout(() => {
+        locked = false;
+      }, 650);
     }
 
     function updateActive(){
-      const i=Math.round(catalog.scrollTop/window.innerHeight);
-      current=Math.max(0,Math.min(pages.length-1,i));
-      pages.forEach((p,k)=>p.classList.toggle('active',k===current));
-      dots.forEach((d,k)=>d.classList.toggle('active',k===current));
+      const pageWidth = getPageWidth();
+      const i = Math.round(catalog.scrollLeft / pageWidth);
+
+      current = Math.max(0, Math.min(pages.length - 1, i));
+
+      pages.forEach((page, index) => {
+        page.classList.toggle('active', index === current);
+      });
+
+      dots.forEach((dot, index) => {
+        dot.classList.toggle('active', index === current);
+      });
     }
 
     pages[0].classList.add('active');
-    catalog.addEventListener('scroll',()=>requestAnimationFrame(updateActive),{passive:true});
-    catalog.addEventListener('touchstart',e=>{startY=e.touches[0].clientY;},{passive:true});
-    catalog.addEventListener('touchend',e=>{
-      const dy=startY-e.changedTouches[0].clientY;
-      if(Math.abs(dy)<45 || locked) return;
-      goToPage(current+(dy>0?1:-1));
-    },{passive:true});
-    catalog.addEventListener('wheel',e=>{
-      if(Math.abs(e.deltaY)<25 || locked) return;
-      e.preventDefault();
-      goToPage(current+(e.deltaY>0?1:-1));
-    },{passive:false});
+
+    catalog.addEventListener('scroll', () => {
+      requestAnimationFrame(updateActive);
+    }, { passive:true });
+
+    catalog.addEventListener('touchstart', event => {
+      startX = event.touches[0].clientX;
+      startY = event.touches[0].clientY;
+    }, { passive:true });
+
+    catalog.addEventListener('touchend', event => {
+      const endX = event.changedTouches[0].clientX;
+      const endY = event.changedTouches[0].clientY;
+
+      const dx = startX - endX;
+      const dy = startY - endY;
+
+      if(Math.abs(dx) < 45 || Math.abs(dx) < Math.abs(dy) || locked) return;
+
+      goToPage(current + (dx > 0 ? 1 : -1));
+    }, { passive:true });
+
+    catalog.addEventListener('wheel', event => {
+      const delta = Math.abs(event.deltaX) > Math.abs(event.deltaY) ? event.deltaX : event.deltaY;
+
+      if(Math.abs(delta) < 25 || locked) return;
+
+      event.preventDefault();
+
+      goToPage(current + (delta > 0 ? 1 : -1));
+    }, { passive:false });
+
+    window.addEventListener('resize', () => {
+      goToPage(current);
+    });
   </script>
 </body>
 </html>
