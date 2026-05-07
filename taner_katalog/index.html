@@ -31,7 +31,7 @@
     }
 
     body{
-      touch-action:pan-x;
+      touch-action:none;
     }
 
     .catalog{
@@ -42,7 +42,8 @@
       overflow-y:hidden;
       scroll-snap-type:x mandatory;
       scroll-behavior:smooth;
-      -webkit-overflow-scrolling:touch;
+      -webkit-overflow-scrolling:auto;
+      touch-action:none;
       scrollbar-width:none;
       overscroll-behavior:none;
     }
@@ -736,9 +737,19 @@
     }
 
     function updateActive(){
-      const i = Math.round(catalog.scrollLeft / window.innerWidth);
+      let nearestIndex = 0;
+      let nearestDistance = Infinity;
 
-      current = Math.max(0, Math.min(pages.length - 1, i));
+      pages.forEach((page, index) => {
+        const distance = Math.abs(catalog.scrollLeft - page.offsetLeft);
+
+        if(distance < nearestDistance){
+          nearestDistance = distance;
+          nearestIndex = index;
+        }
+      });
+
+      current = nearestIndex;
 
       pages.forEach((page, index) => {
         page.classList.toggle('active', index === current);
@@ -754,9 +765,16 @@
     }, { passive:true });
 
     catalog.addEventListener('touchstart', event => {
+      if(event.touches.length !== 1) return;
+
       startX = event.touches[0].clientX;
       startY = event.touches[0].clientY;
-    }, { passive:true });
+    }, { passive:false });
+
+    catalog.addEventListener('touchmove', event => {
+      if(event.touches.length !== 1) return;
+      event.preventDefault();
+    }, { passive:false });
 
     catalog.addEventListener('touchend', event => {
       const endX = event.changedTouches[0].clientX;
@@ -765,10 +783,12 @@
       const dx = startX - endX;
       const dy = startY - endY;
 
-      if(Math.abs(dx) < 42 || Math.abs(dx) < Math.abs(dy) || locked) return;
+      if(locked) return;
+      if(Math.abs(dx) < 45) return;
+      if(Math.abs(dx) < Math.abs(dy)) return;
 
       goToPage(current + (dx > 0 ? 1 : -1));
-    }, { passive:true });
+    }, { passive:false });
 
     catalog.addEventListener('wheel', event => {
       const delta = Math.abs(event.deltaX) > Math.abs(event.deltaY) ? event.deltaX : event.deltaY;
