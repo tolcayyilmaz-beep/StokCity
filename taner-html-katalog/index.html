@@ -74,24 +74,41 @@
       align-items: center;
       justify-content: space-between;
       gap: 14px;
-      min-height: 122px;
+      min-height: 56px;
       z-index: 2;
     }
 
     .logo-wrap {
-      height: 116px;
-      min-width: 268px;
+      height: 54px;
+      min-width: 116px;
       border: 1px solid var(--line);
       background: rgba(255,255,255,.92);
-      border-radius: 24px;
+      border-radius: 20px;
       display: flex;
       align-items: center;
       justify-content: center;
-      padding: 6px 18px;
+      padding: 8px 14px;
       box-shadow: 0 20px 50px rgba(0,0,0,.20);
     }
 
-    .logo { height: 104px; max-width: 235px; object-fit: contain; }
+    .logo { height: 76px; max-width: 280px; object-fit: contain; }
+
+    .home-topbar {
+      margin-bottom: -8px;
+    }
+
+    .home-logo-wrap {
+      height: 96px;
+      min-width: 220px;
+      padding: 12px 22px;
+      border-radius: 28px;
+    }
+
+    .home-logo {
+      height: 120px;
+      max-width: 420px;
+    }
+
 
     .counter {
       border: 1px solid var(--line);
@@ -109,9 +126,8 @@
       flex: 1;
       min-height: 0;
       display: grid;
-      align-content: start;
-      gap: 18px;
-      padding-top: 8px;
+      align-content: center;
+      gap: 20px;
       padding-bottom: 28px;
     }
 
@@ -426,9 +442,9 @@
 
     @media (max-height: 730px) {
       .page { padding: 12px 14px; }
-      .topbar { min-height: 92px; }
-      .logo-wrap { height: 88px; min-width: 210px; border-radius: 20px; padding: 5px 14px; }
-      .logo { height: 78px; max-width: 185px; }
+      .topbar { min-height: 48px; }
+      .logo-wrap { height: 46px; border-radius: 16px; }
+      .logo { height: 32px; }
       .hero-card { min-height: 52dvh; padding: 18px; border-radius: 30px; }
       .hero-title { font-size: clamp(36px, 11vw, 54px); }
       .hero-subtitle { font-size: 13px; line-height: 1.45; }
@@ -513,8 +529,8 @@
     function homePage() {
       return `
         <article class="page">
-          <div class="topbar">
-            <div class="logo-wrap"><img class="logo" src="images/logo/logo.jpg" alt="Taner İş Kıyafetleri"></div>
+          <div class="topbar home-topbar">
+            <div class="logo-wrap home-logo-wrap"><img class="logo home-logo" src="images/logo/logo.jpg" alt="Taner İş Kıyafetleri"></div>
             <div class="counter">01 / 04</div>
           </div>
 
