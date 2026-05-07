@@ -239,6 +239,50 @@
       transition: opacity .18s ease, transform .18s ease;
     }
 
+    .image-pair {
+      position: relative;
+      z-index: 1;
+      width: 100%;
+      height: 100%;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      align-items: center;
+      justify-items: center;
+      gap: 2px;
+    }
+
+    .image-pair .main-image {
+      width: 112%;
+      height: 100%;
+      min-width: 0;
+      object-fit: contain;
+    }
+
+    .image-pair .main-image:first-child {
+      transform: translateX(7%) scale(1.05);
+    }
+
+    .image-pair .main-image:last-child {
+      transform: translateX(-7%) scale(1.05);
+    }
+
+    .view-chip {
+      position: absolute;
+      z-index: 2;
+      bottom: 14px;
+      left: 14px;
+      border: 1px solid rgba(255,255,255,.18);
+      background: rgba(7,10,18,.60);
+      backdrop-filter: blur(12px);
+      border-radius: 999px;
+      padding: 8px 12px;
+      font-size: 11px;
+      font-weight: 900;
+      color: #fed7aa;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+    }
+
     .product-code, .color-name {
       position: absolute;
       z-index: 2;
@@ -421,9 +465,9 @@
         sizes: "S - M - L - XL - XXL",
         features: ["Dik yaka", "Fermuarlı", "Yan cepler", "Kol cep", "Rahat kalıp"],
         colors: [
-          { name: "Kırmızı", src: "images/polar/polar-kirmizi.webp" },
-          { name: "Siyah", src: "images/polar/polar-siyah.webp" },
-          { name: "Gri", src: "images/polar/polar-gri.webp" }
+          { name: "Kırmızı", src: "images/polar/polar-kirmizi.webp", backSrc: "images/polar/polar-kirmizi-arka.webp" },
+          { name: "Siyah", src: "images/polar/polar-siyah.webp", backSrc: "images/polar/polar-siyah-arka.webp" },
+          { name: "Gri", src: "images/polar/polar-gri.webp", backSrc: "images/polar/polar-gri-arka.webp" }
         ]
       },
       {
@@ -500,6 +544,13 @@
     function productPage(product, index) {
       const colorIndex = selectedColors[index];
       const color = product.colors[colorIndex];
+      const mainVisual = color.backSrc
+        ? `<div class="image-pair">
+            <img class="main-image" src="${color.src}" alt="${product.name} ${color.name} ön görünüm">
+            <img class="main-image" src="${color.backSrc}" alt="${product.name} ${color.name} arka görünüm">
+          </div>
+          <div class="view-chip">Ön / Arka</div>`
+        : `<img class="main-image" src="${color.src}" alt="${product.name} ${color.name}">`;
 
       return `
         <article class="page">
@@ -510,7 +561,7 @@
 
           <div class="product-layout">
             <div class="product-image-card">
-              <img class="main-image" src="${color.src}" alt="${product.name} ${color.name}">
+              ${mainVisual}
               <div class="product-code">${product.code}</div>
               <div class="color-name">${color.name}</div>
             </div>
