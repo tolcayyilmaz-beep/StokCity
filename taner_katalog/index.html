@@ -56,34 +56,42 @@
       min-width:100vw;
       height:100vh;
       flex:none;
-      display:grid;
-      place-items:center;
+      display:flex;
+      align-items:center;
+      justify-content:center;
       scroll-snap-align:start;
       overflow:hidden;
       background:#ddd;
     }
 
-    .page{
+    .page-scale{
       position:relative;
+      width:calc(var(--page-w) * var(--scale));
+      height:calc(var(--page-h) * var(--scale));
+      flex:none;
+    }
+
+    .page{
+      position:absolute;
+      left:0;
+      top:0;
       width:var(--page-w);
       height:var(--page-h);
       transform:scale(var(--scale));
-      transform-origin:center center;
-      transition:opacity .55s ease, transform .55s ease;
+      transform-origin:top left;
       background:radial-gradient(circle at 50% 5%,#fff 0,#f8f8f7 38%,#ececea 100%);
       overflow:hidden;
       padding:58px 76px 74px;
       box-shadow:0 18px 55px rgba(0,0,0,.13);
+      transition:opacity .55s ease;
     }
 
     .page-holder:not(.active) .page{
       opacity:.72;
-      transform:scale(calc(var(--scale) * .985));
     }
 
     .page-holder.active .page{
       opacity:1;
-      transform:scale(var(--scale));
     }
 
     .page:before{
@@ -364,10 +372,7 @@
     }
 
     @media(max-width:760px){
-      .catalog{
-        height:100dvh;
-      }
-
+      .catalog,
       .page-holder{
         height:100dvh;
       }
@@ -416,243 +421,184 @@
 
   <main class="catalog" id="catalog">
     <section class="page-holder active">
-      <div class="page home">
-        <div class="left">
-          <img class="logo" src="assets/logo.jpg" alt="Taner İş Kıyafetleri">
+      <div class="page-scale">
+        <div class="page home">
+          <div class="left">
+            <img class="logo" src="assets/logo.jpg" alt="Taner İş Kıyafetleri">
 
-          <h1>İş giyimde<br>güçlü görünüm.</h1>
+            <h1>İş giyimde<br>güçlü görünüm.</h1>
 
-          <p>Polar, polo yaka ve yuvarlak yaka ürün seçenekleriyle modern iş kıyafeti koleksiyonu.</p>
+            <p>Polar, polo yaka ve yuvarlak yaka ürün seçenekleriyle modern iş kıyafeti koleksiyonu.</p>
 
-          <div class="features">
-            <div class="feature">
-              <div class="icon">✓</div>
-              <div>
-                <b>Dayanıklı</b>
-                <span>Uzun ömürlü kullanım</span>
-              </div>
-            </div>
-
-            <div class="feature">
-              <div class="icon">❄</div>
-              <div>
-                <b>Konforlu</b>
-                <span>Her mevsim rahatlık</span>
-              </div>
-            </div>
-
-            <div class="feature">
-              <div class="icon">◈</div>
-              <div>
-                <b>Modern Tasarım</b>
-                <span>Şık ve profesyonel görünüm</span>
-              </div>
-            </div>
-
-            <div class="feature">
-              <div class="icon">✦</div>
-              <div>
-                <b>Yüksek Kalite</b>
-                <span>Özenli kumaş ve işçilik</span>
-              </div>
-            </div>
-
-            <div class="feature">
-              <div class="icon">✂</div>
-              <div>
-                <b>Özel Üretim</b>
-                <span>Kurumsal çözümler</span>
-              </div>
+            <div class="features">
+              <div class="feature"><div class="icon">✓</div><div><b>Dayanıklı</b><span>Uzun ömürlü kullanım</span></div></div>
+              <div class="feature"><div class="icon">❄</div><div><b>Konforlu</b><span>Her mevsim rahatlık</span></div></div>
+              <div class="feature"><div class="icon">◈</div><div><b>Modern Tasarım</b><span>Şık ve profesyonel görünüm</span></div></div>
+              <div class="feature"><div class="icon">✦</div><div><b>Yüksek Kalite</b><span>Özenli kumaş ve işçilik</span></div></div>
+              <div class="feature"><div class="icon">✂</div><div><b>Özel Üretim</b><span>Kurumsal çözümler</span></div></div>
             </div>
           </div>
-        </div>
 
-        <div class="divider"></div>
+          <div class="divider"></div>
 
-        <div class="hero-products">
-          <img src="assets/polar-on.png" alt="Polar iş montu">
-          <img src="assets/polo-on.png" alt="Polo yaka tişört">
-          <img src="assets/tshirt-on.png" alt="Yuvarlak yaka tişört">
-        </div>
-
-        <div class="footer">www.taner.com.tr</div>
-      </div>
-    </section>
-
-    <section class="page-holder">
-      <div class="page product-page">
-        <div class="product-left">
-          <img class="logo" src="assets/logo.jpg" alt="Taner İş Kıyafetleri">
-
-          <div class="showcase">
-            <img src="assets/polar-on.png" alt="Polar ön">
-            <img src="assets/polar-arka.png" alt="Polar arka">
-          </div>
-        </div>
-
-        <div class="product-right">
-          <div class="main-img">
-            <img src="assets/polar-kirmizi.webp" alt="Polar iş montu">
-          </div>
-
-          <div class="product-title">
-            <div class="code">TP-001</div>
-            <div class="name">POLAR İŞ MONTU</div>
-            <div class="orange-line"></div>
-          </div>
-
-          <ul class="specs">
-            <li>Polar kumaş</li>
-            <li>Soğuk hava koşullarına uygun</li>
-            <li>Dik yaka</li>
-            <li>Fermuarlı ve çok cepli tasarım</li>
-            <li>Yan cepler</li>
-            <li>S - M - L - XL - XXL beden</li>
-            <li>Kol cep</li>
-            <li>Özel üretim yapılır</li>
-          </ul>
-
-          <div class="colors">
-            <h3>RENK SEÇENEKLERİ</h3>
-
-            <div class="swatches">
-              <div class="swatch active">
-                <img src="assets/polar-kirmizi.webp" alt="Kırmızı polar">
-                <span>Kırmızı</span>
-              </div>
-
-              <div class="swatch">
-                <img src="assets/polar-siyah.webp" alt="Siyah polar">
-                <span>Siyah</span>
-              </div>
-
-              <div class="swatch">
-                <img src="assets/polar-gri.webp" alt="Gri polar">
-                <span>Gri</span>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div class="footer">www.taner.com.tr</div>
-      </div>
-    </section>
-
-    <section class="page-holder">
-      <div class="page product-page">
-        <div class="product-left">
-          <img class="logo" src="assets/logo.jpg" alt="Taner İş Kıyafetleri">
-
-          <div class="showcase">
-            <img src="assets/polo-on.png" alt="Polo ön">
-            <img src="assets/polo-arka.png" alt="Polo arka">
-          </div>
-        </div>
-
-        <div class="product-right">
-          <div class="main-img">
+          <div class="hero-products">
+            <img src="assets/polar-on.png" alt="Polar iş montu">
             <img src="assets/polo-on.png" alt="Polo yaka tişört">
-          </div>
-
-          <div class="product-title">
-            <div class="code">TP-002</div>
-            <div class="name">UZUN KOL POLO YAKA</div>
-            <div class="orange-line"></div>
-          </div>
-
-          <ul class="specs">
-            <li>Polo yaka tasarım</li>
-            <li>Kurumsal kullanıma uygun</li>
-            <li>Uzun kollu model</li>
-            <li>Nefes alabilen kumaş</li>
-            <li>Rahat kalıp</li>
-            <li>S - M - L - XL - XXL beden</li>
-            <li>Logo baskıya uygun</li>
-            <li>Toplu üretim yapılır</li>
-          </ul>
-
-          <div class="colors">
-            <h3>RENK SEÇENEKLERİ</h3>
-
-            <div class="swatches">
-              <div class="swatch active">
-                <img src="assets/polo-gri.webp" alt="Gri polo">
-                <span>Gri</span>
-              </div>
-
-              <div class="swatch">
-                <img src="assets/polo-lacivert.webp" alt="Lacivert polo">
-                <span>Lacivert</span>
-              </div>
-
-              <div class="swatch">
-                <img src="assets/polo-siyah.webp" alt="Siyah polo">
-                <span>Siyah</span>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div class="footer">www.taner.com.tr</div>
-      </div>
-    </section>
-
-    <section class="page-holder">
-      <div class="page product-page">
-        <div class="product-left">
-          <img class="logo" src="assets/logo.jpg" alt="Taner İş Kıyafetleri">
-
-          <div class="showcase">
-            <img src="assets/tshirt-on.png" alt="Tişört ön">
-            <img src="assets/tshirt-arka.png" alt="Tişört arka">
-          </div>
-        </div>
-
-        <div class="product-right">
-          <div class="main-img">
             <img src="assets/tshirt-on.png" alt="Yuvarlak yaka tişört">
           </div>
 
-          <div class="product-title">
-            <div class="code">TP-003</div>
-            <div class="name">YUVARLAK YAKA TİŞÖRT</div>
-            <div class="orange-line"></div>
+          <div class="footer">www.taner.com.tr</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="page-holder">
+      <div class="page-scale">
+        <div class="page product-page">
+          <div class="product-left">
+            <img class="logo" src="assets/logo.jpg" alt="Taner İş Kıyafetleri">
+
+            <div class="showcase">
+              <img src="assets/polar-on.png" alt="Polar ön">
+              <img src="assets/polar-arka.png" alt="Polar arka">
+            </div>
           </div>
 
-          <ul class="specs">
-            <li>Yuvarlak yaka</li>
-            <li>Günlük iş kullanımı için ideal</li>
-            <li>Kısa kollu model</li>
-            <li>Yumuşak dokulu kumaş</li>
-            <li>Rahat ve modern kalıp</li>
-            <li>S - M - L - XL - XXL beden</li>
-            <li>Ön ve arka baskıya uygun</li>
-            <li>Firma logosu uygulanır</li>
-          </ul>
+          <div class="product-right">
+            <div class="main-img">
+              <img src="assets/polar-kirmizi.webp" alt="Polar iş montu">
+            </div>
 
-          <div class="colors">
-            <h3>RENK SEÇENEKLERİ</h3>
+            <div class="product-title">
+              <div class="code">TP-001</div>
+              <div class="name">POLAR İŞ MONTU</div>
+              <div class="orange-line"></div>
+            </div>
 
-            <div class="swatches">
-              <div class="swatch active">
-                <img src="assets/tshirt-gri.webp" alt="Gri tişört">
-                <span>Gri</span>
-              </div>
+            <ul class="specs">
+              <li>Polar kumaş</li>
+              <li>Soğuk hava koşullarına uygun</li>
+              <li>Dik yaka</li>
+              <li>Fermuarlı ve çok cepli tasarım</li>
+              <li>Yan cepler</li>
+              <li>S - M - L - XL - XXL beden</li>
+              <li>Kol cep</li>
+              <li>Özel üretim yapılır</li>
+            </ul>
 
-              <div class="swatch">
-                <img src="assets/tshirt-kirmizi.webp" alt="Kırmızı tişört">
-                <span>Kırmızı</span>
-              </div>
+            <div class="colors">
+              <h3>RENK SEÇENEKLERİ</h3>
 
-              <div class="swatch">
-                <img src="assets/tshirt-sari.webp" alt="Sarı tişört">
-                <span>Sarı</span>
+              <div class="swatches">
+                <div class="swatch active"><img src="assets/polar-kirmizi.webp" alt="Kırmızı polar"><span>Kırmızı</span></div>
+                <div class="swatch"><img src="assets/polar-siyah.webp" alt="Siyah polar"><span>Siyah</span></div>
+                <div class="swatch"><img src="assets/polar-gri.webp" alt="Gri polar"><span>Gri</span></div>
               </div>
             </div>
           </div>
-        </div>
 
-        <div class="footer">www.taner.com.tr</div>
+          <div class="footer">www.taner.com.tr</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="page-holder">
+      <div class="page-scale">
+        <div class="page product-page">
+          <div class="product-left">
+            <img class="logo" src="assets/logo.jpg" alt="Taner İş Kıyafetleri">
+
+            <div class="showcase">
+              <img src="assets/polo-on.png" alt="Polo ön">
+              <img src="assets/polo-arka.png" alt="Polo arka">
+            </div>
+          </div>
+
+          <div class="product-right">
+            <div class="main-img">
+              <img src="assets/polo-on.png" alt="Polo yaka tişört">
+            </div>
+
+            <div class="product-title">
+              <div class="code">TP-002</div>
+              <div class="name">UZUN KOL POLO YAKA</div>
+              <div class="orange-line"></div>
+            </div>
+
+            <ul class="specs">
+              <li>Polo yaka tasarım</li>
+              <li>Kurumsal kullanıma uygun</li>
+              <li>Uzun kollu model</li>
+              <li>Nefes alabilen kumaş</li>
+              <li>Rahat kalıp</li>
+              <li>S - M - L - XL - XXL beden</li>
+              <li>Logo baskıya uygun</li>
+              <li>Toplu üretim yapılır</li>
+            </ul>
+
+            <div class="colors">
+              <h3>RENK SEÇENEKLERİ</h3>
+
+              <div class="swatches">
+                <div class="swatch active"><img src="assets/polo-gri.webp" alt="Gri polo"><span>Gri</span></div>
+                <div class="swatch"><img src="assets/polo-lacivert.webp" alt="Lacivert polo"><span>Lacivert</span></div>
+                <div class="swatch"><img src="assets/polo-siyah.webp" alt="Siyah polo"><span>Siyah</span></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="footer">www.taner.com.tr</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="page-holder">
+      <div class="page-scale">
+        <div class="page product-page">
+          <div class="product-left">
+            <img class="logo" src="assets/logo.jpg" alt="Taner İş Kıyafetleri">
+
+            <div class="showcase">
+              <img src="assets/tshirt-on.png" alt="Tişört ön">
+              <img src="assets/tshirt-arka.png" alt="Tişört arka">
+            </div>
+          </div>
+
+          <div class="product-right">
+            <div class="main-img">
+              <img src="assets/tshirt-on.png" alt="Yuvarlak yaka tişört">
+            </div>
+
+            <div class="product-title">
+              <div class="code">TP-003</div>
+              <div class="name">YUVARLAK YAKA TİŞÖRT</div>
+              <div class="orange-line"></div>
+            </div>
+
+            <ul class="specs">
+              <li>Yuvarlak yaka</li>
+              <li>Günlük iş kullanımı için ideal</li>
+              <li>Kısa kollu model</li>
+              <li>Yumuşak dokulu kumaş</li>
+              <li>Rahat ve modern kalıp</li>
+              <li>S - M - L - XL - XXL beden</li>
+              <li>Ön ve arka baskıya uygun</li>
+              <li>Firma logosu uygulanır</li>
+            </ul>
+
+            <div class="colors">
+              <h3>RENK SEÇENEKLERİ</h3>
+
+              <div class="swatches">
+                <div class="swatch active"><img src="assets/tshirt-gri.webp" alt="Gri tişört"><span>Gri</span></div>
+                <div class="swatch"><img src="assets/tshirt-kirmizi.webp" alt="Kırmızı tişört"><span>Kırmızı</span></div>
+                <div class="swatch"><img src="assets/tshirt-sari.webp" alt="Sarı tişört"><span>Sarı</span></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="footer">www.taner.com.tr</div>
+        </div>
       </div>
     </section>
   </main>
@@ -668,7 +614,6 @@
     let startY = 0;
 
     function setScale(){
-      const root = document.documentElement;
       const pageW = 1180;
       const pageH = 1000;
 
@@ -677,7 +622,7 @@
 
       const scale = Math.min(availableW / pageW, availableH / pageH);
 
-      root.style.setProperty('--scale', scale);
+      document.documentElement.style.setProperty('--scale', scale.toString());
     }
 
     function goToPage(index){
@@ -714,7 +659,10 @@
       });
     }
 
-    setScale();
+    window.addEventListener('load', () => {
+      setScale();
+      updateActive();
+    });
 
     catalog.addEventListener('scroll', () => {
       requestAnimationFrame(updateActive);
