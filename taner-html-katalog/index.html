@@ -1,0 +1,366 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Taner İş Kıyafetleri | Dijital Katalog</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      background: #f3f4f6;
+      color: #0f172a;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 14px;
+    }
+    .phone {
+      width: 100%;
+      max-width: 430px;
+      height: 94vh;
+      max-height: 880px;
+      background: #fff;
+      border-radius: 34px;
+      overflow: hidden;
+      position: relative;
+      box-shadow: 0 28px 80px rgba(15, 23, 42, .22);
+      border: 1px solid #e5e7eb;
+    }
+    header {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 20;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 18px 20px 12px;
+      background: linear-gradient(to bottom, rgba(255,255,255,.98), rgba(255,255,255,.82));
+      backdrop-filter: blur(10px);
+    }
+    .logo { height: 48px; object-fit: contain; }
+    .header-text { text-align: right; }
+    .header-text small {
+      display: block;
+      color: #94a3b8;
+      font-size: 10px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      font-weight: 700;
+    }
+    .header-text span { font-size: 12px; font-weight: 800; color: #334155; }
+    .content {
+      height: 100%;
+      overflow-y: auto;
+      padding: 94px 20px 48px;
+      touch-action: pan-y;
+    }
+    .product-stage {
+      background: linear-gradient(180deg, #f8fafc, #fff);
+      border: 1px solid #eef2f7;
+      border-radius: 28px;
+      padding: 14px;
+      box-shadow: 0 10px 26px rgba(15, 23, 42, .06);
+    }
+    .image-box {
+      position: relative;
+      background: #fff;
+      border-radius: 24px;
+      aspect-ratio: 4 / 4.25;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+    .main-image {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      transition: transform .25s ease, opacity .2s ease;
+      user-select: none;
+      -webkit-user-drag: none;
+    }
+    .badge {
+      position: absolute;
+      top: 12px;
+      left: 12px;
+      background: #0f172a;
+      color: white;
+      padding: 7px 12px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 800;
+    }
+    .color-badge {
+      position: absolute;
+      right: 12px;
+      bottom: 12px;
+      background: rgba(255,255,255,.92);
+      border: 1px solid #e2e8f0;
+      padding: 7px 12px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 800;
+      color: #334155;
+    }
+    .thumbs {
+      margin-top: 13px;
+      display: flex;
+      gap: 9px;
+      overflow-x: auto;
+      padding-bottom: 2px;
+    }
+    .thumb {
+      flex: 0 0 auto;
+      width: 64px;
+      height: 64px;
+      border: 1px solid #e2e8f0;
+      border-radius: 18px;
+      background: #fff;
+      overflow: hidden;
+      cursor: pointer;
+      padding: 3px;
+    }
+    .thumb.active { border-color: #f97316; box-shadow: 0 0 0 3px #ffedd5; }
+    .thumb img { width: 100%; height: 100%; object-fit: contain; }
+    .category {
+      margin: 22px 0 0;
+      color: #f97316;
+      font-size: 12px;
+      font-weight: 900;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+    }
+    h1 { margin: 8px 0 0; font-size: 31px; line-height: 1.05; letter-spacing: -1px; }
+    .desc { margin: 13px 0 0; color: #64748b; font-size: 14px; line-height: 1.65; }
+    .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 18px; }
+    .info-card {
+      border: 1px solid #eef2f7;
+      border-radius: 22px;
+      padding: 15px;
+      background: #fff;
+      box-shadow: 0 8px 20px rgba(15, 23, 42, .05);
+    }
+    .info-icon {
+      width: 38px;
+      height: 38px;
+      border-radius: 14px;
+      background: #fff7ed;
+      color: #f97316;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      margin-bottom: 10px;
+    }
+    .info-title { font-size: 11px; color: #94a3b8; font-weight: 900; text-transform: uppercase; letter-spacing: 1px; }
+    .info-text { margin-top: 4px; font-size: 13px; font-weight: 800; line-height: 1.45; color: #334155; }
+    .features {
+      margin-top: 18px;
+      background: #0f172a;
+      color: white;
+      border-radius: 26px;
+      padding: 18px;
+    }
+    .features h2 { margin: 0 0 12px; font-size: 17px; }
+    .features ul { list-style: none; padding: 0; margin: 0; display: grid; gap: 9px; }
+    .features li { font-size: 14px; color: #e2e8f0; }
+    .features li::before { content: "✦"; color: #fb923c; margin-right: 8px; }
+    .nav-btn {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 42px;
+      height: 42px;
+      border: 1px solid #e2e8f0;
+      border-radius: 999px;
+      background: rgba(255,255,255,.92);
+      box-shadow: 0 10px 26px rgba(15, 23, 42, .18);
+      z-index: 30;
+      cursor: pointer;
+      font-size: 26px;
+      line-height: 1;
+    }
+    .nav-btn.left { left: 10px; }
+    .nav-btn.right { right: 10px; }
+    .dots {
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 14px;
+      z-index: 22;
+      display: flex;
+      justify-content: center;
+      gap: 8px;
+      pointer-events: none;
+    }
+    .dot { width: 8px; height: 8px; border-radius: 999px; background: #cbd5e1; transition: .2s; }
+    .dot.active { width: 32px; background: #f97316; }
+    .fade-left { animation: fadeLeft .22s ease; }
+    .fade-right { animation: fadeRight .22s ease; }
+    @keyframes fadeLeft { from { transform: translateX(45px); opacity: .3; } to { transform: translateX(0); opacity: 1; } }
+    @keyframes fadeRight { from { transform: translateX(-45px); opacity: .3; } to { transform: translateX(0); opacity: 1; } }
+  </style>
+</head>
+<body>
+  <main class="phone">
+    <header>
+      <img class="logo" src="images/logo/logo.jpg" alt="Taner İş Kıyafetleri" />
+      <div class="header-text">
+        <small>Dijital Katalog</small>
+        <span>2026 Koleksiyonu</span>
+      </div>
+    </header>
+
+    <button class="nav-btn left" onclick="prevProduct()">‹</button>
+    <button class="nav-btn right" onclick="nextProduct()">›</button>
+
+    <section id="content" class="content"></section>
+    <div id="dots" class="dots"></div>
+  </main>
+
+  <script>
+    const products = [
+      {
+        id: "001",
+        name: "Polar İş Montu",
+        category: "Kışlık İş Kıyafeti",
+        code: "TP-001",
+        description: "Soğuk çalışma ortamları için tasarlanmış, fermuarlı, dik yakalı ve çok cepli polar iş montu.",
+        fabric: "Polar kumaş / mevsimlik-kışlık kullanım",
+        sizes: "S - M - L - XL - XXL",
+        features: ["Dik yaka", "Fermuarlı ön kapama", "Yan cepler", "Kol cep detayı", "Rahat kalıp"],
+        colors: [
+          { name: "Kırmızı", src: "images/polar/polar-kirmizi.webp" },
+          { name: "Siyah", src: "images/polar/polar-siyah.webp" },
+          { name: "Gri", src: "images/polar/polar-gri.webp" }
+        ]
+      },
+      {
+        id: "002",
+        name: "Polo Yaka Uzun Kollu Tişört",
+        category: "Kurumsal İş Giyimi",
+        code: "TP-002",
+        description: "Günlük kullanım ve kurumsal ekip kıyafetleri için sade, şık ve konforlu polo yaka uzun kollu tişört.",
+        fabric: "Pamuk karışımlı örme kumaş",
+        sizes: "S - M - L - XL - XXL",
+        features: ["Polo yaka", "Uzun kollu", "Düğmeli pat", "Rahat kullanım", "Kurumsal baskıya uygun"],
+        colors: [
+          { name: "Gri", src: "images/polo/polo-gri.webp" },
+          { name: "Lacivert", src: "images/polo/polo-lacivert.webp" },
+          { name: "Siyah", src: "images/polo/polo-siyah.webp" }
+        ]
+      },
+      {
+        id: "003",
+        name: "Yuvarlak Yaka Tişört",
+        category: "Temel İş Giyimi",
+        code: "TP-003",
+        description: "Ekip kullanımı, promosyon ve günlük iş kıyafeti ihtiyaçları için sade yuvarlak yaka tişört.",
+        fabric: "Pamuk karışımlı tişört kumaşı",
+        sizes: "S - M - L - XL - XXL",
+        features: ["Yuvarlak yaka", "Kısa kollu", "Düz renk tasarım", "Baskı/nakışa uygun", "Hafif yapı"],
+        colors: [
+          { name: "Gri", src: "images/tshirt/tshirt-gri.webp" },
+          { name: "Kırmızı", src: "images/tshirt/tshirt-kirmizi.webp" },
+          { name: "Sarı", src: "images/tshirt/tshirt-sari.webp" },
+          { name: "Siyah", src: "images/tshirt/tshirt-siyah.webp" }
+        ]
+      }
+    ];
+
+    let page = 0;
+    let selectedColors = [0, 0, 0];
+    let startX = 0;
+    let endX = 0;
+
+    const content = document.getElementById("content");
+    const dots = document.getElementById("dots");
+
+    function render(direction = "left") {
+      const product = products[page];
+      const colorIndex = selectedColors[page];
+      const color = product.colors[colorIndex];
+
+      content.className = "content " + (direction === "left" ? "fade-left" : "fade-right");
+      content.innerHTML = `
+        <div class="product-stage">
+          <div class="image-box">
+            <img class="main-image" src="${color.src}" alt="${product.name} ${color.name}" />
+            <div class="badge">${product.code}</div>
+            <div class="color-badge">${color.name}</div>
+          </div>
+          <div class="thumbs">
+            ${product.colors.map((c, i) => `
+              <button class="thumb ${i === colorIndex ? "active" : ""}" onclick="selectColor(${i})">
+                <img src="${c.src}" alt="${c.name}" />
+              </button>
+            `).join("")}
+          </div>
+        </div>
+
+        <p class="category">${product.category}</p>
+        <h1>${product.name}</h1>
+        <p class="desc">${product.description}</p>
+
+        <div class="info-grid">
+          <div class="info-card">
+            <div class="info-icon">◐</div>
+            <div class="info-title">Kumaş</div>
+            <div class="info-text">${product.fabric}</div>
+          </div>
+          <div class="info-card">
+            <div class="info-icon">↔</div>
+            <div class="info-title">Beden</div>
+            <div class="info-text">${product.sizes}</div>
+          </div>
+        </div>
+
+        <div class="features">
+          <h2>Ürün Özellikleri</h2>
+          <ul>${product.features.map(f => `<li>${f}</li>`).join("")}</ul>
+        </div>
+      `;
+
+      dots.innerHTML = products.map((_, i) => `<span class="dot ${i === page ? "active" : ""}"></span>`).join("");
+    }
+
+    function selectColor(index) {
+      selectedColors[page] = index;
+      render("left");
+    }
+
+    function nextProduct() {
+      page = (page + 1) % products.length;
+      render("left");
+    }
+
+    function prevProduct() {
+      page = (page - 1 + products.length) % products.length;
+      render("right");
+    }
+
+    content.addEventListener("touchstart", e => startX = e.touches[0].clientX, { passive: true });
+    content.addEventListener("touchend", e => {
+      endX = e.changedTouches[0].clientX;
+      const diff = endX - startX;
+      if (diff < -70) nextProduct();
+      if (diff > 70) prevProduct();
+    }, { passive: true });
+
+    content.addEventListener("mousedown", e => startX = e.clientX);
+    content.addEventListener("mouseup", e => {
+      endX = e.clientX;
+      const diff = endX - startX;
+      if (diff < -90) nextProduct();
+      if (diff > 90) prevProduct();
+    });
+
+    render();
+  </script>
+</body>
+</html>
