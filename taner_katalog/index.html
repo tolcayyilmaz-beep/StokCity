@@ -372,8 +372,24 @@
     }
 
     @media(max-width:760px){
+      html,
+      body{
+        background:#ececea;
+      }
+
       .catalog,
       .page-holder{
+        height:100dvh;
+      }
+
+      .page-holder{
+        align-items:flex-start;
+        justify-content:flex-start;
+        background:#ececea;
+      }
+
+      .page-scale{
+        width:100vw;
         height:100dvh;
       }
 
@@ -386,24 +402,7 @@
       }
 
       .mobile-note{
-        display:block;
-        position:fixed;
-        left:50%;
-        bottom:18px;
-        transform:translateX(-50%);
-        z-index:20;
-        background:rgba(16,36,62,.86);
-        color:#fff;
-        padding:7px 13px;
-        border-radius:999px;
-        font-size:11px;
-        white-space:nowrap;
-        animation:fadeout 4s forwards;
-      }
-
-      @keyframes fadeout{
-        0%,70%{opacity:1;}
-        100%{opacity:0;pointer-events:none;}
+        display:none;
       }
     }
   </style>
@@ -617,10 +616,20 @@
       const pageW = 1180;
       const pageH = 1000;
 
-      const availableW = window.innerWidth;
-      const availableH = window.innerHeight;
+      const viewportW = window.innerWidth;
+      const viewportH = window.visualViewport ? window.visualViewport.height : window.innerHeight;
 
-      const scale = Math.min(availableW / pageW, availableH / pageH);
+      let scale;
+
+      if(viewportW <= 760){
+        /*
+          Mobilde sayfa tam ekrana otursun.
+          Tasarım oranı korunur, alt taraf kesilmez.
+        */
+        scale = Math.min(viewportW / pageW, viewportH / pageH);
+      }else{
+        scale = Math.min(viewportW / pageW, viewportH / pageH, 1);
+      }
 
       document.documentElement.style.setProperty('--scale', scale.toString());
     }
@@ -706,6 +715,13 @@
         goToPage(current);
       }, 250);
     });
+
+    if(window.visualViewport){
+      window.visualViewport.addEventListener('resize', () => {
+        setScale();
+        setTimeout(() => goToPage(current), 80);
+      });
+    }
   </script>
 </body>
 </html>
