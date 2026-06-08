@@ -6,10 +6,15 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
   <style>
+    * {
+      box-sizing: border-box;
+    }
+
     body {
       font-family: Arial, sans-serif;
       background: #f3f4f6;
       padding: 10px;
+      margin: 0;
     }
 
     .container {
@@ -63,10 +68,12 @@
       background: #2563eb;
       color: white;
       border: none;
-      padding: 10px 14px;
+      width: 42px;
+      height: 42px;
       border-radius: 50%;
       font-size: 16px;
       cursor: pointer;
+      flex-shrink: 0;
     }
 
     .nav-btn:hover {
@@ -113,6 +120,19 @@
       font-weight: bold;
       text-align: center;
       font-size: 14px;
+      min-height: 20px;
+    }
+
+    .status.success {
+      color: #15803d;
+    }
+
+    .status.error {
+      color: #dc2626;
+    }
+
+    .status.info {
+      color: #2563eb;
     }
   </style>
 </head>
@@ -159,13 +179,26 @@
     <button class="delete-btn" onclick="deleteData()">🗑 Kayıt Sil</button>
   </div>
 
-  <div class="status" id="status"></div>
+  <div class="status info" id="status">Panel hazırlanıyor...</div>
 </div>
 
 <!-- Firebase -->
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-  import { getFirestore, doc, getDoc, setDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+  import {
+    getFirestore,
+    doc,
+    getDoc,
+    setDoc,
+    deleteDoc
+  } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+  import {
+    getAuth,
+    signInAnonymously,
+    onAuthStateChanged
+  } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
   const firebaseConfig = {
     apiKey: "AIzaSyDTNOGduGplnuGI0hTUGIGilt_q6ojrCJc",
@@ -178,96 +211,192 @@
 
   const app = initializeApp(firebaseConfig);
   const db = getFirestore(app);
+  const auth = getAuth(app);
 
   const datePicker = document.getElementById("datePicker");
+  const statusEl = document.getElementById("status");
+
+  let authReady = false;
+
+  function setStatus(message, type = "info") {
+    statusEl.innerText = message;
+    statusEl.className = "status " + type;
+  }
+
+  function todayAsInputDate() {
+    const today = new Date();
+    const year = today.getFullYear();
+    const month = String(today.getMonth() + 1).padStart(2, "0");
+    const day = String(today.getDate()).padStart(2, "0");
+    return `${year}-${month}-${day}`;
+  }
+
+  async function initAuth() {
+    try {
+      setStatus("Giriş hazırlanıyor...", "info");
+      await signInAnonymously(auth);
+    } catch (error) {
+      console.error("Auth hatası:", error);
+      setStatus("Giriş yapılamadı: " + error.message, "error");
+    }
+  }
+
+  onAuthStateChanged(auth, (user) => {
+    if (user) {
+      authReady = true;
+      setStatus("Panel hazır.", "success");
+
+      if (!datePicker.value) {
+        datePicker.value = todayAsInputDate();
+      }
+
+      loadData();
+    } else {
+      authReady = false;
+      setStatus("Giriş yapılmadı.", "error");
+    }
+  });
+
+  function checkAuthReady() {
+    if (!authReady) {
+      setStatus("Giriş hazırlanıyor. Lütfen tekrar dene.", "info");
+      return false;
+    }
+
+    return true;
+  }
 
   datePicker.addEventListener("change", loadData);
 
   window.changeDate = function (offset) {
-    if (!datePicker.value) return;
+    if (!datePicker.value) {
+      datePicker.value = todayAsInputDate();
+    }
 
-    const current = new Date(datePicker.value);
+    const current = new Date(datePicker.value + "T00:00:00");
     current.setDate(current.getDate() + offset);
 
-    const newDate = current.toISOString().split("T")[0];
-    datePicker.value = newDate;
+    const year = current.getFullYear();
+    const month = String(current.getMonth() + 1).padStart(2, "0");
+    const day = String(current.getDate()).padStart(2, "0");
+
+    datePicker.value = `${year}-${month}-${day}`;
     loadData();
   };
 
   async function loadData() {
+    if (!checkAuthReady()) return;
+
     const date = datePicker.value;
     if (!date) return;
 
-    const ref = doc(db, "zikirler", date);
-    const snap = await getDoc(ref);
+    try {
+      setStatus("Kayıt yükleniyor...", "info");
 
-    if (snap.exists()) {
-      const data = snap.data();
-      document.getElementById("zikirTextAr").value = data.zikirTextAr || "";
-      document.getElementById("pronunciationTr").value = data.pronunciationTr || "";
-      document.getElementById("pronunciationEn").value = data.pronunciationEn || "";
-      document.getElementById("pronunciationAr").value = data.pronunciationAr || "";
-      document.getElementById("mealTr").value = data.mealTr || "";
-      document.getElementById("mealEn").value = data.mealEn || "";
-      document.getElementById("mealAr").value = data.mealAr || "";
-      document.getElementById("totalDhikr").value = data.totalDhikr || 0;
-      document.getElementById("totalParticipants").value = data.totalParticipants || 0;
+      const ref = doc(db, "zikirler", date);
+      const snap = await getDoc(ref);
 
-      document.getElementById("status").innerText = "Kayıt yüklendi.";
-    } else {
-      clearFields();
-      document.getElementById("status").innerText = "Bu tarih için kayıt yok. Yeni veri girebilirsin.";
+      if (snap.exists()) {
+        const data = snap.data();
+
+        document.getElementById("zikirTextAr").value = data.zikirTextAr || "";
+        document.getElementById("pronunciationTr").value = data.pronunciationTr || "";
+        document.getElementById("pronunciationEn").value = data.pronunciationEn || "";
+        document.getElementById("pronunciationAr").value = data.pronunciationAr || "";
+        document.getElementById("mealTr").value = data.mealTr || "";
+        document.getElementById("mealEn").value = data.mealEn || "";
+        document.getElementById("mealAr").value = data.mealAr || "";
+        document.getElementById("totalDhikr").value = data.totalDhikr || 0;
+        document.getElementById("totalParticipants").value = data.totalParticipants || 0;
+
+        setStatus("Kayıt yüklendi.", "success");
+      } else {
+        clearFields();
+        setStatus("Bu tarih için kayıt yok. Yeni veri girebilirsin.", "info");
+      }
+    } catch (error) {
+      console.error("Veri yükleme hatası:", error);
+      setStatus("Kayıt yüklenemedi: " + error.message, "error");
     }
   }
 
   function clearFields() {
     document.querySelectorAll("input, textarea").forEach(el => {
       if (el.id === "datePicker") return;
-      if (el.type === "number") el.value = 0;
-      else el.value = "";
+
+      if (el.type === "number") {
+        el.value = 0;
+      } else {
+        el.value = "";
+      }
     });
   }
 
   window.saveData = async function () {
+    if (!checkAuthReady()) return;
+
     const date = datePicker.value;
+
     if (!date) {
       alert("Lütfen bir tarih seç!");
       return;
     }
 
     const data = {
-      zikirTextAr: document.getElementById("zikirTextAr").value,
-      pronunciationTr: document.getElementById("pronunciationTr").value,
-      pronunciationEn: document.getElementById("pronunciationEn").value,
-      pronunciationAr: document.getElementById("pronunciationAr").value,
-      mealTr: document.getElementById("mealTr").value,
-      mealEn: document.getElementById("mealEn").value,
-      mealAr: document.getElementById("mealAr").value,
-      totalDhikr: Number(document.getElementById("totalDhikr").value),
-      totalParticipants: Number(document.getElementById("totalParticipants").value)
+      zikirTextAr: document.getElementById("zikirTextAr").value.trim(),
+      pronunciationTr: document.getElementById("pronunciationTr").value.trim(),
+      pronunciationEn: document.getElementById("pronunciationEn").value.trim(),
+      pronunciationAr: document.getElementById("pronunciationAr").value.trim(),
+      mealTr: document.getElementById("mealTr").value.trim(),
+      mealEn: document.getElementById("mealEn").value.trim(),
+      mealAr: document.getElementById("mealAr").value.trim(),
+      totalDhikr: Number(document.getElementById("totalDhikr").value || 0),
+      totalParticipants: Number(document.getElementById("totalParticipants").value || 0),
+      updatedAt: new Date()
     };
 
-    const ref = doc(db, "zikirler", date);
-    await setDoc(ref, data, { merge: true });
+    try {
+      setStatus("Kayıt kaydediliyor...", "info");
 
-    document.getElementById("status").innerText = "Kayıt başarıyla kaydedildi.";
+      const ref = doc(db, "zikirler", date);
+      await setDoc(ref, data, { merge: true });
+
+      setStatus("Kayıt başarıyla kaydedildi.", "success");
+    } catch (error) {
+      console.error("Kaydetme hatası:", error);
+      setStatus("Kayıt kaydedilemedi: " + error.message, "error");
+    }
   };
 
   window.deleteData = async function () {
+    if (!checkAuthReady()) return;
+
     const date = datePicker.value;
+
     if (!date) {
       alert("Lütfen bir tarih seç!");
       return;
     }
 
-    if (!confirm("Bu tarihe ait kaydı silmek istediğine emin misin?")) return;
+    if (!confirm("Bu tarihe ait kaydı silmek istediğine emin misin?")) {
+      return;
+    }
 
-    const ref = doc(db, "zikirler", date);
-    await deleteDoc(ref);
+    try {
+      setStatus("Kayıt siliniyor...", "info");
 
-    clearFields();
-    document.getElementById("status").innerText = "Kayıt silindi.";
+      const ref = doc(db, "zikirler", date);
+      await deleteDoc(ref);
+
+      clearFields();
+      setStatus("Kayıt silindi.", "success");
+    } catch (error) {
+      console.error("Silme hatası:", error);
+      setStatus("Kayıt silinemedi: " + error.message, "error");
+    }
   };
+
+  initAuth();
 </script>
 
 </body>
